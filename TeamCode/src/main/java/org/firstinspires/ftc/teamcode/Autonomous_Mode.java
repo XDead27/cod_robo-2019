@@ -78,19 +78,19 @@ public abstract class Autonomous_Mode extends LinearOpMode {
         }
     }
 
-    //citesc culoarea
-    protected boolean GoodColor(){
-        int curColor = color.readUnsignedByte(ModernRoboticsI2cColorSensor.Register.COLOR_NUMBER);
-        if ( curColor >= 8 && curColor <= 10 ) return true;
-        return false;
-    }
-
     protected void WalkEncoder(double dist , double angle){
         //TODO - WalkEncoder : mers distanta dist la unghiul angle
     }
 
     protected void WalkAtAngle(double speed, double angle){
 
+    }
+
+    //citesc culoarea
+    protected boolean GoodColor(){
+        int curColor = color.readUnsignedByte(ModernRoboticsI2cColorSensor.Register.COLOR_NUMBER);
+        if ( curColor >= 8 && curColor <= 10 ) return true;
+        return false;
     }
 
     //ma rotesc la angle grade; negativ e pentru right, pozitiv e pentru left;
