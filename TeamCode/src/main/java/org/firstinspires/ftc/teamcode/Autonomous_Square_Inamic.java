@@ -7,10 +7,12 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 public final class Autonomous_Square_Inamic extends Autonomous_Mode {
 
     @Override
-    public void runOpMode() {
-        initialise();
+    protected void runOperations() {
 
-        waitForStart();
+    }
+
+    @Override
+    protected void endOperations() {
 
     }
 

@@ -7,11 +7,12 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 public final class Autonomous_Square_Aliat extends Autonomous_Mode {
 
     @Override
-    public void runOpMode() {
-        initialise();
-
-        waitForStart();
+    protected void runOperations() {
 
     }
 
+    @Override
+    protected void endOperations() {
+
+    }
 }

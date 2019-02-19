@@ -34,6 +34,25 @@ public abstract class Autonomous_Mode extends LinearOpMode {
     protected final int tics_per_cm = 67;
     protected final double deadzone = 0.1;
 
+    //functii abstrcte
+    protected abstract void runOperations();
+    protected abstract void endOperations();
+
+    @Override
+    public void runOpMode() {
+        initialise();
+
+        waitForStart();
+
+        runOperations();
+
+        endOperations();
+    }
+
+    //************
+    //INITIALIZARE
+    //************
+
     protected void initialise()
     {
         //hardware mapping
@@ -78,19 +97,52 @@ public abstract class Autonomous_Mode extends LinearOpMode {
         }
     }
 
-    //citesc culoarea
-    protected boolean GoodColor(){
-        int curColor = color.readUnsignedByte(ModernRoboticsI2cColorSensor.Register.COLOR_NUMBER);
-        if ( curColor >= 8 && curColor <= 10 ) return true;
-        return false;
+    //************
+    //MISCARE
+    //************
+
+    //Set the motors power individually
+    protected void SetWheelsPower(double FL, double FR, double BL, double BR){
+        Motor_FR.setPower(FR);
+        Motor_BL.setPower(BL);
+        Motor_FL.setPower(FL);
+        Motor_BR.setPower(BR);
+    }
+
+    //Overcharge of the previous function, takes only two arguments and sets the wheels power based
+    //on mecanum wheel dependence
+    protected void SetWheelsPower(double FLBR, double FRBL){
+        Motor_FR.setPower(FRBL);
+        Motor_BL.setPower(FRBL);
+        Motor_FL.setPower(FLBR);
+        Motor_BR.setPower(FLBR);
+    }
+
+    //Provided with the speed and the angle in degrees(relative to the current rotation), make the
+    //robot pan-move in that direction
+    protected void WalkAtAngle(double speed, double angle){
+        //Transform from angle to vectorial distribution(0 is 0%, 1 is 100%, you could think of it
+        //as the proportion of X and Y)
+        double AxisXVector = Math.cos(Math.toRadians(angle));
+        double AxisYVector = Math.sin(Math.toRadians(angle));
+
+        //Power the wheel motors according to the vectorial distribution
+        //TODO: implementeaza o funcite mai acurata si adauga viteza
+        double SpeedFLBR = AxisYVector - AxisXVector;
+        double SpeedFRBL = AxisYVector + AxisXVector;
+        SetWheelsPower(SpeedFLBR, SpeedFRBL);
     }
 
     protected void WalkEncoder(double dist , double angle){
         //TODO - WalkEncoder : mers distanta dist la unghiul angle
     }
 
-    protected void WalkAtAngle(double speed, double angle){
-
+    //opresc toate motoarele
+    protected void StopMotors(){
+        Motor_BL.setPower(0);
+        Motor_BR.setPower(0);
+        Motor_FL.setPower(0);
+        Motor_FR.setPower(0);
     }
 
     //ma rotesc la angle grade; negativ e pentru right, pozitiv e pentru left;
@@ -192,6 +244,10 @@ public abstract class Autonomous_Mode extends LinearOpMode {
         return false;
     }
 
+    //************
+    //MISCELLANEOUS
+    //************
+
     //verific obiectele pana dau de cel bun
     protected void FindCube(){
 
@@ -206,12 +262,11 @@ public abstract class Autonomous_Mode extends LinearOpMode {
         return;
     }
 
-    //opresc toate motoarele
-    protected void StopMotors(){
-        Motor_BL.setPower(0);
-        Motor_BR.setPower(0);
-        Motor_FL.setPower(0);
-        Motor_FR.setPower(0);
+    //citesc culoarea
+    protected boolean GoodColor(){
+        int curColor = color.readUnsignedByte(ModernRoboticsI2cColorSensor.Register.COLOR_NUMBER);
+        if ( curColor >= 8 && curColor <= 10 ) return true;
+        return false;
     }
 
 }
