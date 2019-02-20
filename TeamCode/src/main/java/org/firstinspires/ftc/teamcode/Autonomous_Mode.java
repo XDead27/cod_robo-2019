@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cColorSensor;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
@@ -127,14 +128,42 @@ public abstract class Autonomous_Mode extends LinearOpMode {
         double AxisYVector = Math.sin(Math.toRadians(angle));
 
         //Power the wheel motors according to the vectorial distribution
-        //TODO: implementeaza o funcite mai acurata si adauga viteza
-        double SpeedFLBR = AxisYVector - AxisXVector;
-        double SpeedFRBL = AxisYVector + AxisXVector;
+        //The function that describes the vectorial distribution is
+        double VectorFLBR = (Math.signum(AxisYVector) * Math.pow(AxisYVector, 2)) - (Math.signum(AxisXVector) * Math.pow(AxisXVector, 2));
+        double VectorFRBL = (Math.signum(AxisYVector) * Math.pow(AxisYVector, 2)) + (Math.signum(AxisXVector) * Math.pow(AxisXVector, 2));
+
+        //Scale that vector by the desired speed, keeping in mind the maximum
+        speed = Range.clip(speed, 0, 1);
+        double ScalingCoeficient = speed/Math.max(VectorFLBR, VectorFRBL);
+
+        double SpeedFLBR = VectorFLBR * ScalingCoeficient;
+        double SpeedFRBL = VectorFRBL * ScalingCoeficient;
+
+
         SetWheelsPower(SpeedFLBR, SpeedFRBL);
     }
 
     protected void WalkEncoder(double dist , double angle){
         //TODO - WalkEncoder : mers distanta dist la unghiul angle
+    }
+
+    //merg pana la un obiect
+    protected boolean WalkUntilObject(double angle){
+        WalkAtAngle(0.2, angle);
+
+        while ( opModeIsActive() && color.readUnsignedByte(ModernRoboticsI2cColorSensor.Register.COLOR_NUMBER) == 0 ){
+            idle();
+        }
+        StopMotors();
+
+        //daca e bun, il mut
+        if ( GoodColor() ){
+            WalkEncoder(5, 0);
+            WalkEncoder(-5, 0);
+            return true;
+        }
+
+        return false;
     }
 
     //opresc toate motoarele
@@ -223,25 +252,6 @@ public abstract class Autonomous_Mode extends LinearOpMode {
         while ( opModeIsActive() && Math.abs(RangeL.getDistance(DistanceUnit.CM) - RangeR.getDistance(DistanceUnit.CM)) > 0 ) {
             idle();
         }
-    }
-
-    //merg pana la un obiect
-    protected boolean WalkUntilObject(double angle){
-        WalkAtAngle(0.2, angle);
-
-        while ( opModeIsActive() && color.readUnsignedByte(ModernRoboticsI2cColorSensor.Register.COLOR_NUMBER) == 0 ){
-            idle();
-        }
-        StopMotors();
-
-        //daca e bun, il mut
-        if ( GoodColor() ){
-            WalkEncoder(5, 0);
-            WalkEncoder(-5, 0);
-            return true;
-        }
-
-        return false;
     }
 
     //************
