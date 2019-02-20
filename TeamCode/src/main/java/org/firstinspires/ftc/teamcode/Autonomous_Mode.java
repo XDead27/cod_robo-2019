@@ -129,8 +129,8 @@ public abstract class Autonomous_Mode extends LinearOpMode {
 
         //Power the wheel motors according to the vectorial distribution
         //The function that describes the vectorial distribution is
-        double VectorFLBR = (Math.signum(AxisYVector) * Math.pow(AxisYVector, 2)) - (Math.signum(AxisXVector) * Math.pow(AxisXVector, 2));
-        double VectorFRBL = (Math.signum(AxisYVector) * Math.pow(AxisYVector, 2)) + (Math.signum(AxisXVector) * Math.pow(AxisXVector, 2));
+        double VectorFLBR = MecanumFunctionCalculator(AxisXVector, AxisYVector, true);
+        double VectorFRBL = MecanumFunctionCalculator(AxisXVector, AxisYVector, false);
 
         //Scale that vector by the desired speed, keeping in mind the maximum
         speed = Range.clip(speed, 0, 1);
@@ -145,6 +145,17 @@ public abstract class Autonomous_Mode extends LinearOpMode {
 
     protected void WalkEncoder(double dist , double angle){
         //TODO - WalkEncoder : mers distanta dist la unghiul angle
+        WalkAtAngle(0.7, angle);
+
+        //calculate vectorials
+        double TargetXVector = dist * Math.cos(angle);
+        double TargetYVector = dist * Math.sin(angle);
+
+        //calculate the encoder target
+        double TargetFLBR = MecanumFunctionCalculator(TargetXVector, TargetYVector, true);
+        double TargetFRBL = MecanumFunctionCalculator(TargetXVector, TargetYVector, false);
+
+        //TODO: stii tu ce trebuie sa mai faci
     }
 
     //merg pana la un obiect
@@ -277,6 +288,10 @@ public abstract class Autonomous_Mode extends LinearOpMode {
         int curColor = color.readUnsignedByte(ModernRoboticsI2cColorSensor.Register.COLOR_NUMBER);
         if ( curColor >= 8 && curColor <= 10 ) return true;
         return false;
+    }
+
+    protected double MecanumFunctionCalculator(double VectorX, double VectorY, boolean bFLBR){
+        return bFLBR? (Math.signum(VectorY) * Math.pow(VectorY, 2)) - (Math.signum(VectorX) * Math.pow(VectorX, 2)) : (Math.signum(VectorY) * Math.pow(VectorY, 2)) + (Math.signum(VectorX) * Math.pow(VectorX, 2));
     }
 
 }
