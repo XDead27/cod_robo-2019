@@ -229,7 +229,7 @@ public abstract class Autonomous_Mode extends LinearOpMode {
     protected boolean WalkUntilObject(double angle){
         WalkAtAngle(0.2, angle);
 
-        while ( opModeIsActive() && color.readUnsignedByte(ModernRoboticsI2cColorSensor.Register.COLOR_NUMBER) ==  0 ){
+        while ( opModeIsActive() && color.readUnsignedByte(ModernRoboticsI2cColorSensor.Register.COLOR_NUMBER) == 0 ){
             idle();
         }
         StopMotors();
