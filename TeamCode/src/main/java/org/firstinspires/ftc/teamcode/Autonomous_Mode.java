@@ -78,6 +78,7 @@ public abstract class Autonomous_Mode extends LinearOpMode {
         }
     }
 
+
     //citesc culoarea
     protected boolean GoodColor(){
         int curColor = color.readUnsignedByte(ModernRoboticsI2cColorSensor.Register.COLOR_NUMBER);
