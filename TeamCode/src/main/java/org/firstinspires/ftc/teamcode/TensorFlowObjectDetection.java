@@ -55,6 +55,19 @@ public class TensorFlowObjectDetection extends LinearOpMode {
     private static final String TFOD_MODEL_ASSET = "RoverRuckus.tflite";
     private static final String LABEL_GOLD_MINERAL = "Gold Mineral";
     private static final String LABEL_SILVER_MINERAL = "Silver Mineral";
+
+    /*
+     * IMPORTANT: You need to obtain your own license key to use Vuforia. The string below with which
+     * 'parameters.vuforiaLicenseKey' is initialized is for illustration only, and will not function.
+     * A Vuforia 'Development' license key, can be obtained free of charge from the Vuforia developer
+     * web site at https://developer.vuforia.com/license-manager.
+     *
+     * Vuforia license keys are always 380 characters long, and look as if they contain mostly
+     * random data. As an example, here is a example of a fragment of a valid key:
+     *      ... yIgIzTqZ4mWjk9wd3cZO9T1axEqzuhxoGlfOOI2dRzKS4T0hQ8kT ...
+     * Once you've obtained a license key, copy the string from the Vuforia web site
+     * and paste it in to your code on the next line, between the double quotes.
+     */
     private static final String VUFORIA_KEY = "AYlEu/7/////AAABmXB1kirNm0vlrZa4DCCmkis6ZNJkEkHGNYjIfoKWcK+yxnJOhuC4Lw3B63L+Y5vrSoTsr1mEe6bvGcMR8Hg+v1Z1Cih0IrBRHdIfrrg6lfa723ft/unZOKgck3ftCj8gWuiM89d+A4smkenUI5P/HXMKMGKCk4xxv5of9YNSX8r4KFO8lD+bqYgnP+GVXzD/TwQo7Dqer3bf0HVbOqP6j6HREHAZdP6Idg/JwyRG8LSdC6ekTwogxCWsuWiaUhuC8uAQ4r/ZfJykZpXYCxhdcLwMM4OaUXkUAPuUenzxlL8MXkwOhsDfqiQNEfSB00BodWKq28EC6cc+Vsko8r9PreeU6jCYR4d84VK8uBFLGaJx";
 
     /**
@@ -99,17 +112,31 @@ public class TensorFlowObjectDetection extends LinearOpMode {
                     List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
                     if (updatedRecognitions != null) {
                         telemetry.addData("# Object Detected", updatedRecognitions.size());
-                        if (updatedRecognitions.size() == 3) {
+                        if (updatedRecognitions.size() >= 3) {
                             int goldMineralX = -1;
+                            int goldMineralY = 1000000;
                             int silverMineral1X = -1;
+                            int silverMineral1Y = 1000000;
                             int silverMineral2X = -1;
+                            int silverMineral2Y = 1000000;
                             for (Recognition recognition : updatedRecognitions) {
-                                if (recognition.getLabel().equals(LABEL_GOLD_MINERAL)) {
-                                    goldMineralX = (int) recognition.getLeft();
-                                } else if (silverMineral1X == -1) {
-                                    silverMineral1X = (int) recognition.getLeft();
+                                if (recognition.getLabel().equals(LABEL_GOLD_MINERAL) && (int)recognition.getBottom() < goldMineralY) {
+                                    if ((int)recognition.getBottom() < goldMineralY){
+                                        goldMineralX = (int) recognition.getLeft();
+                                        goldMineralY = (int) recognition.getBottom();
+                                    }
                                 } else {
-                                    silverMineral2X = (int) recognition.getLeft();
+                                    if ((int)recognition.getBottom() < silverMineral1Y){
+                                        silverMineral2X = silverMineral1X;
+                                        silverMineral2Y = silverMineral1Y;
+                                        silverMineral1X = (int) recognition.getLeft();
+                                        silverMineral1Y = (int) recognition.getBottom();
+                                        continue;
+                                    }
+                                    if ((int)recognition.getBottom() < silverMineral2Y){
+                                        silverMineral2X = (int) recognition.getLeft();
+                                        silverMineral2Y = (int) recognition.getBottom();
+                                    }
                                 }
                             }
                             if (goldMineralX != -1 && silverMineral1X != -1 && silverMineral2X != -1) {
@@ -121,24 +148,12 @@ public class TensorFlowObjectDetection extends LinearOpMode {
                                     telemetry.addData("Gold Mineral Position", "Center");
                                 }
                             }
-                            else {
-                                if (goldMineralX == -1){
-                                    telemetry.addData("Can't See" , "Gold Mineral");
-                                }
-                                if (silverMineral1X == -1){
-                                    telemetry.addData("Can't See" , "Both Silver Minerals");
-                                }
-                                if (silverMineral2X == -1){
-                                    telemetry.addData("Can't See" , "One Silver Mineral");
-                                }
-                            }
                         }
                         telemetry.update();
                     }
                 }
             }
         }
-
         if (tfod != null) {
             tfod.shutdown();
         }
