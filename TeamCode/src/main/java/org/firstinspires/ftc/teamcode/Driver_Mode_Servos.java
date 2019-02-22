@@ -46,8 +46,7 @@ public class Driver_Mode_Servos extends LinearOpMode {
 
         //putere initiala
         ContinuousServo.setPower(0);
-        FixedServo.setPosition(Servo.MIN_POSITION);
-
+        FixedServo.setPosition(0.3);
         //directii
         ContinuousServo.setDirection(CRServo.Direction.FORWARD);
         FixedServo.setDirection(Servo.Direction.FORWARD);
