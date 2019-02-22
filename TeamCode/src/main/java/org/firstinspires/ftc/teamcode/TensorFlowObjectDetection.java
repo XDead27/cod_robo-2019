@@ -112,40 +112,54 @@ public class TensorFlowObjectDetection extends LinearOpMode {
                     List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
                     if (updatedRecognitions != null) {
                         telemetry.addData("# Object Detected", updatedRecognitions.size());
-                        if (updatedRecognitions.size() >= 3) {
-                            int goldMineralX = -1;
-                            int goldMineralY = 1000000;
-                            int silverMineral1X = -1;
-                            int silverMineral1Y = 1000000;
-                            int silverMineral2X = -1;
-                            int silverMineral2Y = 1000000;
+                        if (updatedRecognitions.size() >= 2) {
+                            String label1 = "";
+                            String label2 = "";
+                            int top1 = -1; //top de la tel cand e vertical , deci left pt landscape
+                            int top2 = -1;
+                            int left1 = 100000; //top de la tel cand e vertical , deci buttom pt landscape
+                            int left2 = 100000;
                             for (Recognition recognition : updatedRecognitions) {
-                                if (recognition.getLabel().equals(LABEL_GOLD_MINERAL) && (int)recognition.getBottom() < goldMineralY) {
-                                    if ((int)recognition.getBottom() < goldMineralY){
-                                        goldMineralX = (int) recognition.getLeft();
-                                        goldMineralY = (int) recognition.getBottom();
-                                    }
-                                } else {
-                                    if ((int)recognition.getBottom() < silverMineral1Y){
-                                        silverMineral2X = silverMineral1X;
-                                        silverMineral2Y = silverMineral1Y;
-                                        silverMineral1X = (int) recognition.getLeft();
-                                        silverMineral1Y = (int) recognition.getBottom();
-                                        continue;
-                                    }
-                                    if ((int)recognition.getBottom() < silverMineral2Y){
-                                        silverMineral2X = (int) recognition.getLeft();
-                                        silverMineral2Y = (int) recognition.getBottom();
-                                    }
+                                telemetry.addData("label" , recognition.getLabel());
+                                telemetry.addData("left" , (int)recognition.getLeft());
+                                telemetry.addData("top" , (int)recognition.getTop());
+                                telemetry.addData("" , "");
+                                if (left1 > (int) recognition.getLeft()){
+                                    left1 = (int) recognition.getLeft();
+                                    top1 = (int) recognition.getTop();
+                                    label1 = recognition.getLabel();
+
+                                    left2 = left1;
+                                    top2 = top1;
+                                    label2 = label1;
+                                }
+                                else if (left2 > (int) recognition.getLeft()){
+                                    left2 = (int) recognition.getLeft();
+                                    top2 = (int) recognition.getTop();
+                                    label2 = recognition.getLabel();
                                 }
                             }
-                            if (goldMineralX != -1 && silverMineral1X != -1 && silverMineral2X != -1) {
-                                if (goldMineralX < silverMineral1X && goldMineralX < silverMineral2X) {
-                                    telemetry.addData("Gold Mineral Position", "Left");
-                                } else if (goldMineralX > silverMineral1X && goldMineralX > silverMineral2X) {
-                                    telemetry.addData("Gold Mineral Position", "Right");
-                                } else {
-                                    telemetry.addData("Gold Mineral Position", "Center");
+                            if (top1 != -1 && top2 != -1) {
+                                if (label1.equals(LABEL_GOLD_MINERAL) || label2.equals(LABEL_GOLD_MINERAL)){
+                                    if (label1.equals(LABEL_GOLD_MINERAL)){
+                                        if (top1 > top2){
+                                            telemetry.addData("Cubul este in" , "stanga");
+                                        }
+                                        else{
+                                            telemetry.addData("Cubul este in" , "mijloc");
+                                        }
+                                    }
+                                    else {
+                                        if (top2 > top1){
+                                            telemetry.addData("Cubul este in" , "stanga");
+                                        }
+                                        else {
+                                            telemetry.addData("Cubul este in", "mijloc");
+                                        }
+                                    }
+                                }
+                                else{
+                                    telemetry.addData("Cubul este in" , "dreapta");
                                 }
                             }
                         }
