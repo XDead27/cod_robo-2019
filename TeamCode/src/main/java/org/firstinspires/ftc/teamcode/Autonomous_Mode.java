@@ -33,7 +33,7 @@ public abstract class Autonomous_Mode extends LinearOpMode {
 
     //constante
     protected final int tics_per_cm = 67;
-    protected final double deadzone = 0.1;
+    protected static double TOLERANCE = 0.0001;
 
     //functii abstrcte
     protected abstract void runOperations();
@@ -163,6 +163,131 @@ public abstract class Autonomous_Mode extends LinearOpMode {
 
         //TODO: daca merge sunt zeu
     }
+
+    //need comment
+    protected void WalkObstacleAndRangeNORMAL(double distanceFromWall, boolean bStartAllignedWithWall){
+        //se aliniaza cu zidul din fata
+        if(bStartAllignedWithWall){
+            while(Math.abs(RangeL.rawUltrasonic() - RangeL.rawUltrasonic()) < 10/*magic number*/){
+                int dir = (int)Math.signum(RangeL.rawUltrasonic() - RangeL.rawUltrasonic());
+                SetWheelsPower(-0.2 * dir, 0.2 * dir, -0.2 * dir, 0.2 * dir);
+            }
+        }
+
+        final double target = distanceFromWall;
+        final double delay  = 2000;
+        final long period = 10L; //while ce opereaza la frecventa de 10 ms
+
+        boolean bIsUsingEncoder = false;
+
+        ///IMPLEMENTARE GYRO
+        gyro.resetZAxisIntegrator();
+        double currentHeading = gyro.getHeading();
+
+        ///TEST**************
+        double pGain = 1/(target - 5); //daca zidul sau alt robot se apropie mai mult decat trebuie atunci sa mearga la viteza maxima in spate
+        double dGain = 0.0;
+
+        double errorRight = target - RangeL.getDistance(DistanceUnit.CM);
+        double errorLeft = target - RangeL.getDistance(DistanceUnit.CM);
+
+        double proportionalSpeedLeft = 0;
+        double proportionalSpeedRight = 0;
+
+        double finalSpeedLeft = 0, finalSpeedRight = 0;
+
+        double initValueL = 0, initValueR = 0;
+
+        float steadyTimer = 0;
+
+        while(opModeIsActive() && steadyTimer < delay){
+
+            //*****************************
+            //conditia de timer
+            if (Math.abs(errorLeft) < 2 || Math.abs(errorRight) < 2) {
+                steadyTimer += period;
+            } else {
+                steadyTimer = 0;
+            }
+
+
+            //****************************
+            //PID
+            errorRight = target - RangeL.getDistance(DistanceUnit.CM);
+            errorLeft = target - RangeL.getDistance(DistanceUnit.CM);
+
+            proportionalSpeedRight = (errorRight * pGain);
+            proportionalSpeedLeft = (errorLeft * pGain);
+
+            //inversam viteza ca sa fie pozitiva
+            finalSpeedLeft = -proportionalSpeedLeft;
+            finalSpeedRight = -proportionalSpeedRight;
+
+            finalSpeedLeft = Range.clip(finalSpeedLeft, -0.9, 0.7);
+            finalSpeedRight = Range.clip(finalSpeedRight, -0.9, 0.7);
+
+            //****************************
+            //exceptii
+            if(Math.abs(finalSpeedLeft) < TOLERANCE ){
+                finalSpeedLeft = 0;
+            }
+            if(Math.abs(finalSpeedRight) < TOLERANCE ){
+                finalSpeedRight = 0;
+            }
+
+            //daca robotul trebuie sa se intoarca
+            if(finalSpeedLeft > 0 && finalSpeedRight < 0){
+                finalSpeedLeft = 0;
+            }
+            if(finalSpeedRight > 0 && finalSpeedLeft < 0){
+                finalSpeedRight = 0;
+            }
+
+            //****************************
+            //gyro
+            currentHeading = gyro.getHeading();
+            if(currentHeading > 180){
+                currentHeading = currentHeading - 360;
+            }
+            if(Math.abs(currentHeading) > 2 && !bIsUsingEncoder){
+                bIsUsingEncoder = true;
+                initValueL = Motor_FL.getCurrentPosition();
+                initValueR = Motor_FR.getCurrentPosition();
+            }
+
+            //****************************
+            //retrack
+            if(bIsUsingEncoder){
+                if(initValueL <= Motor_FL.getCurrentPosition()){
+                    finalSpeedLeft = 0;
+                }
+                if(initValueR <= Motor_FR.getCurrentPosition()){
+                    finalSpeedRight = 0;
+                }
+
+                if(initValueL < Motor_FL.getCurrentPosition() && initValueR < Motor_FR.getCurrentPosition()){
+                    bIsUsingEncoder = false;
+                    gyro.resetZAxisIntegrator();
+                }
+            }
+
+            SetWheelsPower(finalSpeedLeft, finalSpeedRight, finalSpeedLeft, finalSpeedRight);
+
+            telemetry.addData("using encoder ", bIsUsingEncoder);
+            telemetry.addData("speed left", finalSpeedLeft);
+            telemetry.addData("speed right", finalSpeedRight);
+            telemetry.addData("error left ", errorLeft);
+            telemetry.addData("error right ", errorRight);
+            telemetry.addData("steady timer ", steadyTimer);
+            telemetry.update();
+
+            sleep(period);
+        }
+
+        ///TEST END*****************
+        StopMotors();
+    }
+
 
     //merg pana la un obiect
     protected boolean WalkUntilObject(double angle){
