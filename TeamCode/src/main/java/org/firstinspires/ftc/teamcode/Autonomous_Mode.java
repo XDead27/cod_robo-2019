@@ -144,7 +144,6 @@ public abstract class Autonomous_Mode extends LinearOpMode {
     }
 
     protected void WalkEncoder(double dist , double angle){
-        //TODO - WalkEncoder : mers distanta dist la unghiul angle
         WalkAtAngle(0.7, angle);
 
         //calculate vectorials
@@ -155,7 +154,14 @@ public abstract class Autonomous_Mode extends LinearOpMode {
         double TargetFLBR = MecanumFunctionCalculator(TargetXVector, TargetYVector, true);
         double TargetFRBL = MecanumFunctionCalculator(TargetXVector, TargetYVector, false);
 
-        //TODO: stii tu ce trebuie sa mai faci
+        //making run to position by hand, because the normal function sometimes has bugs
+        while(Math.abs(TargetFLBR) > Math.abs(Motor_FL.getCurrentPosition()) || Math.abs(TargetFRBL) > Math.abs(Motor_FR.getCurrentPosition())){
+            idle();
+        }
+
+        StopMotors();
+
+        //TODO: daca merge sunt zeu
     }
 
     //merg pana la un obiect
