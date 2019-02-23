@@ -125,12 +125,12 @@ public class Driver_Mode extends LinearOpMode {
     }
 
     protected void gamepad_2(){
-        if (gamepad2.a){
+        /*if (gamepad2.a){
             Rotire_Glisiera_Encoder(-2000,0 , 0.5); //TODO : sa o duca la 90 de grade , viteza mare , pasi caluclati , ai grija la forward si reverse sa nu futa
         }
         else if (gamepad2.b){
             Rotire_Glisiera_Encoder(0 , 0 , 0.5); //TODO : sa o duca la 0 grade (de unde a pornit) , viteza mica , aceeasi pasi calculati dar cu minus
-        }
+        }*/
 
         //daca se apasa cele doua bumpere se pune no constraint mode
         if(gamepad2.left_bumper && gamepad2.right_bumper){

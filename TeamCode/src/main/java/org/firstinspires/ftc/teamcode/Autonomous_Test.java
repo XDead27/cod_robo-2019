@@ -7,29 +7,19 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 public final class Autonomous_Test extends Autonomous_Mode {
 
     @Override
-    public void runOpMode() {
-        initialise();
+    protected void runOperations() {
+        WalkAtAngle(1, 45);
 
-        waitForStart();
-
-        boolean test_servo = false;
-
-        if (test_servo){
-            servo_test();
+        while(opModeIsActive()){
+            idle();
         }
 
+        StopMotors();
     }
 
-    protected void servo_test (){
-        servo_L.setPosition(1);
-        servo_R.setPosition(-1);
-        while (opModeIsActive()){
-            //servo_R.setPosition(1);
-            //sleep (1000);
-            //servo_L.setPosition(0);
-            //servo_R.setPosition(0);
-            //sleep (1000);
-        }
+    @Override
+    protected void endOperations() {
+
     }
 
 }

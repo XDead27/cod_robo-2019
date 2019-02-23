@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cColorSensor;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
-
+import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 public abstract class Autonomous_Mode extends LinearOpMode {
@@ -33,6 +33,25 @@ public abstract class Autonomous_Mode extends LinearOpMode {
     //constante
     protected final int tics_per_cm = 67;
     protected final double deadzone = 0.1;
+
+    //functii abstrcte
+    protected abstract void runOperations();
+    protected abstract void endOperations();
+
+    @Override
+    public void runOpMode() {
+        initialise();
+
+        waitForStart();
+
+        runOperations();
+
+        endOperations();
+    }
+
+    //************
+    //INITIALIZARE
+    //************
 
     protected void initialise()
     {
@@ -78,23 +97,75 @@ public abstract class Autonomous_Mode extends LinearOpMode {
         }
     }
 
+    //************
+    //MISCARE
+    //************
 
-    //citesc culoarea
-    protected boolean GoodColor(){
-        int curColor = color.readUnsignedByte(ModernRoboticsI2cColorSensor.Register.COLOR_NUMBER);
-        if ( curColor >= 8 && curColor <= 10 ) return true;
-        return false;
+    //Set the motors power individually
+    protected void SetWheelsPower(double FL, double FR, double BL, double BR){
+        Motor_FR.setPower(FR);
+        Motor_BL.setPower(BL);
+        Motor_FL.setPower(FL);
+        Motor_BR.setPower(BR);
     }
 
-    protected void WalkEncoder(double dist , double angle){
-        //TODO - WalkEncoder : mers distanta dist la unghiul angle
+    //Overcharge of the previous function, takes only two arguments and sets the wheels power based
+    //on mecanum wheel dependence
+    protected void SetWheelsPower(double FLBR, double FRBL){
+        Motor_FR.setPower(FRBL);
+        Motor_BL.setPower(FRBL);
+        Motor_FL.setPower(FLBR);
+        Motor_BR.setPower(FLBR);
     }
 
+    //Provided with the speed and the angle in degrees(relative to the current rotation), make the
+    //robot pan-move in that direction
     protected void WalkAtAngle(double speed, double angle){
+        //Transform from angle to vectorial distribution(0 is 0%, 1 is 100%, you could think of it
+        //as the proportion of X and Y)
+        double AxisXVector = Math.cos(Math.toRadians(angle));
+        double AxisYVector = Math.sin(Math.toRadians(angle));
 
+        //Power the wheel motors according to the vectorial distribution
+        //The function that describes the vectorial distribution is
+        double VectorFLBR = MecanumFunctionCalculator(AxisXVector, AxisYVector, true);
+        double VectorFRBL = MecanumFunctionCalculator(AxisXVector, AxisYVector, false);
+
+        //Scale that vector by the desired speed, keeping in mind the maximum
+        speed = Range.clip(speed, 0, 1);
+        double ScalingCoeficient = speed/Math.max(VectorFLBR, VectorFRBL);
+
+        double SpeedFLBR = VectorFLBR * ScalingCoeficient;
+        double SpeedFRBL = VectorFRBL * ScalingCoeficient;
+
+
+        SetWheelsPower(SpeedFLBR, SpeedFRBL);
     }
 
-    //ma rotesc la angle grade; negativ e pentru right, pozitiv e pentru left;
+    protected void WalkEncoder(double dist , double angle) {
+        //TODO - WalkEncoder : mers distanta dist la unghiul angle
+        WalkAtAngle(0.7, angle);
+
+        //calculate vectorials
+        double TargetXVector = dist * Math.cos(angle);
+        double TargetYVector = dist * Math.sin(angle);
+
+        //calculate the encoder target
+        double TargetFLBR = MecanumFunctionCalculator(TargetXVector, TargetYVector, true);
+        double TargetFRBL = MecanumFunctionCalculator(TargetXVector, TargetYVector, false);
+
+        //TODO: stii tu ce trebuie sa mai faci
+    }
+
+    //opresc toate motoarele
+    protected void StopMotors(){
+        Motor_BL.setPower(0);
+        Motor_BR.setPower(0);
+        Motor_FL.setPower(0);
+        Motor_FR.setPower(0);
+    }
+
+    //ma rotesc la angle grade: negativ e pentru right, pozitiv e pentru left;
     protected void Rotate(double angle){
         boolean bAngleIsNegative = false;
         double FinalAngle = gyro.getHeading()+angle;
@@ -174,45 +245,12 @@ public abstract class Autonomous_Mode extends LinearOpMode {
         }
     }
 
-    //merg pana la un obiect
-    protected boolean WalkUntilObject(double angle){
-        WalkAtAngle(0.2, angle);
+    //************
+    //MISCELLANEOUS
+    //************
 
-        while ( opModeIsActive() && color.readUnsignedByte(ModernRoboticsI2cColorSensor.Register.COLOR_NUMBER) ==  0 ){
-            idle();
-        }
-        StopMotors();
-
-        //daca e bun, il mut
-        if ( GoodColor() ){
-            WalkEncoder(5, 0);
-            WalkEncoder(-5, 0);
-            return true;
-        }
-
-        return false;
-    }
-
-    //verific obiectele pana dau de cel bun
-    protected void FindCube(){
-
-        if (WalkUntilObject(0)) {
-            return;
-        }
-        if (WalkUntilObject(90)) {
-            return;
-        }
-
-        WalkUntilObject(-90);
-        return;
-    }
-
-    //opresc toate motoarele
-    protected void StopMotors(){
-        Motor_BL.setPower(0);
-        Motor_BR.setPower(0);
-        Motor_FL.setPower(0);
-        Motor_FR.setPower(0);
+    protected double MecanumFunctionCalculator(double VectorX, double VectorY, boolean bFLBR){
+        return bFLBR? (Math.signum(VectorY) * Math.pow(VectorY, 2)) - (Math.signum(VectorX) * Math.pow(VectorX, 2)) : (Math.signum(VectorY) * Math.pow(VectorY, 2)) + (Math.signum(VectorX) * Math.pow(VectorX, 2));
     }
 
 }
