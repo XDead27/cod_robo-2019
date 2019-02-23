@@ -125,13 +125,13 @@ public class TensorFlowObjectDetection extends LinearOpMode {
                                 telemetry.addData("top" , (int)recognition.getTop());
                                 telemetry.addData("" , "");
                                 if (left1 > (int) recognition.getLeft()){
-                                    left1 = (int) recognition.getLeft();
-                                    top1 = (int) recognition.getTop();
-                                    label1 = recognition.getLabel();
-
                                     left2 = left1;
                                     top2 = top1;
                                     label2 = label1;
+
+                                    left1 = (int) recognition.getLeft();
+                                    top1 = (int) recognition.getTop();
+                                    label1 = recognition.getLabel();
                                 }
                                 else if (left2 > (int) recognition.getLeft()){
                                     left2 = (int) recognition.getLeft();
