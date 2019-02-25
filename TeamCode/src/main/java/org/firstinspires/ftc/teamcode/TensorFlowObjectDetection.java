@@ -111,7 +111,7 @@ public class TensorFlowObjectDetection extends LinearOpMode {
                     // the last time that call was made.
                     List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
                     if (updatedRecognitions != null) {
-                        telemetry.addData("# Object Detected", updatedRecognitions.size());
+                        //telemetry.addData("# Object Detected", updatedRecognitions.size());
                         if (updatedRecognitions.size() >= 2) {
                             String label1 = "";
                             String label2 = "";
@@ -120,18 +120,18 @@ public class TensorFlowObjectDetection extends LinearOpMode {
                             int left1 = 100000; //top de la tel cand e vertical , deci buttom pt landscape
                             int left2 = 100000;
                             for (Recognition recognition : updatedRecognitions) {
-                                telemetry.addData("label" , recognition.getLabel());
-                                telemetry.addData("left" , (int)recognition.getLeft());
-                                telemetry.addData("top" , (int)recognition.getTop());
-                                telemetry.addData("" , "");
+                                //telemetry.addData("label" , recognition.getLabel());
+                                //telemetry.addData("left" , (int)recognition.getLeft());
+                                //telemetry.addData("top" , (int)recognition.getTop());
+                                //telemetry.addData("" , "");
                                 if (left1 > (int) recognition.getLeft()){
-                                    left1 = (int) recognition.getLeft();
-                                    top1 = (int) recognition.getTop();
-                                    label1 = recognition.getLabel();
-
                                     left2 = left1;
                                     top2 = top1;
                                     label2 = label1;
+
+                                    left1 = (int) recognition.getLeft();
+                                    top1 = (int) recognition.getTop();
+                                    label1 = recognition.getLabel();
                                 }
                                 else if (left2 > (int) recognition.getLeft()){
                                     left2 = (int) recognition.getLeft();
@@ -142,26 +142,39 @@ public class TensorFlowObjectDetection extends LinearOpMode {
                             if (top1 != -1 && top2 != -1) {
                                 if (label1.equals(LABEL_GOLD_MINERAL) || label2.equals(LABEL_GOLD_MINERAL)){
                                     if (label1.equals(LABEL_GOLD_MINERAL)){
-                                        if (top1 > top2){
-                                            telemetry.addData("Cubul este in" , "stanga");
+                                        if (top1 < top2){
+                                            telemetry.addData("Cubul este in" , "STANGA");
                                         }
                                         else{
-                                            telemetry.addData("Cubul este in" , "mijloc");
+                                            telemetry.addData("Cubul este in" , "MIJLOC");
                                         }
                                     }
                                     else {
-                                        if (top2 > top1){
-                                            telemetry.addData("Cubul este in" , "stanga");
+                                        if (top2 < top1){
+                                            telemetry.addData("Cubul este in" , "STANGA");
                                         }
                                         else {
-                                            telemetry.addData("Cubul este in", "mijloc");
+                                            telemetry.addData("Cubul este in", "MIJLOC");
                                         }
                                     }
                                 }
                                 else{
-                                    telemetry.addData("Cubul este in" , "dreapta");
+                                    telemetry.addData("Cubul este in" , "DREAPTA");
                                 }
+                                /*telemetry.addData("" , "");
+                                telemetry.addData("" , "");
+                                telemetry.addData("label 1" , label1);
+                                telemetry.addData("left 1" , left1);
+                                telemetry.addData("top 1" , top1);
+                                telemetry.addData("" , "");
+                                telemetry.addData("label 2" , label2);
+                                telemetry.addData("left 2" , left2);
+                                telemetry.addData("top 2" , top2);
+                                telemetry.addData("" , "");
+                                telemetry.addData("# Object Detected", updatedRecognitions.size());*/
                             }
+
+
                         }
                         telemetry.update();
                     }
