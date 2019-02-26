@@ -299,12 +299,13 @@ public abstract class Autonomous_Mode extends LinearOpMode {
         final double delay  = 2000;
         final long period = 10L; //while ce opereaza la frecventa de 10 ms
 
-        boolean bIsUsingEncoder = false;
+        boolean bIsUsingEncoder = false , bHasFinishedAvoiding = false;
 
         double pGain = 1/(target - 5); //daca zidul sau alt robot se apropie mai mult decat trebuie atunci sa mearga la viteza maxima in spate
         double dGain = 0.0;
 
         double errorRight = target - RangeL.getDistance(DistanceUnit.CM);
+
         double errorLeft = target - RangeL.getDistance(DistanceUnit.CM);
 
         double proportionalSpeedLeft = 0;
@@ -312,7 +313,7 @@ public abstract class Autonomous_Mode extends LinearOpMode {
 
         double finalSpeedLeft = 0, finalSpeedRight = 0;
 
-        double initValueL = 0, initValueR = 0;
+        double initValueFL = 0, initValueFR = 0;
 
         float steadyTimer = 0;
 
@@ -351,34 +352,33 @@ public abstract class Autonomous_Mode extends LinearOpMode {
                 finalSpeedRight = 0;
             }
 
-            //daca robotul trebuie sa se intoarca
+            //if the robot has to avoid
             if(finalSpeedLeft > 0 && finalSpeedRight < 0){
-                finalSpeedLeft = 0;
-            }
-            if(finalSpeedRight > 0 && finalSpeedLeft < 0){
-                finalSpeedRight = 0;
-            }
-
-            /*if(Math.abs(currentHeading) > 2 && !bIsUsingEncoder){
+                WalkAtAngle(finalSpeedLeft, 90);
+                if(!bIsUsingEncoder) {
+                    initValueFL = MotorFL.getCurrentPosition();
+                    initValueFR = MotorFR.getCurrentPosition();
+                }
                 bIsUsingEncoder = true;
-                initValueL = MotorFL.getCurrentPosition();
-                initValueR = MotorFR.getCurrentPosition();
-            }*/
+            }
+            else if(finalSpeedRight > 0 && finalSpeedLeft < 0){
+                WalkAtAngle(finalSpeedLeft, 90);
+                if(!bIsUsingEncoder) {
+                    initValueFL = MotorFL.getCurrentPosition();
+                    initValueFR = MotorFR.getCurrentPosition();
+                }
+                bIsUsingEncoder = true;
+            }
+            else{
+                StopMotors();
+                bHasFinishedAvoiding = true;
+            }
+            
 
             //****************************
             //retrack
-            if(bIsUsingEncoder){
-                if(initValueL <= MotorFL.getCurrentPosition()){
-                    finalSpeedLeft = 0;
-                }
-                if(initValueR <= MotorFR.getCurrentPosition()){
-                    finalSpeedRight = 0;
-                }
-
-                if(initValueL < MotorFL.getCurrentPosition() && initValueR < MotorFR.getCurrentPosition()){
-                    bIsUsingEncoder = false;
-                    gyro.resetZAxisIntegrator();
-                }
+            if(bHasFinishedAvoiding && bIsUsingEncoder){
+                //TODO
             }
 
             SetWheelsPower(finalSpeedLeft, finalSpeedRight, finalSpeedLeft, finalSpeedRight);
