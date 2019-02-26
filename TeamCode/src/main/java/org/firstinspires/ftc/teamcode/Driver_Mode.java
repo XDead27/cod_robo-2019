@@ -66,10 +66,10 @@ public class Driver_Mode extends LinearOpMode {
         MotorBR = hardwareMap.dcMotor.get("MotorBR");
         MotorGlisieraL = hardwareMap.dcMotor.get("MotorGlisieraL");
         MotorGlisieraR = hardwareMap.dcMotor.get("MotorGlisieraR");
-        ServoPeriiL = hardwareMap.crservo.get("ServoPeriiL");
+        /*ServoPeriiL = hardwareMap.crservo.get("ServoPeriiL");
         ServoPeriiR = hardwareMap.crservo.get("ServoPeriiR");
         ServoAlegereL = hardwareMap.servo.get("ServoAlegereL");
-        ServoAlegereR = hardwareMap.servo.get("ServoAlegereR");
+        ServoAlegereR = hardwareMap.servo.get("ServoAlegereR");*/
         
         //initializare putere
         MotorFL.setPower(0);
@@ -87,8 +87,8 @@ public class Driver_Mode extends LinearOpMode {
         MotorGlisieraL.setDirection(DcMotorSimple.Direction.FORWARD);
         MotorGlisieraR.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        ServoPeriiL.setDirection(DcMotorSimple.Direction.FORWARD);
-        ServoPeriiR.setDirection(DcMotorSimple.Direction.FORWARD);
+        /*ServoPeriiL.setDirection(DcMotorSimple.Direction.FORWARD);
+        ServoPeriiR.setDirection(DcMotorSimple.Direction.FORWARD);*/
         
         //reset encoder
         MotorFL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
