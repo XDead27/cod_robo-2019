@@ -13,10 +13,10 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 public abstract class Autonomous_Mode extends LinearOpMode {
 
     //motoare roti
-    protected DcMotor Motor_FL = null;
-    protected DcMotor Motor_FR = null;
-    protected DcMotor Motor_BL = null;
-    protected DcMotor Motor_BR = null;
+    protected DcMotor MotorFL = null;
+    protected DcMotor MotorFR = null;
+    protected DcMotor MotorBL = null;
+    protected DcMotor MotorBR = null;
 
     //motoare mecanisme
 
@@ -56,45 +56,45 @@ public abstract class Autonomous_Mode extends LinearOpMode {
     protected void initialise()
     {
         //hardware mapping
-        Motor_FL = hardwareMap.dcMotor.get("Motor_FL");
-        Motor_FR = hardwareMap.dcMotor.get("Motor_FR");
-        Motor_BL = hardwareMap.dcMotor.get("Motor_BL");
-        Motor_BR = hardwareMap.dcMotor.get("Motor_BR");
+        MotorFL = hardwareMap.dcMotor.get("MotorFL");
+        MotorFR = hardwareMap.dcMotor.get("MotorFR");
+        MotorBL = hardwareMap.dcMotor.get("MotorBL");
+        MotorBR = hardwareMap.dcMotor.get("MotorBR");
 
-        servo_L = hardwareMap.servo.get("servo_L");
-        servo_R = hardwareMap.servo.get("servo_R");
+        /*servo_L = hardwareMap.servo.get("servo_L");
+        servo_R = hardwareMap.servo.get("servo_R");*/
 
-        color = hardwareMap.get(ModernRoboticsI2cColorSensor.class, "color");
+        /*color = hardwareMap.get(ModernRoboticsI2cColorSensor.class, "color");
         RangeL = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "RangeL");
         RangeR = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "RangeR");
-        gyro = hardwareMap.get(ModernRoboticsI2cGyro.class, "gyro");
+        gyro = hardwareMap.get(ModernRoboticsI2cGyro.class, "gyro");*/
 
         //setare directii
-        Motor_BL.setDirection(DcMotorSimple.Direction.REVERSE);
-        Motor_FL.setDirection(DcMotorSimple.Direction.FORWARD);
-        Motor_BR.setDirection(DcMotorSimple.Direction.REVERSE);
-        Motor_FR.setDirection(DcMotorSimple.Direction.FORWARD);
+        MotorBL.setDirection(DcMotorSimple.Direction.REVERSE);
+        MotorFL.setDirection(DcMotorSimple.Direction.FORWARD);
+        MotorBR.setDirection(DcMotorSimple.Direction.REVERSE);
+        MotorFR.setDirection(DcMotorSimple.Direction.FORWARD);
 
         //setare
-        Motor_BL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        Motor_BR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        Motor_FL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        Motor_FR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        MotorBL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        MotorBR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        MotorFL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        MotorFR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         //initializare putere
-        Motor_FL.setPower(0);
-        Motor_FR.setPower(0);
-        Motor_BR.setPower(0);
-        Motor_BL.setPower(0);
+        MotorFL.setPower(0);
+        MotorFR.setPower(0);
+        MotorBR.setPower(0);
+        MotorBL.setPower(0);
 
         //setare color
-        color.enableLed(true);
+        //color.enableLed(true);
 
         //calibrare gyro
-        gyro.calibrate();
-        while (gyro.isCalibrating()){
-            idle();
-        }
+        //gyro.calibrate();
+        //while (gyro.isCalibrating()){
+        //   idle();
+        //}
     }
 
     //************
@@ -103,19 +103,19 @@ public abstract class Autonomous_Mode extends LinearOpMode {
 
     //Set the motors power individually
     protected void SetWheelsPower(double FL, double FR, double BL, double BR){
-        Motor_FR.setPower(FR);
-        Motor_BL.setPower(BL);
-        Motor_FL.setPower(FL);
-        Motor_BR.setPower(BR);
+        MotorFR.setPower(FR);
+        MotorBL.setPower(BL);
+        MotorFL.setPower(FL);
+        MotorBR.setPower(BR);
     }
 
     //Overcharge of the previous function, takes only two arguments and sets the wheels power based
     //on mecanum wheel dependence
     protected void SetWheelsPower(double FLBR, double FRBL){
-        Motor_FR.setPower(FRBL);
-        Motor_BL.setPower(FRBL);
-        Motor_FL.setPower(FLBR);
-        Motor_BR.setPower(FLBR);
+        MotorFR.setPower(FRBL);
+        MotorBL.setPower(FRBL);
+        MotorFL.setPower(FLBR);
+        MotorBR.setPower(FLBR);
     }
 
     //Provided with the speed and the angle in degrees(relative to the current rotation), make the
@@ -154,7 +154,7 @@ public abstract class Autonomous_Mode extends LinearOpMode {
         double TargetFRBL = MecanumFunctionCalculator(TargetXVector, TargetYVector, false);
 
         //making run to position by hand, because the normal function sometimes has bugs
-        while(Math.abs(TargetFLBR) > Math.abs(Motor_FL.getCurrentPosition()) || Math.abs(TargetFRBL) > Math.abs(Motor_FR.getCurrentPosition())){
+        while(Math.abs(TargetFLBR) > Math.abs(MotorFL.getCurrentPosition()) || Math.abs(TargetFRBL) > Math.abs(MotorFR.getCurrentPosition())){
             idle();
         }
 
@@ -249,21 +249,21 @@ public abstract class Autonomous_Mode extends LinearOpMode {
             }
             if(Math.abs(currentHeading) > 2 && !bIsUsingEncoder){
                 bIsUsingEncoder = true;
-                initValueL = Motor_FL.getCurrentPosition();
-                initValueR = Motor_FR.getCurrentPosition();
+                initValueL = MotorFL.getCurrentPosition();
+                initValueR = MotorFR.getCurrentPosition();
             }
 
             //****************************
             //retrack
             if(bIsUsingEncoder){
-                if(initValueL <= Motor_FL.getCurrentPosition()){
+                if(initValueL <= MotorFL.getCurrentPosition()){
                     finalSpeedLeft = 0;
                 }
-                if(initValueR <= Motor_FR.getCurrentPosition()){
+                if(initValueR <= MotorFR.getCurrentPosition()){
                     finalSpeedRight = 0;
                 }
 
-                if(initValueL < Motor_FL.getCurrentPosition() && initValueR < Motor_FR.getCurrentPosition()){
+                if(initValueL < MotorFL.getCurrentPosition() && initValueR < MotorFR.getCurrentPosition()){
                     bIsUsingEncoder = false;
                     gyro.resetZAxisIntegrator();
                 }
@@ -300,12 +300,13 @@ public abstract class Autonomous_Mode extends LinearOpMode {
         final double delay  = 2000;
         final long period = 10L; //while ce opereaza la frecventa de 10 ms
 
-        boolean bIsUsingEncoder = false;
+        boolean bIsUsingEncoder = false , bHasFinishedAvoiding = false;
 
         double pGain = 1/(target - 5); //daca zidul sau alt robot se apropie mai mult decat trebuie atunci sa mearga la viteza maxima in spate
         double dGain = 0.0;
 
         double errorRight = target - RangeL.getDistance(DistanceUnit.CM);
+
         double errorLeft = target - RangeL.getDistance(DistanceUnit.CM);
 
         double proportionalSpeedLeft = 0;
@@ -313,7 +314,7 @@ public abstract class Autonomous_Mode extends LinearOpMode {
 
         double finalSpeedLeft = 0, finalSpeedRight = 0;
 
-        double initValueL = 0, initValueR = 0;
+        double initValueFL = 0, initValueFR = 0;
 
         float steadyTimer = 0;
 
@@ -352,34 +353,33 @@ public abstract class Autonomous_Mode extends LinearOpMode {
                 finalSpeedRight = 0;
             }
 
-            //daca robotul trebuie sa se intoarca
+            //if the robot has to avoid
             if(finalSpeedLeft > 0 && finalSpeedRight < 0){
-                finalSpeedLeft = 0;
-            }
-            if(finalSpeedRight > 0 && finalSpeedLeft < 0){
-                finalSpeedRight = 0;
-            }
-
-            if(Math.abs(currentHeading) > 2 && !bIsUsingEncoder){
+                WalkAtAngle(finalSpeedLeft, 90);
+                if(!bIsUsingEncoder) {
+                    initValueFL = MotorFL.getCurrentPosition();
+                    initValueFR = MotorFR.getCurrentPosition();
+                }
                 bIsUsingEncoder = true;
-                initValueL = Motor_FL.getCurrentPosition();
-                initValueR = Motor_FR.getCurrentPosition();
             }
+            else if(finalSpeedRight > 0 && finalSpeedLeft < 0){
+                WalkAtAngle(finalSpeedLeft, 90);
+                if(!bIsUsingEncoder) {
+                    initValueFL = MotorFL.getCurrentPosition();
+                    initValueFR = MotorFR.getCurrentPosition();
+                }
+                bIsUsingEncoder = true;
+            }
+            else{
+                StopMotors();
+                bHasFinishedAvoiding = true;
+            }
+            
 
             //****************************
             //retrack
-            if(bIsUsingEncoder){
-                if(initValueL <= Motor_FL.getCurrentPosition()){
-                    finalSpeedLeft = 0;
-                }
-                if(initValueR <= Motor_FR.getCurrentPosition()){
-                    finalSpeedRight = 0;
-                }
-
-                if(initValueL < Motor_FL.getCurrentPosition() && initValueR < Motor_FR.getCurrentPosition()){
-                    bIsUsingEncoder = false;
-                    gyro.resetZAxisIntegrator();
-                }
+            if(bHasFinishedAvoiding && bIsUsingEncoder){
+                //TODO
             }
 
             SetWheelsPower(finalSpeedLeft, finalSpeedRight, finalSpeedLeft, finalSpeedRight);
@@ -400,10 +400,10 @@ public abstract class Autonomous_Mode extends LinearOpMode {
 >>>>>>> fb388c9b7455c9ba6ae639fc76fdda60b7b84504
     //opresc toate motoarele
     protected void StopMotors(){
-        Motor_BL.setPower(0);
-        Motor_BR.setPower(0);
-        Motor_FL.setPower(0);
-        Motor_FR.setPower(0);
+        MotorBL.setPower(0);
+        MotorBR.setPower(0);
+        MotorFL.setPower(0);
+        MotorFR.setPower(0);
     }
 
     //ma rotesc la angle grade: negativ e pentru right, pozitiv e pentru left;
@@ -428,10 +428,10 @@ public abstract class Autonomous_Mode extends LinearOpMode {
             BR_Power *= -1;
         }
 
-        Motor_FL.setPower(FL_Power);
-        Motor_BL.setPower(BL_Power);
-        Motor_FR.setPower(FR_Power);
-        Motor_BR.setPower(BR_Power);
+        MotorFL.setPower(FL_Power);
+        MotorBL.setPower(BL_Power);
+        MotorFR.setPower(FR_Power);
+        MotorBR.setPower(BR_Power);
 
         while ( opModeIsActive() && Math.abs(FinalAngle-angle) > 5 ) {
             idle();
@@ -444,10 +444,10 @@ public abstract class Autonomous_Mode extends LinearOpMode {
     protected void RotateSlowly(double angle, double FL_Power, double BL_Power, double FR_Power, double BR_Power){
         double FinalAngle = gyro.getHeading()+angle;
 
-        Motor_FL.setPower(FL_Power);
-        Motor_BL.setPower(BL_Power);
-        Motor_FR.setPower(FR_Power);
-        Motor_BR.setPower(BR_Power);
+        MotorFL.setPower(FL_Power);
+        MotorBL.setPower(BL_Power);
+        MotorFR.setPower(FR_Power);
+        MotorBR.setPower(BR_Power);
 
         while ( opModeIsActive() && Math.abs(FinalAngle-angle) > 0 ) {
             idle();
@@ -461,10 +461,10 @@ public abstract class Autonomous_Mode extends LinearOpMode {
         double FR_Power = -0.7;
         double BR_Power = -0.7;
 
-        Motor_FL.setPower(FL_Power);
-        Motor_BL.setPower(BL_Power);
-        Motor_FR.setPower(FR_Power);
-        Motor_BR.setPower(BR_Power);
+        MotorFL.setPower(FL_Power);
+        MotorBL.setPower(BL_Power);
+        MotorFR.setPower(FR_Power);
+        MotorBR.setPower(BR_Power);
 
         while ( opModeIsActive() && Math.abs(RangeL.getDistance(DistanceUnit.CM) - RangeR.getDistance(DistanceUnit.CM)) > 5 ) {
             idle();
@@ -476,10 +476,10 @@ public abstract class Autonomous_Mode extends LinearOpMode {
     }
 
     protected void AlignWithWallSlowly(double distance, double FL_Power, double BL_Power, double FR_Power, double BR_Power){
-        Motor_FL.setPower(FL_Power);
-        Motor_BL.setPower(BL_Power);
-        Motor_FR.setPower(FR_Power);
-        Motor_BR.setPower(BR_Power);
+        MotorFL.setPower(FL_Power);
+        MotorBL.setPower(BL_Power);
+        MotorFR.setPower(FR_Power);
+        MotorBR.setPower(BR_Power);
 
         while ( opModeIsActive() && Math.abs(RangeL.getDistance(DistanceUnit.CM) - RangeR.getDistance(DistanceUnit.CM)) > 0 ) {
             idle();
