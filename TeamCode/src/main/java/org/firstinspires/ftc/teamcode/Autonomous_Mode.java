@@ -52,7 +52,7 @@ public abstract class Autonomous_Mode extends LinearOpMode {
     private static final String VUFORIA_KEY = "AYlEu/7/////AAABmXB1kirNm0vlrZa4DCCmkis6ZNJkEkHGNYjIfoKWcK+yxnJOhuC4Lw3B63L+Y5vrSoTsr1mEe6bvGcMR8Hg+v1Z1Cih0IrBRHdIfrrg6lfa723ft/unZOKgck3ftCj8gWuiM89d+A4smkenUI5P/HXMKMGKCk4xxv5of9YNSX8r4KFO8lD+bqYgnP+GVXzD/TwQo7Dqer3bf0HVbOqP6j6HREHAZdP6Idg/JwyRG8LSdC6ekTwogxCWsuWiaUhuC8uAQ4r/ZfJykZpXYCxhdcLwMM4OaUXkUAPuUenzxlL8MXkwOhsDfqiQNEfSB00BodWKq28EC6cc+Vsko8r9PreeU6jCYR4d84VK8uBFLGaJx";
     private VuforiaLocalizer vuforia;
     private TFObjectDetector tfod;
-    private boolean CameraOrientation = false; //false -> back ; true -> front
+    private boolean FrontCamera = false; //false -> back ; true -> front
 
     //functii abstrcte
     protected abstract void runOperations();
@@ -110,7 +110,7 @@ public abstract class Autonomous_Mode extends LinearOpMode {
         //vuforia
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
         parameters.vuforiaLicenseKey = VUFORIA_KEY;
-        if (CameraOrientation){
+        if (FrontCamera){
             parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
         }
         else{
@@ -172,6 +172,11 @@ public abstract class Autonomous_Mode extends LinearOpMode {
                     }
                     if (top1 != -1 && top2 != -1) {
                         if (label1.equals(LABEL_GOLD_MINERAL) || label2.equals(LABEL_GOLD_MINERAL)){
+                            if (FrontCamera){
+                                int aux = top1;
+                                top1 = top2;
+                                top2 = aux;
+                            }
                             if (label1.equals(LABEL_GOLD_MINERAL)){
                                 if (top1 < top2){
                                     ret = LEFT;
