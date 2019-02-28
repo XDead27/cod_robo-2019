@@ -8,13 +8,8 @@ public final class Autonomous_Test extends Autonomous_Mode {
 
     @Override
     protected void runOperations() {
-        WalkAtAngle(1, 45);
-
-        while(opModeIsActive()){
-            idle();
-        }
-
-        StopMotors();
+        WalkEncoder(10 * 67, 0.4, 45);
+        WalkEncoder(10 * 67, 0.4, 0);
     }
 
     @Override

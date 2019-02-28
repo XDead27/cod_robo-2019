@@ -373,7 +373,7 @@ public abstract class Autonomous_Mode extends LinearOpMode {
                 StopMotors();
                 bHasFinishedAvoiding = true;
             }
-            
+
 
             //****************************
             //retrack

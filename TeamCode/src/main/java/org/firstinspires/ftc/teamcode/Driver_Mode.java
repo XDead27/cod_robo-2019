@@ -54,6 +54,12 @@ public class Driver_Mode extends LinearOpMode {
         {
             gamepad_1();
             gamepad_2();
+
+            telemetry.addData("speed FL", MotorFL.getPower());
+            telemetry.addData("speed FR", MotorFL.getPower());
+            telemetry.addData("gamepad y", gamepad1.left_stick_y);
+            telemetry.addData("gamepad y dreapta", gamepad1.right_stick_y);
+            telemetry.update();
         }
     }
 
@@ -119,7 +125,7 @@ public class Driver_Mode extends LinearOpMode {
 
     protected void gamepad_1(){
         if ( abs(gamepad1.left_stick_x) > deadzone || abs(gamepad1.left_stick_y) > deadzone || abs(gamepad1.right_stick_x) > deadzone)
-            calculateWheelsPower(gamepad1.left_stick_y , gamepad1.left_stick_x , gamepad1.right_stick_x);
+            calculateWheelsPower(-gamepad1.left_stick_y , gamepad1.left_stick_x , gamepad1.right_stick_x);
         else
             stop_walk();
     }
@@ -160,12 +166,6 @@ public class Driver_Mode extends LinearOpMode {
         }*/
 
         //test_glisiera();
-
-        //telemetry
-        telemetry.addData("Encoder Glisiera Dreapta" , MotorGlisieraR.getCurrentPosition());
-        telemetry.addData("Encoder Glisiera Stanga", MotorGlisieraL.getCurrentPosition());
-        telemetry.addData("No Constraints Mode", bNoContraintsMode);
-        telemetry.update();
 
 
     }
