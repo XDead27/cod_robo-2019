@@ -642,7 +642,7 @@ public abstract class Autonomous_Mode extends LinearOpMode {
         //  This is how we ended up with the function f(x, y) = sig(y)*(y^2) - sig(x)*(x^2) and its
         //conjugate
 
-        return bFLBR? (Math.signum(VectorY) * Math.pow(VectorY, 2)) - (Math.signum(VectorX) * Math.pow(VectorX, 2)) : (Math.signum(VectorY) * Math.pow(VectorY, 2)) + (Math.signum(VectorX) * Math.pow(VectorX, 2));
+        return bFLBR? (Math.signum(VectorY) * Math.pow(VectorY, 2)) + (Math.signum(VectorX) * Math.pow(VectorX, 2)) : (Math.signum(VectorY) * Math.pow(VectorY, 2)) - (Math.signum(VectorX) * Math.pow(VectorX, 2));
     }
 
 }

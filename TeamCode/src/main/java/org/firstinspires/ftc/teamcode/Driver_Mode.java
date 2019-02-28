@@ -239,10 +239,10 @@ public class Driver_Mode extends LinearOpMode {
 
     protected void calculateWheelsPower ( double drive, double strafe, double rotate )
     {
-        double FL = Range.clip(drive - strafe + rotate , -0.7 , 0.7);
-        double FR = Range.clip(drive + strafe - rotate , -0.7 , 0.7);
-        double BL = Range.clip(drive + strafe + rotate , -0.7 , 0.7);
-        double BR = Range.clip(drive - strafe - rotate , -0.7 , 0.7);
+        double FL = Range.clip(drive + strafe + rotate , -0.7 , 0.7);
+        double FR = Range.clip(drive - strafe - rotate , -0.7 , 0.7);
+        double BL = Range.clip(drive - strafe + rotate , -0.7 , 0.7);
+        double BR = Range.clip(drive + strafe - rotate , -0.7 , 0.7);
 
         MotorFL.setPower(FL);
         MotorFR.setPower(FR);
