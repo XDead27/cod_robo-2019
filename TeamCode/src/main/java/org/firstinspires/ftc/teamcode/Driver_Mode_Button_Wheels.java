@@ -40,10 +40,10 @@ public class Driver_Mode_Button_Wheels extends LinearOpMode {
     protected void initialise()
     {
         //hardware mapping
-        Motor_FL = hardwareMap.dcMotor.get("Motor_FL");
-        Motor_FR = hardwareMap.dcMotor.get("Motor_FR");
-        Motor_BL = hardwareMap.dcMotor.get("Motor_BL");
-        Motor_BR = hardwareMap.dcMotor.get("Motor_BR");
+        Motor_FL = hardwareMap.dcMotor.get("MotorFL");
+        Motor_FR = hardwareMap.dcMotor.get("MotorFR");
+        Motor_BL = hardwareMap.dcMotor.get("MotorBL");
+        Motor_BR = hardwareMap.dcMotor.get("MotorBR");
 
         //setare directii
         Motor_FL.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -58,36 +58,36 @@ public class Driver_Mode_Button_Wheels extends LinearOpMode {
         Motor_BR.setPower(0);
 
         //setare
-        Motor_FL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        Motor_FR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        Motor_BL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        Motor_BR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        Motor_FL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        Motor_FR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        Motor_BL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        Motor_BR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
     }
 
     protected void gamepad_1(){
-        if (gamepad1.a){
+        if (gamepad1.x){
             Motor_FL.setPower(0.5);
         }
         else{
             Motor_FL.setPower(0);
         }
 
-        if (gamepad1.b){
+        if (gamepad1.y){
             Motor_FR.setPower(0.5);
         }
         else{
             Motor_FR.setPower(0);
         }
 
-        if (gamepad1.x){
+        if (gamepad1.a){
             Motor_BL.setPower(0.5);
         }
         else{
             Motor_BL.setPower(0);
         }
 
-        if (gamepad1.y){
+        if (gamepad1.b){
             Motor_BR.setPower(0.5);
         }
         else{

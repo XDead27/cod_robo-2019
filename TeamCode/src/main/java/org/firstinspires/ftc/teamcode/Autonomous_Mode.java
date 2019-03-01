@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -8,31 +9,28 @@ import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cColorSensor;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.robotcore.util.Range;
+import org.firstinspires.ftc.robotcore.external.ClassFactory;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
+import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
+import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 
-public abstract class Autonomous_Mode extends LinearOpMode {
+import java.util.List;
 
-    //motoare roti
-    protected DcMotor MotorFL = null;
-    protected DcMotor MotorFR = null;
-    protected DcMotor MotorBL = null;
-    protected DcMotor MotorBR = null;
+import static org.firstinspires.ftc.teamcode.MineralPosition.LEFT;
+import static org.firstinspires.ftc.teamcode.MineralPosition.MIDDLE;
+import static org.firstinspires.ftc.teamcode.MineralPosition.RIGHT;
 
-    //motoare mecanisme
+public abstract class Autonomous_Mode extends RobotHardwareClass {
 
-    //motoare servo
-    protected Servo servo_L = null;
-    protected Servo servo_R = null;
-
-    //senzori
-    protected ModernRoboticsI2cColorSensor color = null;
-    protected ModernRoboticsI2cRangeSensor RangeL = null;
-    protected ModernRoboticsI2cRangeSensor RangeR = null;
-    protected ModernRoboticsI2cGyro gyro = null;
-
-    //constante
     protected final int tics_per_cm = 67;
     protected static double TOLERANCE = 0.0001;
+    Orientation lastAngles = new Orientation();
+    double globalAngle;
 
     //functii abstrcte
     protected abstract void runOperations();
@@ -40,7 +38,7 @@ public abstract class Autonomous_Mode extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        initialise();
+        initialise(false);
 
         waitForStart();
 
@@ -50,52 +48,78 @@ public abstract class Autonomous_Mode extends LinearOpMode {
     }
 
     //************
-    //INITIALIZARE
+    //VUFORIA
     //************
 
-    protected void initialise()
-    {
-        //hardware mapping
-        MotorFL = hardwareMap.dcMotor.get("MotorFL");
-        MotorFR = hardwareMap.dcMotor.get("MotorFR");
-        MotorBL = hardwareMap.dcMotor.get("MotorBL");
-        MotorBR = hardwareMap.dcMotor.get("MotorBR");
+    protected MineralPosition Position(){
+        MineralPosition ret = null;
+        tfod.activate();
+        while (opModeIsActive()) {
+            List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
+            if (updatedRecognitions != null) {
+                //telemetry.addData("# Object Detected", updatedRecognitions.size());
+                if (updatedRecognitions.size() >= 2) {
+                    String label1 = "";
+                    String label2 = "";
+                    int top1 = -1; //top de la tel cand e vertical , deci left pt landscape
+                    int top2 = -1;
+                    int left1 = 100000; //top de la tel cand e vertical , deci buttom pt landscape
+                    int left2 = 100000;
+                    for (Recognition recognition : updatedRecognitions) {
+                        if (left1 > (int) recognition.getLeft()){
+                            left2 = left1;
+                            top2 = top1;
+                            label2 = label1;
 
-        /*servo_L = hardwareMap.servo.get("servo_L");
-        servo_R = hardwareMap.servo.get("servo_R");*/
-
-        /*color = hardwareMap.get(ModernRoboticsI2cColorSensor.class, "color");
-        RangeL = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "RangeL");
-        RangeR = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "RangeR");
-        gyro = hardwareMap.get(ModernRoboticsI2cGyro.class, "gyro");*/
-
-        //setare directii
-        MotorBL.setDirection(DcMotorSimple.Direction.REVERSE);
-        MotorFL.setDirection(DcMotorSimple.Direction.FORWARD);
-        MotorBR.setDirection(DcMotorSimple.Direction.REVERSE);
-        MotorFR.setDirection(DcMotorSimple.Direction.FORWARD);
-
-        //setare
-        MotorBL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        MotorBR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        MotorFL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        MotorFR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        //initializare putere
-        MotorFL.setPower(0);
-        MotorFR.setPower(0);
-        MotorBR.setPower(0);
-        MotorBL.setPower(0);
-
-        //setare color
-        //color.enableLed(true);
-
-        //calibrare gyro
-        //gyro.calibrate();
-        //while (gyro.isCalibrating()){
-        //   idle();
-        //}
+                            left1 = (int) recognition.getLeft();
+                            top1 = (int) recognition.getTop();
+                            label1 = recognition.getLabel();
+                        }
+                        else if (left2 > (int) recognition.getLeft()){
+                            left2 = (int) recognition.getLeft();
+                            top2 = (int) recognition.getTop();
+                            label2 = recognition.getLabel();
+                        }
+                    }
+                    if (top1 != -1 && top2 != -1) {
+                        if (label1.equals(LABEL_GOLD_MINERAL) || label2.equals(LABEL_GOLD_MINERAL)){
+                            if (FrontCamera){
+                                int aux = top1;
+                                top1 = top2;
+                                top2 = aux;
+                            }
+                            if (label1.equals(LABEL_GOLD_MINERAL)){
+                                if (top1 < top2){
+                                    ret = LEFT;
+                                }
+                                else{
+                                    ret = MIDDLE;
+                                }
+                            }
+                            else {
+                                if (top2 < top1){
+                                    ret = LEFT;
+                                }
+                                else {
+                                    ret = MIDDLE;
+                                }
+                            }
+                        }
+                        else{
+                            ret = RIGHT;
+                        }
+                        break;
+                    }
+                    telemetry.addData("position : " , ret);
+                }
+                telemetry.update();
+            }
+        }
+        tfod.shutdown();
+        return ret;
     }
+
+
 
     //************
     //MISCARE
@@ -110,7 +134,7 @@ public abstract class Autonomous_Mode extends LinearOpMode {
     }
 
     //Overcharge of the previous function, takes only two arguments and sets the wheels power based
-    //on mecanum wheel dependence
+    //on mecanum wheel dependency
     protected void SetWheelsPower(double FLBR, double FRBL){
         MotorFR.setPower(FRBL);
         MotorBL.setPower(FRBL);
@@ -133,55 +157,79 @@ public abstract class Autonomous_Mode extends LinearOpMode {
 
         //Scale that vector by the desired speed, keeping in mind the maximum
         speed = Range.clip(speed, 0, 1);
-        double ScalingCoeficient = speed/Math.max(VectorFLBR, VectorFRBL);
+        double ScalingCoefficient = speed/Math.max(VectorFLBR, VectorFRBL);
 
-        double SpeedFLBR = VectorFLBR * ScalingCoeficient;
-        double SpeedFRBL = VectorFRBL * ScalingCoeficient;
+        double SpeedFLBR = VectorFLBR * ScalingCoefficient;
+        double SpeedFRBL = VectorFRBL * ScalingCoefficient;
 
-
+        //Set the power of the wheels
         SetWheelsPower(SpeedFLBR, SpeedFRBL);
     }
 
+    //Pan-move a desired distance, being given the speed and the angle as well
     protected void WalkEncoder(double dist, double speed, double angle){
         WalkAtAngle(speed, angle);
 
-        //calculate vectorials
+        //calculate vectors based on the given angle and the distance
         double TargetXVector = dist * Math.cos(angle);
         double TargetYVector = dist * Math.sin(angle);
 
-        //calculate the encoder target
+        ///calculate the encoder target
+        //use the mecanum function calculator just like you would for normal speeds, but now it will
+        //return the distance that each wheel will travel to reach the target distance with the target angle
         double TargetFLBR = MecanumFunctionCalculator(TargetXVector, TargetYVector, true);
         double TargetFRBL = MecanumFunctionCalculator(TargetXVector, TargetYVector, false);
 
-        //making run to position by hand, because the normal function sometimes has bugs
+        ///making run to position by hand, because the normal function sometimes has bugs
+        //the motors will not stop unless they have overpassed their target distance
         while(Math.abs(TargetFLBR) > Math.abs(MotorFL.getCurrentPosition()) || Math.abs(TargetFRBL) > Math.abs(MotorFR.getCurrentPosition())){
             idle();
         }
 
+        //stop motors and end function
         StopMotors();
 
         //TODO: daca merge sunt zeu
     }
 
-    //need comment
-    protected void WalkObstacleAndRangeNORMAL(double distanceFromWall, boolean bStartAllignedWithWall){
-        //se aliniaza cu zidul din fata
-        if(bStartAllignedWithWall){
+    //Complex moving function which avoids incoming obstacles and aligns with the wall at the end. It
+    //uses a double PID system with two range sensors, each one of them for a side of the robot
+    protected void WalkObstacleAndRangeNORMAL(double distanceFromWall, boolean bStartAlignedWithWall){
+        //IN-DEPTH EXPLANATION
+        //
+        //  This is a function that makes the robot move forward until there is a target distance
+        //between it and the wall in front of him (distanceFromWall) for a certain amount of time.
+        //  It has the option to align the robot with the wall in front of him before starting to move
+        //(bStartAlignedWithWall).
+        //  There is a timer loop that acts like a timer, constantly checking the sensors & checking if
+        //the target distance from wall is reached and maintained for a number of seconds (delay). The
+        //loop operates at a given rate (period) to add to the timer every iteration.
+        //  If the robot meets an obstacle there are two possible outcomes: if the obstacle is detected
+        //by only one sensor (it doesn't come perfectly head on) then the robot will execute a quick
+        //one wheel axis turn; if both the sensor report an obstacle (the obstacle comes head on)
+        //then the robot will simply move backwards.
+        //  If the robot doesn't move from target distance for [delay] milliseconds then the function
+        //is exited.
+
+
+        //if wanted, the robot aligns with the wall before starting to move towards it
+        if(bStartAlignedWithWall){
             while(Math.abs(RangeL.rawUltrasonic() - RangeL.rawUltrasonic()) < 10/*magic number*/){
                 int dir = (int)Math.signum(RangeL.rawUltrasonic() - RangeL.rawUltrasonic());
                 SetWheelsPower(-0.2 * dir, 0.2 * dir, -0.2 * dir, 0.2 * dir);
             }
         }
 
+        //initialising of the timer loop
         final double target = distanceFromWall;
         final double delay  = 2000;
         final long period = 10L; //while ce opereaza la frecventa de 10 ms
 
         boolean bIsUsingEncoder = false;
 
-        ///IMPLEMENTARE GYRO
-        gyro.resetZAxisIntegrator();
-        double currentHeading = gyro.getHeading();
+        ///IMPLEMENTATION GYRO
+        ResetAngle();
+        double currentHeading;
 
         double pGain = 1/(target - 5); //daca zidul sau alt robot se apropie mai mult decat trebuie atunci sa mearga la viteza maxima in spate
         double dGain = 0.0;
@@ -201,7 +249,7 @@ public abstract class Autonomous_Mode extends LinearOpMode {
         while(opModeIsActive() && steadyTimer < delay){
 
             //*****************************
-            //conditia de timer
+            //timer condition
             if (Math.abs(errorLeft) < 2 || Math.abs(errorRight) < 2) {
                 steadyTimer += period;
             } else {
@@ -217,15 +265,16 @@ public abstract class Autonomous_Mode extends LinearOpMode {
             proportionalSpeedRight = (errorRight * pGain);
             proportionalSpeedLeft = (errorLeft * pGain);
 
-            //inversam viteza ca sa fie pozitiva
+            //the outcome will be negative (because of the distance subtraction) so we invert it
             finalSpeedLeft = -proportionalSpeedLeft;
             finalSpeedRight = -proportionalSpeedRight;
 
+            //we restrict the outcome to the minimum and maximum for the motor
             finalSpeedLeft = Range.clip(finalSpeedLeft, -0.9, 0.7);
             finalSpeedRight = Range.clip(finalSpeedRight, -0.9, 0.7);
 
             //****************************
-            //exceptii
+            //exceptions (if the output is a really small number)
             if(Math.abs(finalSpeedLeft) < TOLERANCE ){
                 finalSpeedLeft = 0;
             }
@@ -233,7 +282,7 @@ public abstract class Autonomous_Mode extends LinearOpMode {
                 finalSpeedRight = 0;
             }
 
-            //daca robotul trebuie sa se intoarca
+            //if the robot has to avoid an obstacle
             if(finalSpeedLeft > 0 && finalSpeedRight < 0){
                 finalSpeedLeft = 0;
             }
@@ -243,7 +292,7 @@ public abstract class Autonomous_Mode extends LinearOpMode {
 
             //****************************
             //gyro
-            currentHeading = gyro.getHeading();
+            currentHeading = GetAngle();
             if(currentHeading > 180){
                 currentHeading = currentHeading - 360;
             }
@@ -254,7 +303,7 @@ public abstract class Autonomous_Mode extends LinearOpMode {
             }
 
             //****************************
-            //retrack
+            //get back on previous track (once the obstacle has passed)
             if(bIsUsingEncoder){
                 if(initValueL <= MotorFL.getCurrentPosition()){
                     finalSpeedLeft = 0;
@@ -265,7 +314,7 @@ public abstract class Autonomous_Mode extends LinearOpMode {
 
                 if(initValueL < MotorFL.getCurrentPosition() && initValueR < MotorFR.getCurrentPosition()){
                     bIsUsingEncoder = false;
-                    gyro.resetZAxisIntegrator();
+                    ResetAngle();
                 }
             }
 
@@ -372,7 +421,7 @@ public abstract class Autonomous_Mode extends LinearOpMode {
                 StopMotors();
                 bHasFinishedAvoiding = true;
             }
-            
+
 
             //****************************
             //retrack
@@ -395,7 +444,7 @@ public abstract class Autonomous_Mode extends LinearOpMode {
         StopMotors();
     }
 
-    //opresc toate motoarele
+    //stop all motors
     protected void StopMotors(){
         MotorBL.setPower(0);
         MotorBR.setPower(0);
@@ -407,9 +456,10 @@ public abstract class Autonomous_Mode extends LinearOpMode {
     //ROTIRE
     //**************
     //ma rotesc la angle grade: negativ e pentru right, pozitiv e pentru left;
+    //rotate at [angle] degrees - negative is clockwise, positive is anticlockwise
     protected void Rotate(double angle){
         boolean bAngleIsNegative = false;
-        double FinalAngle = gyro.getHeading()+angle;
+        double FinalAngle = GetAngle()+angle;
 
         if ( FinalAngle < 0 ) {
             FinalAngle += 360;
@@ -442,7 +492,7 @@ public abstract class Autonomous_Mode extends LinearOpMode {
     }
 
     protected void RotateSlowly(double angle, double FL_Power, double BL_Power, double FR_Power, double BR_Power){
-        double FinalAngle = gyro.getHeading()+angle;
+        double FinalAngle = GetAngle()+angle;
 
         MotorFL.setPower(FL_Power);
         MotorBL.setPower(BL_Power);
@@ -454,8 +504,8 @@ public abstract class Autonomous_Mode extends LinearOpMode {
         }
     }
 
-    //ma aliniez cu peretele la distanta distance
-    protected void AlignWithWall(double distance){
+    //align with wall
+    protected void AlignWithWall(){
         double FL_Power = 0.7;
         double BL_Power = 0.7;
         double FR_Power = -0.7;
@@ -470,12 +520,12 @@ public abstract class Autonomous_Mode extends LinearOpMode {
             idle();
         }
 
-        AlignWithWallSlowly(distance, FL_Power/2, BL_Power/2, FR_Power/2, BR_Power/2);
+        AlignWithWallSlowly(FL_Power/2, BL_Power/2, FR_Power/2, BR_Power/2);
         StopMotors();
 
     }
 
-    protected void AlignWithWallSlowly(double distance, double FL_Power, double BL_Power, double FR_Power, double BR_Power){
+    protected void AlignWithWallSlowly(double FL_Power, double BL_Power, double FR_Power, double BR_Power){
         MotorFL.setPower(FL_Power);
         MotorBL.setPower(BL_Power);
         MotorFR.setPower(FR_Power);
@@ -486,12 +536,63 @@ public abstract class Autonomous_Mode extends LinearOpMode {
         }
     }
 
+
+
+    //************
+    //GYRO REV
+    //************
+
+    //Function that adds the orientation of the REV integrated gyro to the globalAngle variable
+    private double GetAngle() {
+        // We have to process the angle because the imu works in euler angles so the Z axis is
+        // returned as 0 to +180 or 0 to -180 rolling back to -179 or +179 when rotation passes
+        // 180 degrees. We detect this transition and track the total cumulative angle of rotation.
+
+        Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+
+        double deltaAngle = angles.firstAngle - lastAngles.firstAngle;
+
+        if (deltaAngle < -180)
+            deltaAngle += 360;
+        else if (deltaAngle > 180)
+            deltaAngle -= 360;
+
+        globalAngle += deltaAngle;
+
+        lastAngles = angles;
+
+        return globalAngle;
+    }
+
+    //Function that resets the global angle to 0
+    private void ResetAngle() {
+        lastAngles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+
+        globalAngle = 0;
+    }
+
+
     //************
     //MISCELLANEOUS
     //************
 
+    //Function that returns either FLBR or FRBL motors speeds based on a vectorial distribution
     protected double MecanumFunctionCalculator(double VectorX, double VectorY, boolean bFLBR){
-        return bFLBR? (Math.signum(VectorY) * Math.pow(VectorY, 2)) - (Math.signum(VectorX) * Math.pow(VectorX, 2)) : (Math.signum(VectorY) * Math.pow(VectorY, 2)) + (Math.signum(VectorX) * Math.pow(VectorX, 2));
+        //IN-DEPTH EXPLANATION
+        //
+        //  This function would normally be two separate functions.
+        //  We found out, quite experimentally, that this is the function that perfectly describes
+        //the values that each motor power should have depending on the given vector values
+        //  The simple function that approximately describes the desired behavior would be y - x
+        //(for FLBR) and y + x (for FRBL). We tried squaring each variable (because of Pythagoras
+        //theorem - we wanted to find out the hypotenuse of a triangle with the sizes x and y),
+        //but this turned out to cancel the sign of each parameter y^2 - x^2, x,y > 0 is equal to
+        //y^2 - x^2, x,y < 0. So the obvious solution was to multiply the squared parameter with the
+        //sign of each variable.
+        //  This is how we ended up with the function f(x, y) = sig(y)*(y^2) - sig(x)*(x^2) and its
+        //conjugate
+
+        return bFLBR? (Math.signum(VectorY) * Math.pow(VectorY, 2)) + (Math.signum(VectorX) * Math.pow(VectorX, 2)) : (Math.signum(VectorY) * Math.pow(VectorY, 2)) - (Math.signum(VectorX) * Math.pow(VectorX, 2));
     }
 
 }

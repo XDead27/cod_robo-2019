@@ -16,21 +16,7 @@ import static java.lang.Math.abs;
 
 @TeleOp (name = "Driver_Mode", group = "Driver")
 
-public class Driver_Mode extends LinearOpMode {
-
-    //motoare roti
-    protected DcMotor MotorFL = null;
-    protected DcMotor MotorFR = null;
-    protected DcMotor MotorBL = null;
-    protected DcMotor MotorBR = null;
-
-    //motoare mecanisme
-    protected DcMotor MotorGlisieraL = null;
-    protected DcMotor MotorGlisieraR = null;
-
-    //servo
-    protected CRServo ContinuousServo = null;
-    protected Servo FixedServo = null;
+public class Driver_Mode extends RobotHardwareClass {
 
     //constante
     protected final int tics_per_cm = 67;
@@ -38,13 +24,13 @@ public class Driver_Mode extends LinearOpMode {
     protected final int GLISIERA_MAX = 0;
     protected final int GLISIERA_MIN = -2000;
 
-    //coditii
+    //conditii
     private boolean bNoContraintsMode = false;
 
     @Override
     public void runOpMode()
     {
-        initialise();
+        initialise(true);
 
         waitForStart();
 
@@ -52,71 +38,18 @@ public class Driver_Mode extends LinearOpMode {
         {
             gamepad_1();
             gamepad_2();
+
+            telemetry.addData("speed FL", MotorFL.getPower());
+            telemetry.addData("speed FR", MotorFL.getPower());
+            telemetry.addData("gamepad y", gamepad1.left_stick_y);
+            telemetry.addData("gamepad y dreapta", gamepad1.right_stick_y);
+            telemetry.update();
         }
-    }
-
-    protected void initialise()
-    {
-        //hardware mapping
-        MotorFL = hardwareMap.dcMotor.get("MotorFL");
-        MotorFR = hardwareMap.dcMotor.get("MotorFR");
-        MotorBL = hardwareMap.dcMotor.get("MotorBL");
-        MotorBR = hardwareMap.dcMotor.get("MotorBR");
-        MotorGlisieraL = hardwareMap.dcMotor.get("MotorGlisieraL");
-        MotorGlisieraR = hardwareMap.dcMotor.get("MotorGlisieraR");
-        ContinuousServo = hardwareMap.crservo.get("ContinuousServo");
-        FixedServo = hardwareMap.servo.get("FixedServo");
-        
-        //initializare putere
-        MotorFL.setPower(0);
-        MotorFR.setPower(0);
-        MotorBL.setPower(0);
-        MotorBR.setPower(0);
-        MotorGlisieraL.setPower(0);
-        MotorGlisieraR.setPower(0);
-        ContinuousServo.setPower(0);
-        FixedServo.setPosition(0.1);
-
-        //setare directii
-        MotorFL.setDirection(DcMotorSimple.Direction.REVERSE);
-        MotorFR.setDirection(DcMotorSimple.Direction.FORWARD);
-        MotorBL.setDirection(DcMotorSimple.Direction.REVERSE);
-        MotorBR.setDirection(DcMotorSimple.Direction.FORWARD);
-        MotorGlisieraL.setDirection(DcMotorSimple.Direction.FORWARD);
-        MotorGlisieraR.setDirection(DcMotorSimple.Direction.REVERSE);
-        ContinuousServo.setDirection(CRServo.Direction.FORWARD);
-        FixedServo.setDirection(Servo.Direction.FORWARD);
-        
-        //reset encoder
-        MotorFL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        MotorFR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        MotorBL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        MotorBR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        MotorGlisieraL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        MotorGlisieraR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-
-        //setare encoder
-        MotorFL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        MotorFR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        MotorBL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        MotorBR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        MotorGlisieraL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        MotorGlisieraR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        //setare cand power == 0
-        MotorFL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        MotorFR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        MotorBL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        MotorBR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        MotorGlisieraL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        MotorGlisieraR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
     }
 
     protected void gamepad_1(){
         if ( abs(gamepad1.left_stick_x) > deadzone || abs(gamepad1.left_stick_y) > deadzone || abs(gamepad1.right_stick_x) > deadzone)
-            calculateWheelsPower(gamepad1.left_stick_y , gamepad1.left_stick_x , gamepad1.right_stick_x);
+            calculateWheelsPower(-gamepad1.left_stick_y , gamepad1.left_stick_x , gamepad1.right_stick_x);
         else
             stop_walk();
 
@@ -161,8 +94,6 @@ public class Driver_Mode extends LinearOpMode {
         telemetry.addData("Encoder Glisiera Stanga", MotorGlisieraL.getCurrentPosition());
         telemetry.addData("No Constraints Mode", bNoContraintsMode);
         telemetry.update();
-
-
     }
 
     protected void test_glisiera()
@@ -202,15 +133,14 @@ public class Driver_Mode extends LinearOpMode {
 
     protected void calculateWheelsPower ( double drive, double strafe, double rotate )
     {
-        double FL = Range.clip(drive - strafe + rotate , -0.7 , 0.7);
-        double FR = Range.clip(drive + strafe - rotate , -0.7 , 0.7);
-        double BL = Range.clip(drive + strafe + rotate , -0.7 , 0.7);
-        double BR = Range.clip(drive - strafe - rotate , -0.7 , 0.7);
+        double FL = Range.clip(drive + strafe + rotate , -0.7 , 0.7);
+        double FR = Range.clip(drive - strafe - rotate , -0.7 , 0.7);
+        double BL = Range.clip(drive - strafe + rotate , -0.7 , 0.7);
+        double BR = Range.clip(drive + strafe - rotate , -0.7 , 0.7);
 
         MotorFL.setPower(FL);
         MotorFR.setPower(FR);
         MotorBL.setPower(BL);
         MotorBR.setPower(BR);
     }
-
 }
