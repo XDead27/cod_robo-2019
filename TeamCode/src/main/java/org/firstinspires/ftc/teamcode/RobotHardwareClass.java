@@ -40,7 +40,7 @@ public abstract class RobotHardwareClass extends LinearOpMode {
     protected ModernRoboticsI2cRangeSensor RangeL = null;
     protected ModernRoboticsI2cRangeSensor RangeR = null;
     protected ModernRoboticsI2cGyro gyro = null;
-    BNO055IMU imu;
+    BNO055IMU imuGyro;
 
     //vuforia stuff
     protected static final String TFOD_MODEL_ASSET = "RoverRuckus.tflite";
@@ -140,22 +140,22 @@ public abstract class RobotHardwareClass extends LinearOpMode {
         REVGyroParameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
         REVGyroParameters.loggingEnabled = false;
 
-        imu = hardwareMap.get(BNO055IMU.class, "imu");
+        imuGyro = hardwareMap.get(BNO055IMU.class, "imu");
 
         if(!bIsDriver) {
-            imu.initialize(REVGyroParameters);
+            imuGyro.initialize(REVGyroParameters);
 
             telemetry.addData("Mode", "calibrating...");
             telemetry.update();
 
             // make sure the imu gyro is calibrated before continuing.
-            while (!isStopRequested() && !imu.isGyroCalibrated()) {
+            while (!isStopRequested() && !imuGyro.isGyroCalibrated()) {
                 sleep(50);
                 idle();
             }
 
             telemetry.addData("Mode", "waiting for start");
-            telemetry.addData("imu calib status", imu.getCalibrationStatus().toString());
+            telemetry.addData("imu calib status", imuGyro.getCalibrationStatus().toString());
             telemetry.update();
         }
     }
