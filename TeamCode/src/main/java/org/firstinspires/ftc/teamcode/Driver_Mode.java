@@ -16,24 +16,7 @@ import static java.lang.Math.abs;
 
 @TeleOp (name = "Driver_Mode", group = "Driver")
 
-public class Driver_Mode extends LinearOpMode {
-
-    //motoare roti
-    protected DcMotor MotorFL = null;
-    protected DcMotor MotorFR = null;
-    protected DcMotor MotorBL = null;
-    protected DcMotor MotorBR = null;
-
-    //motoare mecanisme
-    protected DcMotor MotorGlisieraL = null;
-    protected DcMotor MotorGlisieraR = null;
-
-    //servo
-    protected CRServo ServoPeriiL = null;
-    protected CRServo ServoPeriiR = null;
-    protected Servo ServoAlegereL = null;
-    protected Servo ServoAlegereR = null;
-    
+public class Driver_Mode extends RobotHardwareClass {
     //constante
     protected final int tics_per_cm = 67;
     protected final double deadzone = 0.1;
@@ -63,65 +46,7 @@ public class Driver_Mode extends LinearOpMode {
         }
     }
 
-    protected void initialise()
-    {
-        //hardware mapping
-        MotorFL = hardwareMap.dcMotor.get("MotorFL");
-        MotorFR = hardwareMap.dcMotor.get("MotorFR");
-        MotorBL = hardwareMap.dcMotor.get("MotorBL");
-        MotorBR = hardwareMap.dcMotor.get("MotorBR");
-        MotorGlisieraL = hardwareMap.dcMotor.get("MotorGlisieraL");
-        MotorGlisieraR = hardwareMap.dcMotor.get("MotorGlisieraR");
-        /*ServoPeriiL = hardwareMap.crservo.get("ServoPeriiL");
-        ServoPeriiR = hardwareMap.crservo.get("ServoPeriiR");
-        ServoAlegereL = hardwareMap.servo.get("ServoAlegereL");
-        ServoAlegereR = hardwareMap.servo.get("ServoAlegereR");*/
-        
-        //initializare putere
-        MotorFL.setPower(0);
-        MotorFR.setPower(0);
-        MotorBL.setPower(0);
-        MotorBR.setPower(0);
-        MotorGlisieraL.setPower(0);
-        MotorGlisieraR.setPower(0);
 
-        //setare directii
-        MotorFL.setDirection(DcMotorSimple.Direction.REVERSE);
-        MotorFR.setDirection(DcMotorSimple.Direction.FORWARD);
-        MotorBL.setDirection(DcMotorSimple.Direction.REVERSE);
-        MotorBR.setDirection(DcMotorSimple.Direction.FORWARD);
-        MotorGlisieraL.setDirection(DcMotorSimple.Direction.FORWARD);
-        MotorGlisieraR.setDirection(DcMotorSimple.Direction.REVERSE);
-
-        /*ServoPeriiL.setDirection(DcMotorSimple.Direction.FORWARD);
-        ServoPeriiR.setDirection(DcMotorSimple.Direction.FORWARD);*/
-        
-        //reset encoder
-        MotorFL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        MotorFR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        MotorBL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        MotorBR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        MotorGlisieraL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        MotorGlisieraR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-
-        //setare encoder
-        MotorFL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        MotorFR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        MotorBL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        MotorBR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        MotorGlisieraL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        MotorGlisieraR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        //setare cand power == 0
-        MotorFL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        MotorFR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        MotorBL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        MotorBR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        MotorGlisieraL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        MotorGlisieraR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-    }
 
     protected void gamepad_1(){
         if ( abs(gamepad1.left_stick_x) > deadzone || abs(gamepad1.left_stick_y) > deadzone || abs(gamepad1.right_stick_x) > deadzone)

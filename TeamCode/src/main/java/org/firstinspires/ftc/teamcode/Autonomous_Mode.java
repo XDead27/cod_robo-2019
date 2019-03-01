@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -21,38 +22,11 @@ import static org.firstinspires.ftc.teamcode.MineralPosition.LEFT;
 import static org.firstinspires.ftc.teamcode.MineralPosition.MIDDLE;
 import static org.firstinspires.ftc.teamcode.MineralPosition.RIGHT;
 
-public abstract class Autonomous_Mode extends LinearOpMode {
+public abstract class Autonomous_Mode extends RobotHardwareClass {
 
-    //motoare roti
-    protected DcMotor MotorFL = null;
-    protected DcMotor MotorFR = null;
-    protected DcMotor MotorBL = null;
-    protected DcMotor MotorBR = null;
-
-    //motoare mecanisme
-
-    //motoare servo
-    protected Servo servo_L = null;
-    protected Servo servo_R = null;
-
-    //senzori
-    protected ModernRoboticsI2cColorSensor color = null;
-    protected ModernRoboticsI2cRangeSensor RangeL = null;
-    protected ModernRoboticsI2cRangeSensor RangeR = null;
-    protected ModernRoboticsI2cGyro gyro = null;
-
-    //constante
     protected final int tics_per_cm = 67;
     protected static double TOLERANCE = 0.0001;
 
-    //vuforia stuff
-    private static final String TFOD_MODEL_ASSET = "RoverRuckus.tflite";
-    private static final String LABEL_GOLD_MINERAL = "Gold Mineral";
-    private static final String LABEL_SILVER_MINERAL = "Silver Mineral";
-    private static final String VUFORIA_KEY = "AYlEu/7/////AAABmXB1kirNm0vlrZa4DCCmkis6ZNJkEkHGNYjIfoKWcK+yxnJOhuC4Lw3B63L+Y5vrSoTsr1mEe6bvGcMR8Hg+v1Z1Cih0IrBRHdIfrrg6lfa723ft/unZOKgck3ftCj8gWuiM89d+A4smkenUI5P/HXMKMGKCk4xxv5of9YNSX8r4KFO8lD+bqYgnP+GVXzD/TwQo7Dqer3bf0HVbOqP6j6HREHAZdP6Idg/JwyRG8LSdC6ekTwogxCWsuWiaUhuC8uAQ4r/ZfJykZpXYCxhdcLwMM4OaUXkUAPuUenzxlL8MXkwOhsDfqiQNEfSB00BodWKq28EC6cc+Vsko8r9PreeU6jCYR4d84VK8uBFLGaJx";
-    private VuforiaLocalizer vuforia;
-    private TFObjectDetector tfod;
-    private boolean FrontCamera = false; //false -> back ; true -> front
 
     //functii abstrcte
     protected abstract void runOperations();
@@ -68,72 +42,6 @@ public abstract class Autonomous_Mode extends LinearOpMode {
 
         endOperations();
     }
-
-
-
-    //************
-    //INITIALIZARE
-    //************
-
-    protected void initialise(){
-        //hardware mapping
-        MotorFL = hardwareMap.dcMotor.get("MotorFL");
-        MotorFR = hardwareMap.dcMotor.get("MotorFR");
-        MotorBL = hardwareMap.dcMotor.get("MotorBL");
-        MotorBR = hardwareMap.dcMotor.get("MotorBR");
-
-        //servo_L = hardwareMap.servo.get("servo_L");
-        //servo_R = hardwareMap.servo.get("servo_R");
-
-        //color = hardwareMap.get(ModernRoboticsI2cColorSensor.class, "color");
-        //RangeL = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "RangeL");
-        //RangeR = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "RangeR");
-        //gyro = hardwareMap.get(ModernRoboticsI2cGyro.class, "gyro");
-
-        //setare directii
-        MotorBL.setDirection(DcMotorSimple.Direction.REVERSE);
-        MotorFL.setDirection(DcMotorSimple.Direction.FORWARD);
-        MotorBR.setDirection(DcMotorSimple.Direction.REVERSE);
-        MotorFR.setDirection(DcMotorSimple.Direction.FORWARD);
-
-        //setare
-        MotorBL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        MotorBR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        MotorFL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        MotorFR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        //initializare putere
-        MotorFL.setPower(0);
-        MotorFR.setPower(0);
-        MotorBR.setPower(0);
-        MotorBL.setPower(0);
-
-        //vuforia
-        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
-        parameters.vuforiaLicenseKey = VUFORIA_KEY;
-        if (FrontCamera){
-            parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
-        }
-        else{
-            parameters.cameraDirection = VuforiaLocalizer.CameraDirection.FRONT;
-        }
-        vuforia = ClassFactory.getInstance().createVuforia(parameters);
-        int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
-        tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
-        tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_GOLD_MINERAL, LABEL_SILVER_MINERAL);
-
-        //setare color
-        //color.enableLed(true);
-
-        //calibrare gyro
-        //gyro.calibrate();
-        //while (gyro.isCalibrating()){
-        //   idle();
-        //}
-    }
-
-
 
     //************
     //VUFORIA
@@ -620,6 +528,15 @@ public abstract class Autonomous_Mode extends LinearOpMode {
         }
     }
 
+
+
+    //************
+    //GYRO REV
+    //************
+
+    protected double getAngle(){
+        return 0.0;
+    }
 
 
     //************
