@@ -101,7 +101,7 @@ public abstract class Autonomous_Mode extends LinearOpMode {
     //MISCARE
     //************
 
-    //Set the motors power individually
+    //Set the motors' power individually
     protected void SetWheelsPower(double FL, double FR, double BL, double BR){
         MotorFR.setPower(FR);
         MotorBL.setPower(BL);
@@ -284,8 +284,6 @@ public abstract class Autonomous_Mode extends LinearOpMode {
         StopMotors();
     }
 
-<<<<<<< HEAD
-=======
     //TODO
     protected void WalkObstacleAndRangeSTRAFE(double distanceFromWall, boolean bStartAllignedWithWall){
         //se aliniaza cu zidul din fata
@@ -397,7 +395,6 @@ public abstract class Autonomous_Mode extends LinearOpMode {
         StopMotors();
     }
 
->>>>>>> fb388c9b7455c9ba6ae639fc76fdda60b7b84504
     //opresc toate motoarele
     protected void StopMotors(){
         MotorBL.setPower(0);
@@ -406,6 +403,9 @@ public abstract class Autonomous_Mode extends LinearOpMode {
         MotorFR.setPower(0);
     }
 
+    //**************
+    //ROTIRE
+    //**************
     //ma rotesc la angle grade: negativ e pentru right, pozitiv e pentru left;
     protected void Rotate(double angle){
         boolean bAngleIsNegative = false;
