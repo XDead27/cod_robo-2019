@@ -30,10 +30,8 @@ public abstract class RobotHardwareClass extends LinearOpMode {
     protected DcMotor MotorGlisieraR = null;
 
     //servo
-    protected CRServo ServoPeriiL = null;
-    protected CRServo ServoPeriiR = null;
-    protected Servo ServoAlegereL = null;
-    protected Servo ServoAlegereR = null;
+    protected CRServo ContinuousServo = null;
+    protected Servo FixedServo = null;
 
     //senzori
     protected ModernRoboticsI2cColorSensor color = null;
@@ -64,10 +62,8 @@ public abstract class RobotHardwareClass extends LinearOpMode {
         MotorBR = hardwareMap.dcMotor.get("MotorBR");
         MotorGlisieraL = hardwareMap.dcMotor.get("MotorGlisieraL");
         MotorGlisieraR = hardwareMap.dcMotor.get("MotorGlisieraR");
-        /*ServoPeriiL = hardwareMap.crservo.get("ServoPeriiL");
-        ServoPeriiR = hardwareMap.crservo.get("ServoPeriiR");
-        ServoAlegereL = hardwareMap.servo.get("ServoAlegereL");
-        ServoAlegereR = hardwareMap.servo.get("ServoAlegereR");*/
+        ContinuousServo = hardwareMap.crservo.get("ContinuousServo");
+        FixedServo = hardwareMap.servo.get("FixedServo");
 
         //initializare putere
         MotorFL.setPower(0);
@@ -77,6 +73,9 @@ public abstract class RobotHardwareClass extends LinearOpMode {
         MotorGlisieraL.setPower(0);
         MotorGlisieraR.setPower(0);
 
+        ContinuousServo.setPower(0);
+        FixedServo.setPosition(0.1);
+
         //setare directii
         MotorFL.setDirection(DcMotorSimple.Direction.REVERSE);
         MotorFR.setDirection(DcMotorSimple.Direction.FORWARD);
@@ -85,8 +84,9 @@ public abstract class RobotHardwareClass extends LinearOpMode {
         MotorGlisieraL.setDirection(DcMotorSimple.Direction.FORWARD);
         MotorGlisieraR.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        /*ServoPeriiL.setDirection(DcMotorSimple.Direction.FORWARD);
-        ServoPeriiR.setDirection(DcMotorSimple.Direction.FORWARD);*/
+        ContinuousServo.setDirection(CRServo.Direction.FORWARD);
+        FixedServo.setDirection(Servo.Direction.FORWARD);
+
 
         //reset encoder
         MotorFL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);

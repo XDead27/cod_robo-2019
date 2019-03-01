@@ -4,6 +4,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
 @TeleOp (name = "Driver_Mode_Servos", group = "Driver")
@@ -35,7 +36,6 @@ public class Driver_Mode_Servos extends LinearOpMode {
             } else if (gamepad1.y) {
                 FixedServo.setPosition(0.3);
             }
-
         }
     }
 
@@ -46,9 +46,12 @@ public class Driver_Mode_Servos extends LinearOpMode {
 
         //putere initiala
         ContinuousServo.setPower(0);
+        FixedServo.setPosition(0.1);
+
         FixedServo.setPosition(0.3);
         //directii
         ContinuousServo.setDirection(CRServo.Direction.FORWARD);
         FixedServo.setDirection(Servo.Direction.FORWARD);
     }
 }
+
