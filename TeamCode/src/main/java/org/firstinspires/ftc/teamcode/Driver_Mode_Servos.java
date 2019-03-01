@@ -36,7 +36,6 @@ public class Driver_Mode_Servos extends LinearOpMode {
             } else if (gamepad1.y) {
                 FixedServo.setPosition(0.3);
             }
-
         }
     }
 
