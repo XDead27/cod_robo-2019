@@ -29,7 +29,7 @@ public class Driver_Mode extends RobotHardwareClass {
     @Override
     public void runOpMode()
     {
-        initialise();
+        initialise(true);
 
         waitForStart();
 

@@ -56,7 +56,7 @@ public abstract class RobotHardwareClass extends LinearOpMode {
     //INITIALISE
     //************
 
-    protected void initialise(){
+    protected void initialise(boolean bIsDriver){
         //hardware mapping
         MotorFL = hardwareMap.dcMotor.get("MotorFL");
         MotorFR = hardwareMap.dcMotor.get("MotorFR");
@@ -128,13 +128,35 @@ public abstract class RobotHardwareClass extends LinearOpMode {
         tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
         tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_GOLD_MINERAL, LABEL_SILVER_MINERAL);
 
-        //setare color
-        //color.enableLed(true);
 
-        //calibrare gyro
-        //gyro.calibrate();
-        //while (gyro.isCalibrating()){
-        //   idle();
-        //}
+        //GYRO
+        //
+        //
+
+        BNO055IMU.Parameters REVGyroParameters = new BNO055IMU.Parameters();
+
+        REVGyroParameters.mode = BNO055IMU.SensorMode.IMU;
+        REVGyroParameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+        REVGyroParameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        REVGyroParameters.loggingEnabled = false;
+
+        imu = hardwareMap.get(BNO055IMU.class, "imu");
+
+        if(!bIsDriver) {
+            imu.initialize(REVGyroParameters);
+
+            telemetry.addData("Mode", "calibrating...");
+            telemetry.update();
+
+            // make sure the imu gyro is calibrated before continuing.
+            while (!isStopRequested() && !imu.isGyroCalibrated()) {
+                sleep(50);
+                idle();
+            }
+
+            telemetry.addData("Mode", "waiting for start");
+            telemetry.addData("imu calib status", imu.getCalibrationStatus().toString());
+            telemetry.update();
+        }
     }
 }

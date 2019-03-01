@@ -11,7 +11,11 @@ import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
@@ -26,7 +30,8 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
 
     protected final int tics_per_cm = 67;
     protected static double TOLERANCE = 0.0001;
-
+    Orientation lastAngles = new Orientation();
+    double globalAngle;
 
     //functii abstrcte
     protected abstract void runOperations();
@@ -34,7 +39,7 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
 
     @Override
     public void runOpMode() {
-        initialise();
+        initialise(false);
 
         waitForStart();
 
@@ -224,8 +229,8 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
         boolean bIsUsingEncoder = false;
 
         ///IMPLEMENTATION GYRO
-        gyro.resetZAxisIntegrator();
-        double currentHeading = gyro.getHeading();
+        ResetAngle();
+        double currentHeading;
 
         double pGain = 1/(target - 5); //daca zidul sau alt robot se apropie mai mult decat trebuie atunci sa mearga la viteza maxima in spate
         double dGain = 0.0;
@@ -288,7 +293,7 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
 
             //****************************
             //gyro
-            currentHeading = gyro.getHeading();
+            currentHeading = GetAngle();
             if(currentHeading > 180){
                 currentHeading = currentHeading - 360;
             }
@@ -310,7 +315,7 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
 
                 if(initValueL < MotorFL.getCurrentPosition() && initValueR < MotorFR.getCurrentPosition()){
                     bIsUsingEncoder = false;
-                    gyro.resetZAxisIntegrator();
+                    ResetAngle();
                 }
             }
 
@@ -451,7 +456,7 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
     //rotate at [angle] degrees - negative is clockwise, positive is anticlockwise
     protected void Rotate(double angle){
         boolean bAngleIsNegative = false;
-        double FinalAngle = gyro.getHeading()+angle;
+        double FinalAngle = GetAngle()+angle;
 
         if ( FinalAngle < 0 ) {
             FinalAngle += 360;
@@ -484,7 +489,7 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
     }
 
     protected void RotateSlowly(double angle, double FL_Power, double BL_Power, double FR_Power, double BR_Power){
-        double FinalAngle = gyro.getHeading()+angle;
+        double FinalAngle = GetAngle()+angle;
 
         MotorFL.setPower(FL_Power);
         MotorBL.setPower(BL_Power);
@@ -534,8 +539,33 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
     //GYRO REV
     //************
 
-    protected double getAngle(){
-        return 0.0;
+    //Function that adds the orientation of the REV integrated gyro to the globalAngle variable
+    private double GetAngle() {
+        // We have to process the angle because the imu works in euler angles so the Z axis is
+        // returned as 0 to +180 or 0 to -180 rolling back to -179 or +179 when rotation passes
+        // 180 degrees. We detect this transition and track the total cumulative angle of rotation.
+
+        Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+
+        double deltaAngle = angles.firstAngle - lastAngles.firstAngle;
+
+        if (deltaAngle < -180)
+            deltaAngle += 360;
+        else if (deltaAngle > 180)
+            deltaAngle -= 360;
+
+        globalAngle += deltaAngle;
+
+        lastAngles = angles;
+
+        return globalAngle;
+    }
+
+    //Function that resets the global angle to 0
+    private void ResetAngle() {
+        lastAngles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+
+        globalAngle = 0;
     }
 
 
