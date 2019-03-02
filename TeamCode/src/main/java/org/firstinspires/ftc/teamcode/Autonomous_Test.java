@@ -25,7 +25,13 @@ public final class Autonomous_Test extends Autonomous_Mode {
                 TestWalkAtAngle4();
             }
             else if (gamepad1.dpad_up) {
-                TestEncoderAngle();
+                TestEncoderAngle1();
+            }
+            else if (gamepad1.dpad_down) {
+                TestEncoderAngle2();
+            }
+            else if (gamepad1.dpad_right) {
+                TestEncoderAngle3();
             }
             else{
                 idle();
@@ -95,9 +101,23 @@ public final class Autonomous_Test extends Autonomous_Mode {
         }
     }
 
-    void TestEncoderAngle(){
+    void TestEncoderAngle1(){
         WalkEncoder(10*67, 0.5, 45);
+        sleep(1000);
         WalkEncoder(-10*67, 0.5, 45);
+        sleep(1000);
+    }
+    void TestEncoderAngle2(){
+        WalkEncoder(10*67, 0.5, 60);
+        sleep(1000);
+        WalkEncoder(-10*67, 0.5, 60);
+        sleep(1000);
+    }
+    void TestEncoderAngle3(){
+        WalkEncoder(10*67, 0.5, -60);
+        sleep(1000);
+        WalkEncoder(-10*67, 0.5, -60);
+        sleep(1000);
     }
 
     @Override
