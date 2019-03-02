@@ -20,7 +20,7 @@ public class Driver_Mode extends RobotHardwareClass {
     //constante
     protected final int tics_per_cm = 67;
     protected final double deadzone = 0.1;
-    protected final int GLISIERA_MAX = 0;
+    protected final int GLISIERA_MAX = 2000;
     protected final int GLISIERA_MIN = -2000;
 
     //conditii

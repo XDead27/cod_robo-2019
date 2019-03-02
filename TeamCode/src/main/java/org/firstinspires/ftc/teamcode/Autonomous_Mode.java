@@ -135,6 +135,15 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
     //Provided with the speed and the angle in degrees(relative to the current rotation), make the
     //robot pan-move in that direction
     protected void WalkAtAngle(double speed, double angle){
+
+        if (speed < 0){
+            speed *= -1;
+            angle += 180;
+        }
+
+        //to translate from the trigonometric form to oriented XoY axing(just like on the controllers)
+        angle = angle + 90;
+
         //Transform from angle to vectorial distribution(0 is 0%, 1 is 100%, you could think of it
         //as the proportion of X and Y)
         double AxisXVector = Math.cos(Math.toRadians(angle));
@@ -147,7 +156,7 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
 
         //Scale that vector by the desired speed, keeping in mind the maximum
         speed = Range.clip(speed, 0, 1);
-        double ScalingCoefficient = speed/Math.max(VectorFLBR, VectorFRBL);
+        double ScalingCoefficient = speed/Math.max(Math.abs(VectorFLBR) , Math.abs(VectorFRBL));
 
         double SpeedFLBR = VectorFLBR * ScalingCoefficient;
         double SpeedFRBL = VectorFRBL * ScalingCoefficient;
@@ -158,11 +167,20 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
 
     //Pan-move a desired distance, being given the speed and the angle as well
     protected void WalkEncoder(double dist, double speed, double angle){
+
+        if (dist < 0){
+            dist *= -1;
+            angle += 180;
+        }
+
         WalkAtAngle(speed, angle);
 
+        //to translate from the trigonometric form to oriented XoY axing(just like on the controllers)
+        angle += 90;
+
         //calculate vectors based on the given angle and the distance
-        double TargetXVector = dist * Math.cos(angle);
-        double TargetYVector = dist * Math.sin(angle);
+        double TargetXVector = dist * Math.cos(Math.toRadians(angle));
+        double TargetYVector = dist * Math.sin(Math.toRadians(angle));
 
         ///calculate the encoder target
         //use the mecanum function calculator just like you would for normal speeds, but now it will
@@ -529,7 +547,7 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
     //************
 
     //Function that adds the orientation of the REV integrated gyro to the globalAngle variable
-    private double GetAngle() {
+    protected double GetAngle() {
         // We have to process the angle because the imu works in euler angles so the Z axis is
         // returned as 0 to +180 or 0 to -180 rolling back to -179 or +179 when rotation passes
         // 180 degrees. We detect this transition and track the total cumulative angle of rotation.
@@ -551,7 +569,7 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
     }
 
     //Function that resets the global angle to 0
-    private void ResetAngle() {
+    protected void ResetAngle() {
         lastAngles = imuGyro.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
 
         globalAngle = 0;
@@ -578,7 +596,8 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
         //  This is how we ended up with the function f(x, y) = sig(y)*(y^2) - sig(x)*(x^2) and its
         //conjugate
 
-        return bFLBR? (Math.signum(VectorY) * Math.pow(VectorY, 2)) + (Math.signum(VectorX) * Math.pow(VectorX, 2)) : (Math.signum(VectorY) * Math.pow(VectorY, 2)) - (Math.signum(VectorX) * Math.pow(VectorX, 2));
+        //return bFLBR? (Math.signum(VectorY) * Math.pow(VectorY, 2)) + (Math.signum(VectorX) * Math.pow(VectorX, 2)) : (Math.signum(VectorY) * Math.pow(VectorY, 2)) - (Math.signum(VectorX) * Math.pow(VectorX, 2));
+        return bFLBR? VectorY + VectorX : VectorY - VectorX;
     }
 
 }

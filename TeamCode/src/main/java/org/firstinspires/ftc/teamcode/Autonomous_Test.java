@@ -9,35 +9,95 @@ public final class Autonomous_Test extends Autonomous_Mode {
     @Override
     protected void runOperations() {
 
-        boolean test_Position = true;
-        boolean test_WalkAtAngle = false;
+        tfod.shutdown();
 
-        if (test_Position){
-            TestPosition();
-        }
-        if (test_WalkAtAngle){
-            TestWalkAtAngle();
+        while(opModeIsActive()) {
+            if (gamepad1.a) {
+                TestWalkAtAngle1();
+            }
+            else if (gamepad1.b) {
+                TestWalkAtAngle2();
+            }
+            else if (gamepad1.x) {
+                TestWalkAtAngle3();
+            }
+            else if (gamepad1.y) {
+                TestWalkAtAngle4();
+            }
+            else if (gamepad1.dpad_up) {
+                TestEncoderAngle();
+            }
+            else{
+                idle();
+            }
         }
 
     }
 
     void TestPosition(){
         MineralPosition now = Position();
-        while(opModeIsActive()){
+        while(opModeIsActive() && !gamepad1.dpad_down){
             telemetry.addData("position : " , now);
             telemetry.update();
             idle();
         }
     }
 
-    void TestWalkAtAngle(){
-        WalkAtAngle(1, 45);
+    void TestWalkAtAngle1(){
+        WalkAtAngle(0.5, 30);
 
-        while(opModeIsActive()){
-            idle();
-        }
+        sleep(1000);
+
+        WalkAtAngle(-0.5, 30);
+
+        sleep(1000);
 
         StopMotors();
+    }
+    void TestWalkAtAngle2(){
+        WalkAtAngle(0.5, 60);
+
+        sleep(1000);
+
+        WalkAtAngle(-0.5, 60);
+
+        sleep(1000);
+
+        StopMotors();
+    }
+    void TestWalkAtAngle3(){
+        WalkAtAngle(0.5, -30);
+
+        sleep(1000);
+
+        WalkAtAngle(-0.5, -30);
+
+        sleep(1000);
+
+        StopMotors();
+    }
+    void TestWalkAtAngle4(){
+        WalkAtAngle(0.5, -60);
+
+        sleep(1000);
+
+        WalkAtAngle(-0.5, -60);
+
+        sleep(1000);
+
+        StopMotors();
+    }
+
+    void TestGyro(){
+        while(opModeIsActive() && !gamepad1.dpad_down) {
+            telemetry.addData("integrated Gyro", GetAngle());
+            telemetry.update();
+        }
+    }
+
+    void TestEncoderAngle(){
+        WalkEncoder(10*67, 0.5, 45);
+        WalkEncoder(-10*67, 0.5, 45);
     }
 
     @Override
