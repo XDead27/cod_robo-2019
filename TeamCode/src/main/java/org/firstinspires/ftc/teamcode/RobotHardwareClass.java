@@ -84,8 +84,8 @@ public abstract class RobotHardwareClass extends LinearOpMode {
         MotorGlisieraL.setDirection(DcMotorSimple.Direction.FORWARD);
         MotorGlisieraR.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        ContinuousServo.setDirection(CRServo.Direction.FORWARD);
-        FixedServo.setDirection(Servo.Direction.FORWARD);
+        //ContinuousServo.setDirection(CRServo.Direction.FORWARD);
+        //FixedServo.setDirection(Servo.Direction.FORWARD);
 
 
         //reset encoder
@@ -114,19 +114,20 @@ public abstract class RobotHardwareClass extends LinearOpMode {
         MotorGlisieraR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         //vuforia
-        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
-        parameters.vuforiaLicenseKey = VUFORIA_KEY;
-        if (FrontCamera){
-            parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
+        if(!bIsDriver) {
+            VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
+            parameters.vuforiaLicenseKey = VUFORIA_KEY;
+            if (FrontCamera) {
+                parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
+            } else {
+                parameters.cameraDirection = VuforiaLocalizer.CameraDirection.FRONT;
+            }
+            vuforia = ClassFactory.getInstance().createVuforia(parameters);
+            int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+            TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
+            tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
+            tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_GOLD_MINERAL, LABEL_SILVER_MINERAL);
         }
-        else{
-            parameters.cameraDirection = VuforiaLocalizer.CameraDirection.FRONT;
-        }
-        vuforia = ClassFactory.getInstance().createVuforia(parameters);
-        int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
-        tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
-        tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_GOLD_MINERAL, LABEL_SILVER_MINERAL);
 
 
         //GYRO
