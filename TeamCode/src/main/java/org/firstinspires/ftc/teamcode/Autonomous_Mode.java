@@ -42,6 +42,9 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
     //************
 
     protected MineralPosition Position(){
+
+        //TODO : atunci cand sunt la crater sa incerc sa nu iau din greseala elem din spate
+
         MineralPosition ret = null;
         tfod.activate();
         while (opModeIsActive()) {
