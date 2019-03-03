@@ -1,23 +1,13 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.hardware.bosch.BNO055IMU;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cColorSensor;
-import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
-import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.robotcore.util.Range;
-import org.firstinspires.ftc.robotcore.external.ClassFactory;
+
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
-import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 
 import java.util.List;
 
@@ -52,6 +42,10 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
     //************
 
     protected MineralPosition Position(){
+
+        //TODO : sa inteleg ce este top, bottom, left, right (daca sunt fata de mardinile ecranului sau altceva), dam telemetry sa aflam
+        //TODO : atunci cand sunt la crater sa incerc sa nu iau din greseala elem din spate
+
         MineralPosition ret = null;
         tfod.activate();
         while (opModeIsActive()) {
@@ -123,7 +117,7 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
     //MISCARE
     //************
 
-    //Set the motors' power individually
+    //Set the motors power individually
     protected void SetWheelsPower(double FL, double FR, double BL, double BR){
         MotorFR.setPower(FR);
         MotorBL.setPower(BL);
@@ -143,6 +137,15 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
     //Provided with the speed and the angle in degrees(relative to the current rotation), make the
     //robot pan-move in that direction
     protected void WalkAtAngle(double speed, double angle){
+
+        if (speed < 0){
+            speed *= -1;
+            angle += 180;
+        }
+
+        //to translate from the trigonometric form to oriented XoY axing(just like on the controllers)
+        angle = angle + 90;
+
         //Transform from angle to vectorial distribution(0 is 0%, 1 is 100%, you could think of it
         //as the proportion of X and Y)
         double AxisXVector = Math.cos(Math.toRadians(angle));
@@ -155,7 +158,7 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
 
         //Scale that vector by the desired speed, keeping in mind the maximum
         speed = Range.clip(speed, 0, 1);
-        double ScalingCoefficient = speed/Math.max(VectorFLBR, VectorFRBL);
+        double ScalingCoefficient = speed/Math.max(Math.abs(VectorFLBR) , Math.abs(VectorFRBL));
 
         double SpeedFLBR = VectorFLBR * ScalingCoefficient;
         double SpeedFRBL = VectorFRBL * ScalingCoefficient;
@@ -166,11 +169,22 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
 
     //Pan-move a desired distance, being given the speed and the angle as well
     protected void WalkEncoder(double dist, double speed, double angle){
+
+        //TODO : merge mult mai mult ca dist (ii dadeam 10 cm, el mergea un metru, s-ar putea sa fie o greseala de la calcule sau encodere, dam telemetry sa aflam
+
+        if (dist < 0){
+            dist *= -1;
+            angle += 180;
+        }
+
         WalkAtAngle(speed, angle);
 
+        //to translate from the trigonometric form to oriented XoY axing(just like on the controllers)
+        angle += 90;
+
         //calculate vectors based on the given angle and the distance
-        double TargetXVector = dist * Math.cos(angle);
-        double TargetYVector = dist * Math.sin(angle);
+        double TargetXVector = dist * Math.cos(Math.toRadians(angle));
+        double TargetYVector = dist * Math.sin(Math.toRadians(angle));
 
         ///calculate the encoder target
         //use the mecanum function calculator just like you would for normal speeds, but now it will
@@ -180,14 +194,27 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
 
         ///making run to position by hand, because the normal function sometimes has bugs
         //the motors will not stop unless they have overpassed their target distance
-        while(Math.abs(TargetFLBR) > Math.abs(MotorFL.getCurrentPosition()) || Math.abs(TargetFRBL) > Math.abs(MotorFR.getCurrentPosition())){
+        double sensFL = 1;
+        double sensFR = 1;
+        if (TargetFLBR < MotorFL.getCurrentPosition()){
+            sensFL = -1;
+        }
+        if (TargetFRBL < MotorFR.getCurrentPosition()){
+            sensFR = -1;
+        }
+        while(TargetFLBR * sensFL > MotorFL.getCurrentPosition() * sensFL && TargetFRBL * sensFR > MotorFR.getCurrentPosition() * sensFR){
+            telemetry.addData("TargetFLBR : " , TargetFLBR);
+            telemetry.addData("MotorFL : " , MotorFL.getCurrentPosition());
+
+            telemetry.addData("TargetFRBL : " , TargetFRBL);
+            telemetry.addData("MotorFR : " , MotorFR.getCurrentPosition());
+
+            telemetry.update();
             idle();
         }
 
         //stop motors and end function
         StopMotors();
-
-        //TODO: daca merge sunt zeu
     }
 
     //Complex moving function which avoids incoming obstacles and aligns with the wall at the end. It
@@ -450,10 +477,6 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
         MotorFR.setPower(0);
     }
 
-    //**************
-    //ROTIRE
-    //**************
-    //ma rotesc la angle grade: negativ e pentru right, pozitiv e pentru left;
     //rotate at [angle] degrees - negative is clockwise, positive is anticlockwise
     protected void Rotate(double angle){
         boolean bAngleIsNegative = false;
@@ -529,12 +552,12 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
     //************
 
     //Function that adds the orientation of the REV integrated gyro to the globalAngle variable
-    private double GetAngle() {
+    protected double GetAngle() {
         // We have to process the angle because the imu works in euler angles so the Z axis is
         // returned as 0 to +180 or 0 to -180 rolling back to -179 or +179 when rotation passes
         // 180 degrees. We detect this transition and track the total cumulative angle of rotation.
 
-        Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        Orientation angles = imuGyro.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
 
         double deltaAngle = angles.firstAngle - lastAngles.firstAngle;
 
@@ -551,8 +574,8 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
     }
 
     //Function that resets the global angle to 0
-    private void ResetAngle() {
-        lastAngles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+    protected void ResetAngle() {
+        lastAngles = imuGyro.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
 
         globalAngle = 0;
     }
@@ -578,7 +601,8 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
         //  This is how we ended up with the function f(x, y) = sig(y)*(y^2) - sig(x)*(x^2) and its
         //conjugate
 
-        return bFLBR? (Math.signum(VectorY) * Math.pow(VectorY, 2)) + (Math.signum(VectorX) * Math.pow(VectorX, 2)) : (Math.signum(VectorY) * Math.pow(VectorY, 2)) - (Math.signum(VectorX) * Math.pow(VectorX, 2));
+        //return bFLBR? (Math.signum(VectorY) * Math.pow(VectorY, 2)) + (Math.signum(VectorX) * Math.pow(VectorX, 2)) : (Math.signum(VectorY) * Math.pow(VectorY, 2)) - (Math.signum(VectorX) * Math.pow(VectorX, 2));
+        return bFLBR? VectorY + VectorX : VectorY - VectorX;
     }
 
 }

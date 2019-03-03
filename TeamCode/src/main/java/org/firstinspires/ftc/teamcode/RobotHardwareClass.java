@@ -38,7 +38,7 @@ public abstract class RobotHardwareClass extends LinearOpMode {
     protected ModernRoboticsI2cRangeSensor RangeL = null;
     protected ModernRoboticsI2cRangeSensor RangeR = null;
     protected ModernRoboticsI2cGyro gyro = null;
-    BNO055IMU imu;
+    BNO055IMU imuGyro;
 
     //vuforia stuff
     protected static final String TFOD_MODEL_ASSET = "RoverRuckus.tflite";
@@ -84,8 +84,8 @@ public abstract class RobotHardwareClass extends LinearOpMode {
         MotorGlisieraL.setDirection(DcMotorSimple.Direction.FORWARD);
         MotorGlisieraR.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        ContinuousServo.setDirection(CRServo.Direction.FORWARD);
-        FixedServo.setDirection(Servo.Direction.FORWARD);
+        //ContinuousServo.setDirection(CRServo.Direction.FORWARD);
+        //FixedServo.setDirection(Servo.Direction.FORWARD);
 
 
         //reset encoder
@@ -114,19 +114,20 @@ public abstract class RobotHardwareClass extends LinearOpMode {
         MotorGlisieraR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         //vuforia
-        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
-        parameters.vuforiaLicenseKey = VUFORIA_KEY;
-        if (FrontCamera){
-            parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
+        if(!bIsDriver) {
+            VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
+            parameters.vuforiaLicenseKey = VUFORIA_KEY;
+            if (FrontCamera) {
+                parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
+            } else {
+                parameters.cameraDirection = VuforiaLocalizer.CameraDirection.FRONT;
+            }
+            vuforia = ClassFactory.getInstance().createVuforia(parameters);
+            int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+            TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
+            tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
+            tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_GOLD_MINERAL, LABEL_SILVER_MINERAL);
         }
-        else{
-            parameters.cameraDirection = VuforiaLocalizer.CameraDirection.FRONT;
-        }
-        vuforia = ClassFactory.getInstance().createVuforia(parameters);
-        int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
-        tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
-        tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_GOLD_MINERAL, LABEL_SILVER_MINERAL);
 
 
         //GYRO
@@ -140,22 +141,22 @@ public abstract class RobotHardwareClass extends LinearOpMode {
         REVGyroParameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
         REVGyroParameters.loggingEnabled = false;
 
-        imu = hardwareMap.get(BNO055IMU.class, "imu");
+        imuGyro = hardwareMap.get(BNO055IMU.class, "imu");
 
         if(!bIsDriver) {
-            imu.initialize(REVGyroParameters);
+            imuGyro.initialize(REVGyroParameters);
 
             telemetry.addData("Mode", "calibrating...");
             telemetry.update();
 
             // make sure the imu gyro is calibrated before continuing.
-            while (!isStopRequested() && !imu.isGyroCalibrated()) {
+            while (!isStopRequested() && !imuGyro.isGyroCalibrated()) {
                 sleep(50);
                 idle();
             }
 
             telemetry.addData("Mode", "waiting for start");
-            telemetry.addData("imu calib status", imu.getCalibrationStatus().toString());
+            telemetry.addData("imu calib status", imuGyro.getCalibrationStatus().toString());
             telemetry.update();
         }
     }

@@ -15,13 +15,12 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import static java.lang.Math.abs;
 
 @TeleOp (name = "Driver_Mode", group = "Driver")
-
 public class Driver_Mode extends RobotHardwareClass {
 
     //constante
     protected final int tics_per_cm = 67;
     protected final double deadzone = 0.1;
-    protected final int GLISIERA_MAX = 0;
+    protected final int GLISIERA_MAX = 2000;
     protected final int GLISIERA_MIN = -2000;
 
     //conditii
@@ -53,7 +52,7 @@ public class Driver_Mode extends RobotHardwareClass {
         else
             stop_walk();
 
-        test_glisiera();
+        //test_glisiera();
     }
 
     protected void gamepad_2(){
@@ -93,7 +92,6 @@ public class Driver_Mode extends RobotHardwareClass {
         telemetry.addData("Encoder Glisiera Dreapta" , MotorGlisieraR.getCurrentPosition());
         telemetry.addData("Encoder Glisiera Stanga", MotorGlisieraL.getCurrentPosition());
         telemetry.addData("No Constraints Mode", bNoContraintsMode);
-        telemetry.update();
     }
 
     protected void test_glisiera()
@@ -121,7 +119,6 @@ public class Driver_Mode extends RobotHardwareClass {
 
         telemetry.addData("pozitie L: ", MotorGlisieraL.getCurrentPosition());
         telemetry.addData("pozitie R: ", MotorGlisieraR.getCurrentPosition());
-        telemetry.update();
     }
 
     protected void stop_walk(){
