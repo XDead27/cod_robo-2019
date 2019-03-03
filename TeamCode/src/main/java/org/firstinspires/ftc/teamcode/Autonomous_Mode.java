@@ -43,6 +43,7 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
 
     protected MineralPosition Position(){
 
+        //TODO : sa inteleg ce este top, bottom, left, right (daca sunt fata de mardinile ecranului sau altceva), dam telemetry sa aflam
         //TODO : atunci cand sunt la crater sa incerc sa nu iau din greseala elem din spate
 
         MineralPosition ret = null;
@@ -171,6 +172,8 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
     //Pan-move a desired distance, being given the speed and the angle as well
     protected void WalkEncoder(double dist, double speed, double angle){
 
+        //TODO : merge mult mai mult ca dist (ii dadeam 10 cm, el mergea un metru, s-ar putea sa fie o greseala de la calcule sau encodere, dam telemetry sa aflam
+
         if (dist < 0){
             dist *= -1;
             angle += 180;
@@ -214,8 +217,6 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
 
         //stop motors and end function
         StopMotors();
-
-        //TODO: daca merge sunt zeu
     }
 
     //Complex moving function which avoids incoming obstacles and aligns with the wall at the end. It
