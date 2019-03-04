@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -44,6 +43,7 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
 
     protected MineralPosition Position(){
 
+        //TODO : sa inteleg ce este top, bottom, left, right (daca sunt fata de mardinile ecranului sau altceva), dam telemetry sa aflam
         //TODO : atunci cand sunt la crater sa incerc sa nu iau din greseala elem din spate
 
         MineralPosition ret = null;
@@ -113,8 +113,6 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
         return ret;
     }
 
-
-
     //************
     //MISCARE
     //************
@@ -172,7 +170,7 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
     //Pan-move a desired distance, being given the speed and the angle as well
     protected void WalkEncoder(double dist, double speed, double angle){
 
-        ResetAllEncoders();
+        //TODO : merge mult mai mult ca dist (ii dadeam 10 cm, el mergea un metru, s-ar putea sa fie o greseala de la calcule sau encodere, dam telemetry sa aflam
 
         if (dist < 0){
             dist *= -1;
@@ -196,7 +194,15 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
 
         ///making run to position by hand, because the normal function sometimes has bugs
         //the motors will not stop unless they have overpassed their target distance
-        while(Math.abs(TargetFRBL) > Math.abs(MotorFR.getCurrentPosition()) || Math.abs(TargetFLBR) > Math.abs(MotorFL.getCurrentPosition())){
+        double sensFL = 1;
+        double sensFR = 1;
+        if (TargetFLBR < MotorFL.getCurrentPosition()){
+            sensFL = -1;
+        }
+        if (TargetFRBL < MotorFR.getCurrentPosition()){
+            sensFR = -1;
+        }
+        while(TargetFLBR * sensFL > MotorFL.getCurrentPosition() * sensFL && TargetFRBL * sensFR > MotorFR.getCurrentPosition() * sensFR){
             telemetry.addData("TargetFLBR : " , TargetFLBR);
             telemetry.addData("MotorFL : " , MotorFL.getCurrentPosition());
 
@@ -209,8 +215,6 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
 
         //stop motors and end function
         StopMotors();
-
-        //TODO: daca merge sunt zeu
     }
 
     //Complex moving function which avoids incoming obstacles and aligns with the wall at the end. It
@@ -483,38 +487,32 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
             bAngleIsNegative = true;
         }
 
-        double FL_Power = 0.7;
-        double BL_Power = 0.7;
-        double FR_Power = -0.7;
-        double BR_Power = -0.7;
+        double FLPower = 0.7;
+        double BLPower = 0.7;
+        double FRPower = -0.7;
+        double BRPower = -0.7;
 
         if ( bAngleIsNegative ) {
-            FL_Power *= -1;
-            BL_Power *= -1;
-            FR_Power *= -1;
-            BR_Power *= -1;
+            FLPower *= -1;
+            BLPower *= -1;
+            FRPower *= -1;
+            BRPower *= -1;
         }
 
-        MotorFL.setPower(FL_Power);
-        MotorBL.setPower(BL_Power);
-        MotorFR.setPower(FR_Power);
-        MotorBR.setPower(BR_Power);
+        SetWheelsPower(FLPower, FRPower, BLPower, BRPower);
 
         while ( opModeIsActive() && Math.abs(FinalAngle-angle) > 5 ) {
             idle();
         }
 
-        RotateSlowly(angle, FL_Power/2, BL_Power/2, FR_Power/2, BR_Power/2);
+        RotateSlowly(angle, FLPower/2, BLPower/2, FRPower/2, BRPower/2);
         StopMotors();
     }
 
-    protected void RotateSlowly(double angle, double FL_Power, double BL_Power, double FR_Power, double BR_Power){
+    protected void RotateSlowly(double angle, double FLPower, double BLPower, double FRPower, double BRPower){
         double FinalAngle = GetAngle()+angle;
 
-        MotorFL.setPower(FL_Power);
-        MotorBL.setPower(BL_Power);
-        MotorFR.setPower(FR_Power);
-        MotorBR.setPower(BR_Power);
+        SetWheelsPower(FLPower, FRPower, BLPower, BRPower);
 
         while ( opModeIsActive() && Math.abs(FinalAngle-angle) > 0 ) {
             idle();
@@ -523,34 +521,28 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
 
     //align with wall
     protected void AlignWithWall(){
-        double FL_Power = 0.7;
-        double BL_Power = 0.7;
-        double FR_Power = -0.7;
-        double BR_Power = -0.7;
+        double FLPower = 0.7;
+        double BLPower = 0.7;
+        double FRPower = -0.7;
+        double BRPower = -0.7;
 
-        MotorFL.setPower(FL_Power);
-        MotorBL.setPower(BL_Power);
-        MotorFR.setPower(FR_Power);
-        MotorBR.setPower(BR_Power);
+        SetWheelsPower(FLPower, FRPower, BLPower, BRPower);
 
         while ( opModeIsActive() && Math.abs(RangeL.getDistance(DistanceUnit.CM) - RangeR.getDistance(DistanceUnit.CM)) > 5 ) {
             idle();
         }
 
-        AlignWithWallSlowly(FL_Power/2, BL_Power/2, FR_Power/2, BR_Power/2);
+        AlignWithWallSlowly(FLPower/2, BLPower/2, FRPower/2, BRPower/2);
         StopMotors();
-
     }
 
-    protected void AlignWithWallSlowly(double FL_Power, double BL_Power, double FR_Power, double BR_Power){
-        MotorFL.setPower(FL_Power);
-        MotorBL.setPower(BL_Power);
-        MotorFR.setPower(FR_Power);
-        MotorBR.setPower(BR_Power);
+    protected void AlignWithWallSlowly(double FLPower, double BLPower, double FRPower, double BRPower){
+        SetWheelsPower(FLPower, FRPower, BLPower, BRPower);
 
         while ( opModeIsActive() && Math.abs(RangeL.getDistance(DistanceUnit.CM) - RangeR.getDistance(DistanceUnit.CM)) > 0 ) {
             idle();
         }
+        StopMotors();
     }
 
 
@@ -611,20 +603,6 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
 
         //return bFLBR? (Math.signum(VectorY) * Math.pow(VectorY, 2)) + (Math.signum(VectorX) * Math.pow(VectorX, 2)) : (Math.signum(VectorY) * Math.pow(VectorY, 2)) - (Math.signum(VectorX) * Math.pow(VectorX, 2));
         return bFLBR? VectorY + VectorX : VectorY - VectorX;
-    }
-
-
-    //Resets encoders for all motors
-    protected void ResetAllEncoders(){
-        MotorBL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        MotorFL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        MotorBR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        MotorFR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        MotorBL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        MotorFL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        MotorBR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        MotorFR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
 }
