@@ -22,19 +22,19 @@ public class Driver_Mode_Servos extends LinearOpMode {
 
         while (opModeIsActive()) {
             if (gamepad1.a) {
-                ContinuousServo.setPower(0.5);
+                ContinuousServo.setPower(0.9);
             }
             else if (gamepad1.b) {
-                ContinuousServo.setPower(-0.5);
+                ContinuousServo.setPower(-0.9);
             }
             else {
                 ContinuousServo.setPower(0);
             }
 
             if (gamepad1.x) {
-                FixedServo.setPosition(0.1);
+                FixedServo.setPosition(FixedServo.MIN_POSITION);
             } else if (gamepad1.y) {
-                FixedServo.setPosition(0.3);
+                FixedServo.setPosition(0.5);
             }
         }
     }
@@ -46,9 +46,10 @@ public class Driver_Mode_Servos extends LinearOpMode {
 
         //putere initiala
         ContinuousServo.setPower(0);
-        FixedServo.setPosition(0.1);
 
-        FixedServo.setPosition(0.3);
+        //pozitie initiala
+        FixedServo.setPosition(FixedServo.MIN_POSITION);
+
         //directii
         ContinuousServo.setDirection(CRServo.Direction.FORWARD);
         FixedServo.setDirection(Servo.Direction.FORWARD);

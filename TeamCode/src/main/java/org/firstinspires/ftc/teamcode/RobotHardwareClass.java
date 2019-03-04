@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
@@ -74,7 +75,9 @@ public abstract class RobotHardwareClass extends LinearOpMode {
         MotorGlisieraR.setPower(0);
 
         ContinuousServo.setPower(0);
-        FixedServo.setPosition(0.1);
+
+        //initializare pozitie
+        FixedServo.setPosition(FixedServo.MIN_POSITION);
 
         //setare directii
         MotorFL.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -84,8 +87,8 @@ public abstract class RobotHardwareClass extends LinearOpMode {
         MotorGlisieraL.setDirection(DcMotorSimple.Direction.FORWARD);
         MotorGlisieraR.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        //ContinuousServo.setDirection(CRServo.Direction.FORWARD);
-        //FixedServo.setDirection(Servo.Direction.FORWARD);
+        ContinuousServo.setDirection(CRServo.Direction.FORWARD);
+        FixedServo.setDirection(Servo.Direction.FORWARD);
 
 
         //reset encoder

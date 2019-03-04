@@ -37,7 +37,6 @@ public class Driver_Mode extends RobotHardwareClass {
         {
             gamepad_1();
             gamepad_2();
-
             telemetry.addData("speed FL", MotorFL.getPower());
             telemetry.addData("speed FR", MotorFL.getPower());
             telemetry.addData("gamepad y", gamepad1.left_stick_y);
@@ -74,19 +73,19 @@ public class Driver_Mode extends RobotHardwareClass {
         }
 
         if (gamepad2.a) {
-            ContinuousServo.setPower(0.5);
+            ContinuousServo.setPower(0.9);
         }
         else if (gamepad2.b) {
-            ContinuousServo.setPower(-0.5);
+            ContinuousServo.setPower(-0.9);
         }
         else {
             ContinuousServo.setPower(0);
         }
 
         if (gamepad2.x) {
-            FixedServo.setPosition(0.1);
+            FixedServo.setPosition(FixedServo.MIN_POSITION);
         } else if (gamepad2.y) {
-            FixedServo.setPosition(0.3);
+            FixedServo.setPosition(0.5);
         }
 
         telemetry.addData("Encoder Glisiera Dreapta" , MotorGlisieraR.getCurrentPosition());
