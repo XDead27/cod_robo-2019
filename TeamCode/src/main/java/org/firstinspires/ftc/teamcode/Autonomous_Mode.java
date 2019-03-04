@@ -45,6 +45,12 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
     //VUFORIA
     //************
 
+
+    //We use the phone to identify the qube's position by looking at the 2 minerals in the left and using an A.I. that recognises their type
+    //If we see a qube, we return its position
+    //If we have 2 spheres, that means that the qube is on the right
+    //The function returns an enum that is eithr LEFT, MIDDLE or RIGHT, coresponding to the qube's position
+    
     protected MineralPosition Position(){
 
         //TODO : sa inteleg ce este top, bottom, left, right (daca sunt fata de mardinile ecranului sau altceva), dam telemetry sa aflam
