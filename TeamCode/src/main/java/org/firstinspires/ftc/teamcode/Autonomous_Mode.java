@@ -10,6 +10,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 
+import java.io.File;
 import java.util.List;
 
 import static org.firstinspires.ftc.teamcode.MineralPosition.LEFT;
@@ -541,6 +542,19 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
         StopMotors();
     }
 
+    //Follow a Text Editor pah
+    protected void RunWithPath(File inFile, double OverallSpeed) throws Exception{
+        File file = new File("C:\\Users\\robos\\IdeaProjects\\TestChestieRobo\\default_test.txt");
+        CourseReaderClass Crc = new CourseReaderClass(file);
+
+        List<Integer> AngleList = Crc.GetAngleMap();
+        List<Double> VectorList = Crc.GetVectorMap();
+
+        for(int i = 0; i < Math.min(AngleList.size(), VectorList.size()); i++){
+            WalkEncoder(VectorList.get(i), OverallSpeed, AngleList.get(i));
+        }
+    }
+
 
 
     //************
@@ -629,5 +643,6 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
 
         StopMotors();
     }
+
 
 }
