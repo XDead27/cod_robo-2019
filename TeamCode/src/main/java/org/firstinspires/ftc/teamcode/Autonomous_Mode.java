@@ -18,7 +18,8 @@ import static org.firstinspires.ftc.teamcode.MineralPosition.RIGHT;
 
 public abstract class Autonomous_Mode extends RobotHardwareClass {
 
-    protected final int tics_per_cm = 67;
+    protected static int TICKS_PER_CM = 67;
+    protected static int DIST_GLISIERE = 1;
     protected static double TOLERANCE = 0.0001;
     Orientation lastAngles = new Orientation();
     double globalAngle;
@@ -606,11 +607,27 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
         MotorFL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         MotorBR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         MotorFR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        MotorGlisieraL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        MotorGlisieraR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         MotorBR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         MotorBR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         MotorBR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         MotorBR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        MotorGlisieraL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        MotorGlisieraR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+
+    protected void LiftDown(){
+        ResetAllEncoders();
+        MotorGlisieraL.setPower(0.3);
+        MotorGlisieraR.setPower(0.3);
+
+        while (Math.abs(MotorGlisieraL.getCurrentPosition()) < DIST_GLISIERE){
+            idle();
+        }
+
+        StopMotors();
     }
 
 }
