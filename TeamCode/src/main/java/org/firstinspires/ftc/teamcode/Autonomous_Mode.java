@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -17,7 +18,8 @@ import static org.firstinspires.ftc.teamcode.MineralPosition.RIGHT;
 
 public abstract class Autonomous_Mode extends RobotHardwareClass {
 
-    protected final int tics_per_cm = 67;
+    protected static int TICKS_PER_CM = 67;
+    protected static int DIST_GLISIERE = 1;
     protected static double TOLERANCE = 0.0001;
     Orientation lastAngles = new Orientation();
     double globalAngle;
@@ -172,6 +174,8 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
 
         //TODO : merge mult mai mult ca dist (ii dadeam 10 cm, el mergea un metru, s-ar putea sa fie o greseala de la calcule sau encodere, dam telemetry sa aflam
 
+        ResetAllEncoders();
+
         if (dist < 0){
             dist *= -1;
             angle += 180;
@@ -194,15 +198,7 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
 
         ///making run to position by hand, because the normal function sometimes has bugs
         //the motors will not stop unless they have overpassed their target distance
-        double sensFL = 1;
-        double sensFR = 1;
-        if (TargetFLBR < MotorFL.getCurrentPosition()){
-            sensFL = -1;
-        }
-        if (TargetFRBL < MotorFR.getCurrentPosition()){
-            sensFR = -1;
-        }
-        while(TargetFLBR * sensFL > MotorFL.getCurrentPosition() * sensFL && TargetFRBL * sensFR > MotorFR.getCurrentPosition() * sensFR){
+        while(Math.abs(TargetFRBL) > Math.abs(MotorFR.getCurrentPosition()) || Math.abs(TargetFLBR) > Math.abs(MotorFL.getCurrentPosition())){
             telemetry.addData("TargetFLBR : " , TargetFLBR);
             telemetry.addData("MotorFL : " , MotorFL.getCurrentPosition());
 
@@ -603,6 +599,35 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
 
         //return bFLBR? (Math.signum(VectorY) * Math.pow(VectorY, 2)) + (Math.signum(VectorX) * Math.pow(VectorX, 2)) : (Math.signum(VectorY) * Math.pow(VectorY, 2)) - (Math.signum(VectorX) * Math.pow(VectorX, 2));
         return bFLBR? VectorY + VectorX : VectorY - VectorX;
+    }
+
+    //Reset all encoders
+    protected void ResetAllEncoders(){
+        MotorBL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        MotorFL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        MotorBR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        MotorFR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        MotorGlisieraL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        MotorGlisieraR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        MotorBR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        MotorBR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        MotorBR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        MotorBR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        MotorGlisieraL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        MotorGlisieraR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+
+    protected void LiftDown(){
+        ResetAllEncoders();
+        MotorGlisieraL.setPower(0.3);
+        MotorGlisieraR.setPower(0.3);
+
+        while (Math.abs(MotorGlisieraL.getCurrentPosition()) < DIST_GLISIERE){
+            idle();
+        }
+
+        StopMotors();
     }
 
 }
