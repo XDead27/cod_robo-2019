@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.Range;
 
@@ -130,7 +131,7 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
 
     //Overcharge of the previous function, takes only two arguments and sets the wheels power based
     //on mecanum wheel dependency
-    protected void SetWheelsPower(double FLBR, double FRBL){
+    protected void SetWheelsPower(double FLBR, double FRBL) {
         MotorFR.setPower(FRBL);
         MotorBL.setPower(FRBL);
         MotorFL.setPower(FLBR);
@@ -475,6 +476,14 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
     }
 
     //rotate at [angle] degrees - negative is clockwise, positive is anticlockwise
+    //citesc culoarea
+    protected boolean GoodColor(){
+        int curColor = color.readUnsignedByte(ModernRoboticsI2cColorSensor.Register.COLOR_NUMBER);
+        if ( curColor >= 8 && curColor <= 10 ) return true;
+        return false;
+    }
+
+    //ma rotesc la angle grade; negativ e pentru right, pozitiv e pentru left;
     protected void Rotate(double angle){
         boolean bAngleIsNegative = false;
         double FinalAngle = GetAngle()+angle;
