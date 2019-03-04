@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Vector;
 
 public class CourseReaderClass {
-    File defaultFile = new File("C:\\Users\\robos\\Documents\\Android_Studio_Apps\\cod_robo-2019\\default_test.txt");
+    File defaultFile = new File("C:\\Users\\robos\\IdeaProjects\\TestChestieRobo\\default_test.txt");
 
     //RULES FOR ASCII FILE
     //
@@ -25,7 +25,7 @@ public class CourseReaderClass {
     private double WidthVector, HeightVector;
 
     //The ascii vector
-    private char[][] charBox;
+    private List<char[]> charBox = new ArrayList<char[]>();
     //Text bounds
     private static double TextBlockHeight = 0;
     private static double TextBlockWidth = 0;
@@ -33,10 +33,11 @@ public class CourseReaderClass {
     private int StartRow, StartColumn;
     //Instruction map
     private List<Integer> AngleMap = new ArrayList<Integer>();
+    private List<Double> VectorMap = new ArrayList<Double>();
 
 
     //Constructor
-    CourseReaderClass(File inFile) throws IOException {
+    CourseReaderClass(File inFile) throws Exception, NullPointerException {
 
         if(!inFile.canExecute())
             inFile = defaultFile;
@@ -46,7 +47,7 @@ public class CourseReaderClass {
         String st;
         int index = 0;
         while ((st = br.readLine()) != null) {
-            charBox[index] = st.toCharArray();
+            charBox.add(st.toCharArray());
             TextBlockHeight++;
             if(TextBlockWidth <= st.length())
                 TextBlockWidth = st.length();
@@ -55,11 +56,11 @@ public class CourseReaderClass {
 
         //Interpret Map
         //Find the starting position
-        for(int i = 0; i < charBox.length; i++){
-            for(int j = 0; j < charBox[i].length; j++){
-                if(charBox[i][j] == 'X')
+        for(int i = 0; i < charBox.size(); i++){
+            for(int j = 0; j < charBox.get(i).length; j++){
+                if(charBox.get(i)[j] == 'X')
                     StartRow = i;
-                    StartColumn = j;
+                StartColumn = j;
             }
         }
 
@@ -79,11 +80,13 @@ public class CourseReaderClass {
     private int[] FindClosestToPoint(int[] InitPointLoc){
         for(int i = -1; i < 2; i++){
             for(int j = -1; j < 2; j++){
-                if(charBox[InitPointLoc[0] + i][InitPointLoc[1] + j] == '0') {
-                    int[] aux = {InitPointLoc[0], InitPointLoc[1]};
-                    charBox[InitPointLoc[0] + i][InitPointLoc[1] + j] = '*';
-                    AngleMap.add(CategorizeResults(i, j));
-                    return aux;
+                if(InitPointLoc[0] + i < TextBlockHeight && InitPointLoc[0] + i >= 0 && InitPointLoc[1] + j < TextBlockWidth && InitPointLoc[1] + j >= 0) {
+                    if (charBox.get(InitPointLoc[0] + i)[InitPointLoc[1] + j] == '0') {
+                        int[] aux = {InitPointLoc[0] + i, InitPointLoc[1] + j};
+                        charBox.get(InitPointLoc[0] + i)[InitPointLoc[1] + j] = '*';
+                        AngleMap.add(CategorizeResults(i, j));
+                        return aux;
+                    }
                 }
             }
         }
@@ -97,12 +100,15 @@ public class CourseReaderClass {
                 switch (column){
                     case -1:
                         desiredAngle = 45;
+                        VectorMap.add(Math.sqrt(Math.pow(HeightVector, 2) + Math.pow(WidthVector, 2)));
                         break;
                     case 0:
                         desiredAngle = 0;
+                        VectorMap.add(HeightVector);
                         break;
                     case 1:
                         desiredAngle = 315;
+                        VectorMap.add(Math.sqrt(Math.pow(HeightVector, 2) + Math.pow(WidthVector, 2)));
                         break;
                 }
                 break;
@@ -110,9 +116,11 @@ public class CourseReaderClass {
                 switch (column){
                     case -1:
                         desiredAngle = 90;
+                        VectorMap.add(WidthVector);
                         break;
                     case 1:
                         desiredAngle = 270;
+                        VectorMap.add(WidthVector);
                         break;
                 }
                 break;
@@ -120,12 +128,15 @@ public class CourseReaderClass {
                 switch (column){
                     case -1:
                         desiredAngle = 135;
+                        VectorMap.add(Math.sqrt(Math.pow(HeightVector, 2) + Math.pow(WidthVector, 2)));
                         break;
                     case 0:
                         desiredAngle = 180;
+                        VectorMap.add(HeightVector);
                         break;
                     case 1:
                         desiredAngle = 225;
+                        VectorMap.add(Math.sqrt(Math.pow(HeightVector, 2) + Math.pow(WidthVector, 2)));
                         break;
                 }
                 break;
@@ -138,8 +149,8 @@ public class CourseReaderClass {
         return AngleMap;
     }
 
-    public double GetPlanarVector(){
-        return Math.sqrt(Math.pow(HeightVector, 2) + Math.pow(WidthVector, 2));
+    public List<Double> GetVectorMap(){
+        return VectorMap;
     }
 
 }
