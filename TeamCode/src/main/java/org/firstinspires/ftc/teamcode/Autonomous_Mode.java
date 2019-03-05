@@ -12,6 +12,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 import static org.firstinspires.ftc.teamcode.MineralPosition.LEFT;
@@ -31,7 +32,7 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
     protected abstract void endOperations();
 
     @Override
-    public void runOpMode() {
+    public void runOpMode(){
         initialise(false);
 
         waitForStart();
@@ -184,6 +185,14 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
 
         ResetAllEncoders();
 
+        //Nush de ce merge doar asa
+        MotorFL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        MotorFR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        MotorBL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        MotorBR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        MotorGlisieraL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        MotorGlisieraR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
         if (dist < 0){
             dist *= -1;
             angle += 180;
@@ -195,14 +204,14 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
         angle += 90;
 
         //calculate vectors based on the given angle and the distance
-        double TargetXVector = dist * Math.cos(Math.toRadians(angle));
-        double TargetYVector = dist * Math.sin(Math.toRadians(angle));
+        double TargetXVector = Math.cos(Math.toRadians(angle));
+        double TargetYVector = Math.sin(Math.toRadians(angle));
 
         ///calculate the encoder target
         //use the mecanum function calculator just like you would for normal speeds, but now it will
         //return the distance that each wheel will travel to reach the target distance with the target angle
-        double TargetFLBR = MecanumFunctionCalculator(TargetXVector, TargetYVector, true);
-        double TargetFRBL = MecanumFunctionCalculator(TargetXVector, TargetYVector, false);
+        double TargetFLBR = dist * MecanumFunctionCalculator(TargetXVector, TargetYVector, true);
+        double TargetFRBL = dist * MecanumFunctionCalculator(TargetXVector, TargetYVector, false);
 
 
         ///making run to position by hand, because the normal function sometimes has bugs
@@ -210,6 +219,8 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
         while((Math.abs(TargetFRBL) > Math.abs(MotorFR.getCurrentPosition()) || Math.abs(TargetFLBR) > Math.abs(MotorFL.getCurrentPosition())) && opModeIsActive()){
             telemetry.addData("TargetFLBR : " , TargetFLBR);
             telemetry.addData("MotorFL : " , MotorFL.getCurrentPosition());
+            telemetry.addData("MotorFL mode : " , MotorFL.getMode());
+            telemetry.addData("MotorFL speed : " , MotorFL.getPower());
 
             telemetry.addData("TargetFRBL : " , TargetFRBL);
             telemetry.addData("MotorFR : " , MotorFR.getCurrentPosition());
@@ -500,10 +511,10 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
             bAngleIsNegative = true;
         }
 
-        double FLPower = -0.7;
-        double BLPower = -0.7;
-        double FRPower = 0.7;
-        double BRPower = 0.7;
+        double FLPower = -0.5;
+        double BLPower = -0.5;
+        double FRPower = 0.5;
+        double BRPower = 0.5;
 
         if ( bAngleIsNegative ) {
             FLPower *= -1;
@@ -514,23 +525,22 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
 
         SetWheelsPower(FLPower, FRPower, BLPower, BRPower);
 
-        while ( opModeIsActive() && Math.abs(FinalAngle-GetAngle()) > 5 ) {
-            idle();
+        while ( opModeIsActive() && Math.abs(FinalAngle-GetAngle()) > 15 ) {
             telemetry.addData("sunt in modul normal", " ");
             telemetry.addData("uwu m-am rotit la ", GetAngle());
             telemetry.update();
         }
 
-        RotateSlowly(angle, FLPower/2, BLPower/2, FRPower/2, BRPower/2);
+        RotateSlowly(FinalAngle, FLPower/2, BLPower/2, FRPower/2, BRPower/2);
         StopMotors();
     }
 
     protected void RotateSlowly(double angle, double FLPower, double BLPower, double FRPower, double BRPower){
-        double FinalAngle = GetAngle()+angle;
+        double FinalAngle = angle;
 
         SetWheelsPower(FLPower, FRPower, BLPower, BRPower);
 
-        while ( opModeIsActive() && Math.abs(FinalAngle-GetAngle()) > 0 ) {
+        while ( opModeIsActive() && Math.abs(FinalAngle-GetAngle()) > 5 ) {
             idle();
             telemetry.addData("sunt in modul incet", " ");
             telemetry.addData("unghiul de gyro uwu: ", GetAngle());
@@ -634,7 +644,7 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
         //conjugate
 
         //return bFLBR? (Math.signum(VectorY) * Math.pow(VectorY, 2)) + (Math.signum(VectorX) * Math.pow(VectorX, 2)) : (Math.signum(VectorY) * Math.pow(VectorY, 2)) - (Math.signum(VectorX) * Math.pow(VectorX, 2));
-        return bFLBR? VectorY + VectorX : VectorY - VectorX;
+        return Range.clip(bFLBR? VectorY + VectorX : VectorY - VectorX, -1, 1);
     }
 
     //Reset all encoders
@@ -645,11 +655,9 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
         MotorFR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         MotorGlisieraL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         MotorGlisieraR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    }
 
-        while(MotorBL.isBusy()){
-            idle();
-        }
-
+    private void RunWithAllEncoders(){
         MotorBR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         MotorBR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         MotorBR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);

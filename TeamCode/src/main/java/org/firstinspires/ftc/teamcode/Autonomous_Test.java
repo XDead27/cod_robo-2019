@@ -2,12 +2,16 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+
+import java.io.File;
+
 @Autonomous(name = "Autonomous_Test", group = "Autonomous")
 
 public final class Autonomous_Test extends Autonomous_Mode {
 
     @Override
-    protected void runOperations() {
+    protected void runOperations(){
 
         tfod.shutdown();
 
@@ -38,6 +42,9 @@ public final class Autonomous_Test extends Autonomous_Mode {
             }
             else if(gamepad1.right_bumper){
                 TestGyro();
+            }
+            else if(gamepad1.right_trigger > 0.1){
+                TestPath();
             }
             else{
                 idle();
@@ -125,6 +132,15 @@ public final class Autonomous_Test extends Autonomous_Mode {
         sleep(1000);
         WalkEncoder(-10*67, 0.5, -60);
         sleep(1000);
+    }
+
+    private void TestPath(){
+        try {
+            File file = new File("./default_path.txt");
+            RunWithPath(file, 0.5);
+        } catch(Exception e){
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
