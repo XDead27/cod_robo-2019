@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Vector;
 
 public class CourseReaderClass {
-    File defaultFile = new File("C:\\Users\\robos\\IdeaProjects\\TestChestieRobo\\default_test.txt");
+    File defaultFile = new File("./default_path.txt");
 
     //RULES FOR ASCII FILE
     //
@@ -32,7 +32,7 @@ public class CourseReaderClass {
     //Start coordinates
     private int StartRow, StartColumn;
     //Instruction map
-    private List<Integer> AngleMap = new ArrayList<Integer>();
+    private List<Double> AngleMap = new ArrayList<Double>();
     private List<Double> VectorMap = new ArrayList<Double>();
 
 
@@ -58,10 +58,12 @@ public class CourseReaderClass {
         //Find the starting position
         for(int i = 0; i < charBox.size(); i++){
             for(int j = 0; j < charBox.get(i).length; j++){
-                if(charBox.get(i)[j] == 'X')
+                if(charBox.get(i)[j] == 'X') {
                     StartRow = i;
-                StartColumn = j;
+                    StartColumn = j;
+                }
             }
+            //System.out.println(charBox.get(i));
         }
 
         //Calculate vector lenght
@@ -78,74 +80,73 @@ public class CourseReaderClass {
 
     //Find the closest next path element
     private int[] FindClosestToPoint(int[] InitPointLoc){
+        int HasFoundPath = -1;
+        int[] aux = {0, 0};
+
         for(int i = -1; i < 2; i++){
             for(int j = -1; j < 2; j++){
                 if(InitPointLoc[0] + i < TextBlockHeight && InitPointLoc[0] + i >= 0 && InitPointLoc[1] + j < TextBlockWidth && InitPointLoc[1] + j >= 0) {
-                    if (charBox.get(InitPointLoc[0] + i)[InitPointLoc[1] + j] == '0') {
-                        int[] aux = {InitPointLoc[0] + i, InitPointLoc[1] + j};
-                        charBox.get(InitPointLoc[0] + i)[InitPointLoc[1] + j] = '*';
-                        AngleMap.add(CategorizeResults(i, j));
-                        return aux;
+                    if(charBox.get(InitPointLoc[0] + i)[InitPointLoc[1] + j] == '1' && HasFoundPath < 2){
+                        aux[0] = InitPointLoc[0] + i;
+                        aux[1] = InitPointLoc[1] + j;
+                        HasFoundPath = 1;
+                    }
+                    if (charBox.get(InitPointLoc[0] + i)[InitPointLoc[1] + j] == '0' && HasFoundPath < 1) {
+                        aux[0] = InitPointLoc[0] + i;
+                        aux[1] = InitPointLoc[1] + j;
+                        HasFoundPath = 0;
                     }
                 }
             }
         }
-        return null;
+
+        if(HasFoundPath > -1) {
+            System.out.println(charBox.get(aux[0])[aux[1]]);
+            if(charBox.get(aux[0])[aux[1]] == '0') {
+                charBox.get(aux[0])[aux[1]] = '*';
+            }
+            else {
+                charBox.get(aux[0])[aux[1]] = '0';
+            }
+            AngleMap.add(CategorizeResults(aux[0] - InitPointLoc[0], aux[1] - InitPointLoc[1]));
+            return aux;
+        }
+        else{
+            return null;
+        }
     }
 
-    private int CategorizeResults(int row, int column){
-        int desiredAngle = 0;
-        switch (row){
-            case -1:
-                switch (column){
-                    case -1:
-                        desiredAngle = 45;
-                        VectorMap.add(Math.sqrt(Math.pow(HeightVector, 2) + Math.pow(WidthVector, 2)));
-                        break;
-                    case 0:
-                        desiredAngle = 0;
-                        VectorMap.add(HeightVector);
-                        break;
-                    case 1:
-                        desiredAngle = 315;
-                        VectorMap.add(Math.sqrt(Math.pow(HeightVector, 2) + Math.pow(WidthVector, 2)));
-                        break;
-                }
-                break;
-            case 0:
-                switch (column){
-                    case -1:
-                        desiredAngle = 90;
-                        VectorMap.add(WidthVector);
-                        break;
-                    case 1:
-                        desiredAngle = 270;
-                        VectorMap.add(WidthVector);
-                        break;
-                }
-                break;
-            case 1:
-                switch (column){
-                    case -1:
-                        desiredAngle = 135;
-                        VectorMap.add(Math.sqrt(Math.pow(HeightVector, 2) + Math.pow(WidthVector, 2)));
-                        break;
-                    case 0:
-                        desiredAngle = 180;
-                        VectorMap.add(HeightVector);
-                        break;
-                    case 1:
-                        desiredAngle = 225;
-                        VectorMap.add(Math.sqrt(Math.pow(HeightVector, 2) + Math.pow(WidthVector, 2)));
-                        break;
-                }
-                break;
-        }
+    private double CategorizeResults(int row, int column){
+        double desiredAngle = 0;
 
+        if(Math.abs(row * column) == 1){
+            desiredAngle = Math.toDegrees(Math.atan(WidthVector/HeightVector));
+            if(row == 1){
+                if(column == 1)
+                    desiredAngle += 180;
+                else if(column == -1)
+                    desiredAngle = 180 - desiredAngle;
+            }
+            else if(row == -1 && column == 1){
+                desiredAngle = 360 - desiredAngle;
+            }
+            VectorMap.add(Math.sqrt(Math.pow(HeightVector, 2) + Math.pow(WidthVector, 2)));
+        }
+        else if(row == 0 && column == 0){
+            VectorMap.add(0.0);
+        }
+        else if(row == 0){
+            desiredAngle = 180 + (column * 90);
+            VectorMap.add(WidthVector);
+        }
+        else if(column == 0){
+            desiredAngle = 90 + (row * 90);
+            VectorMap.add(HeightVector);
+        }
         return desiredAngle;
     }
 
-    public List<Integer> GetAngleMap(){
+    public List<Double> GetAngleMap(){
         return AngleMap;
     }
 
@@ -154,5 +155,8 @@ public class CourseReaderClass {
     }
 
 }
+
+
+
 
 

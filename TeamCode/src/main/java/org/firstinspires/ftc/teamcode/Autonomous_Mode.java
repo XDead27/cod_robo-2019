@@ -204,9 +204,10 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
         double TargetFLBR = MecanumFunctionCalculator(TargetXVector, TargetYVector, true);
         double TargetFRBL = MecanumFunctionCalculator(TargetXVector, TargetYVector, false);
 
+
         ///making run to position by hand, because the normal function sometimes has bugs
         //the motors will not stop unless they have overpassed their target distance
-        while(Math.abs(TargetFRBL) > Math.abs(MotorFR.getCurrentPosition()) || Math.abs(TargetFLBR) > Math.abs(MotorFL.getCurrentPosition())){
+        while((Math.abs(TargetFRBL) > Math.abs(MotorFR.getCurrentPosition()) || Math.abs(TargetFLBR) > Math.abs(MotorFL.getCurrentPosition())) && opModeIsActive()){
             telemetry.addData("TargetFLBR : " , TargetFLBR);
             telemetry.addData("MotorFL : " , MotorFL.getCurrentPosition());
 
@@ -499,10 +500,10 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
             bAngleIsNegative = true;
         }
 
-        double FLPower = 0.7;
-        double BLPower = 0.7;
-        double FRPower = -0.7;
-        double BRPower = -0.7;
+        double FLPower = -0.7;
+        double BLPower = -0.7;
+        double FRPower = 0.7;
+        double BRPower = 0.7;
 
         if ( bAngleIsNegative ) {
             FLPower *= -1;
@@ -513,8 +514,11 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
 
         SetWheelsPower(FLPower, FRPower, BLPower, BRPower);
 
-        while ( opModeIsActive() && Math.abs(FinalAngle-angle) > 5 ) {
+        while ( opModeIsActive() && Math.abs(FinalAngle-GetAngle()) > 5 ) {
             idle();
+            telemetry.addData("sunt in modul normal", " ");
+            telemetry.addData("uwu m-am rotit la ", GetAngle());
+            telemetry.update();
         }
 
         RotateSlowly(angle, FLPower/2, BLPower/2, FRPower/2, BRPower/2);
@@ -526,8 +530,11 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
 
         SetWheelsPower(FLPower, FRPower, BLPower, BRPower);
 
-        while ( opModeIsActive() && Math.abs(FinalAngle-angle) > 0 ) {
+        while ( opModeIsActive() && Math.abs(FinalAngle-GetAngle()) > 0 ) {
             idle();
+            telemetry.addData("sunt in modul incet", " ");
+            telemetry.addData("unghiul de gyro uwu: ", GetAngle());
+            telemetry.update();
         }
     }
 
@@ -559,14 +566,14 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
 
     //Follow a Text Editor pah
     protected void RunWithPath(File inFile, double OverallSpeed) throws Exception{
-        File file = new File("C:\\Users\\robos\\IdeaProjects\\TestChestieRobo\\default_test.txt");
+        File file = inFile;
         CourseReaderClass Crc = new CourseReaderClass(file);
 
-        List<Integer> AngleList = Crc.GetAngleMap();
+        List<Double> AngleList = Crc.GetAngleMap();
         List<Double> VectorList = Crc.GetVectorMap();
 
         for(int i = 0; i < Math.min(AngleList.size(), VectorList.size()); i++){
-            WalkEncoder(VectorList.get(i), OverallSpeed, AngleList.get(i));
+            WalkEncoder(VectorList.get(i) * 67, OverallSpeed, AngleList.get(i));
         }
     }
 
@@ -638,6 +645,10 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
         MotorFR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         MotorGlisieraL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         MotorGlisieraR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        while(MotorBL.isBusy()){
+            idle();
+        }
 
         MotorBR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         MotorBR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
