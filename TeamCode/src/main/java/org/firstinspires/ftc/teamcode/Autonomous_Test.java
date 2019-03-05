@@ -33,9 +33,16 @@ public final class Autonomous_Test extends Autonomous_Mode {
             else if (gamepad1.dpad_right) {
                 TestEncoderAngle3();
             }
+            else if(gamepad1.left_bumper){
+                Rotate(135);
+            }
+            else if(gamepad1.right_bumper){
+                TestGyro();
+            }
             else{
                 idle();
             }
+
         }
 
     }
@@ -49,7 +56,7 @@ public final class Autonomous_Test extends Autonomous_Mode {
         }
     }
 
-    void TestWalkAtAngle1(){
+    private void TestWalkAtAngle1(){
         WalkAtAngle(0.5, 30);
 
         sleep(1000);
@@ -60,7 +67,7 @@ public final class Autonomous_Test extends Autonomous_Mode {
 
         StopMotors();
     }
-    void TestWalkAtAngle2(){
+    private void TestWalkAtAngle2(){
         WalkAtAngle(0.5, 60);
 
         sleep(1000);
@@ -71,7 +78,7 @@ public final class Autonomous_Test extends Autonomous_Mode {
 
         StopMotors();
     }
-    void TestWalkAtAngle3(){
+    private void TestWalkAtAngle3(){
         WalkAtAngle(0.5, -30);
 
         sleep(1000);
@@ -82,7 +89,7 @@ public final class Autonomous_Test extends Autonomous_Mode {
 
         StopMotors();
     }
-    void TestWalkAtAngle4(){
+    private void TestWalkAtAngle4(){
         WalkAtAngle(0.5, -60);
 
         sleep(1000);
@@ -94,26 +101,26 @@ public final class Autonomous_Test extends Autonomous_Mode {
         StopMotors();
     }
 
-    void TestGyro(){
+    private void TestGyro(){
         while(opModeIsActive() && !gamepad1.dpad_down) {
             telemetry.addData("integrated Gyro", GetAngle());
             telemetry.update();
         }
     }
 
-    void TestEncoderAngle1(){
+    private void TestEncoderAngle1(){
         WalkEncoder(10*67, 0.5, 45);
         sleep(1000);
         WalkEncoder(-10*67, 0.5, 45);
         sleep(1000);
     }
-    void TestEncoderAngle2(){
+    private void TestEncoderAngle2(){
         WalkEncoder(10*67, 0.5, 60);
         sleep(1000);
         WalkEncoder(-10*67, 0.5, 60);
         sleep(1000);
     }
-    void TestEncoderAngle3(){
+    private void TestEncoderAngle3(){
         WalkEncoder(10*67, 0.5, -60);
         sleep(1000);
         WalkEncoder(-10*67, 0.5, -60);

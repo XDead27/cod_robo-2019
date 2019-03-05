@@ -130,10 +130,13 @@ public class Driver_Mode extends RobotHardwareClass {
 
     protected void calculateWheelsPower ( double drive, double strafe, double rotate )
     {
-        double FL = Range.clip(drive + strafe + rotate , -0.7 , 0.7);
-        double FR = Range.clip(drive - strafe - rotate , -0.7 , 0.7);
-        double BL = Range.clip(drive - strafe + rotate , -0.7 , 0.7);
-        double BR = Range.clip(drive + strafe - rotate , -0.7 , 0.7);
+        double FLBRNormal = Math.signum(drive)*Math.pow(drive,2) + Math.signum(strafe)*Math.pow(strafe,2);
+        double FRBLNormal = Math.signum(drive)*Math.pow(drive,2) - Math.signum(strafe)*Math.pow(strafe,2);
+
+        double FL = Range.clip(FLBRNormal + rotate , -0.7 , 0.7);
+        double FR = Range.clip(FRBLNormal - strafe - rotate , -0.7 , 0.7);
+        double BL = Range.clip(FRBLNormal - strafe + rotate , -0.7 , 0.7);
+        double BR = Range.clip(FLBRNormal + strafe - rotate , -0.7 , 0.7);
 
         MotorFL.setPower(FL);
         MotorFR.setPower(FR);
