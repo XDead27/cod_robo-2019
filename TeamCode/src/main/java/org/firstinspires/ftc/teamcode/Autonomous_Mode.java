@@ -21,7 +21,7 @@ import static org.firstinspires.ftc.teamcode.MineralPosition.RIGHT;
 
 public abstract class Autonomous_Mode extends RobotHardwareClass {
 
-    protected static int TICKS_PER_CM = 67;
+    protected static int TICKS_PER_CM = 43;
     protected static int DIST_GLISIERE = 1;
     protected static double TOLERANCE = 0.0001;
     Orientation lastAngles = new Orientation();
@@ -185,13 +185,15 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
 
         ResetAllEncoders();
 
+        RunWithAllEncoders();
+
         //Nush de ce merge doar asa
-        MotorFL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        /*MotorFL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         MotorFR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         MotorBL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         MotorBR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         MotorGlisieraL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        MotorGlisieraR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        MotorGlisieraR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);*/
 
         if (dist < 0){
             dist *= -1;
@@ -217,12 +219,12 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
         ///making run to position by hand, because the normal function sometimes has bugs
         //the motors will not stop unless they have overpassed their target distance
         while((Math.abs(TargetFRBL) > Math.abs(MotorFR.getCurrentPosition()) || Math.abs(TargetFLBR) > Math.abs(MotorFL.getCurrentPosition())) && opModeIsActive()){
-            telemetry.addData("TargetFLBR : " , TargetFLBR / 67);
+            telemetry.addData("TargetFLBR : " , TargetFLBR / TICKS_PER_CM);
             telemetry.addData("MotorFL : " , MotorFL.getCurrentPosition());
             telemetry.addData("MotorFL mode : " , MotorFL.getMode());
             telemetry.addData("MotorFL speed : " , MotorFL.getPower());
 
-            telemetry.addData("TargetFRBL : " , TargetFRBL / 67);
+            telemetry.addData("TargetFRBL : " , TargetFRBL / TICKS_PER_CM);
             telemetry.addData("MotorFR : " , MotorFR.getCurrentPosition());
 
             telemetry.update();
@@ -643,8 +645,8 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
         //  This is how we ended up with the function f(x, y) = sig(y)*(y^2) - sig(x)*(x^2) and its
         //conjugate
 
-        //return bFLBR? (Math.signum(VectorY) * Math.pow(VectorY, 2)) + (Math.signum(VectorX) * Math.pow(VectorX, 2)) : (Math.signum(VectorY) * Math.pow(VectorY, 2)) - (Math.signum(VectorX) * Math.pow(VectorX, 2));
-        return Range.clip(bFLBR? VectorY + VectorX : VectorY - VectorX, -1, 1);
+        return bFLBR? (Math.signum(VectorY) * Math.pow(VectorY, 2)) + (Math.signum(VectorX) * Math.pow(VectorX, 2)) : (Math.signum(VectorY) * Math.pow(VectorY, 2)) - (Math.signum(VectorX) * Math.pow(VectorX, 2));
+        //return Range.clip(bFLBR? VectorY + VectorX : VectorY - VectorX, -1, 1);
     }
 
     //Reset all encoders
@@ -658,9 +660,9 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
     }
 
     private void RunWithAllEncoders(){
-        MotorBR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        MotorBR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        MotorBR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        MotorFL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        MotorFR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        MotorBL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         MotorBR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         MotorGlisieraL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         MotorGlisieraR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);

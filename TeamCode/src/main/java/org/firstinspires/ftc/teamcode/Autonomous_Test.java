@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import android.app.Activity;
 import android.content.res.AssetManager;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -118,30 +119,37 @@ public final class Autonomous_Test extends Autonomous_Mode {
     }
 
     private void TestEncoderAngle1(){
-        WalkEncoder(10*43, 0.5, 45);
+        WalkEncoder(10*TICKS_PER_CM, 0.3, 45);
         sleep(1000);
-        WalkEncoder(-10*43, 0.5, 45);
+        WalkEncoder(-10*TICKS_PER_CM, 0.5, 45);
         sleep(1000);
     }
     private void TestEncoderAngle2(){
-        WalkEncoder(10*67, 0.5, 60);
+        WalkEncoder(10*TICKS_PER_CM, 0.5, 60);
         sleep(1000);
-        WalkEncoder(-10*67, 0.5, 60);
+        WalkEncoder(-10*TICKS_PER_CM, 0.5, 60);
         sleep(1000);
     }
     private void TestEncoderAngle3(){
-        WalkEncoder(10*67, 0.5, -60);
+        WalkEncoder(10*TICKS_PER_CM, 0.5, -60);
         sleep(1000);
-        WalkEncoder(-10*67, 0.5, -60);
+        WalkEncoder(-10*TICKS_PER_CM, 0.5, -60);
         sleep(1000);
     }
 
     private void TestPath(){
         try {
 
-            AssetManager asmg;
+            Activity a = new Activity();
+            File file;
 
-            File file = new File("/assets/default_path.txt");
+            file = new File(a.getAssets().list("")[0]);
+
+            //catch (NullPointerException e){
+            //    telemetry.addData("Nu e nimic in folder", " ");
+            //    telemetry.update();
+            //}
+
             RunWithPath(file, 0.5);
         } catch(Exception e){
             throw new RuntimeException(e);
