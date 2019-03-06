@@ -29,6 +29,7 @@ public abstract class RobotHardwareClass extends LinearOpMode {
     //motoare mecanisme
     protected DcMotor MotorGlisieraL = null;
     protected DcMotor MotorGlisieraR = null;
+    protected DcMotor MotorExtindere = null;
 
     //servo
     protected CRServo ContinuousServo = null;
@@ -63,9 +64,13 @@ public abstract class RobotHardwareClass extends LinearOpMode {
         MotorFR = hardwareMap.dcMotor.get("MotorFR");
         MotorBL = hardwareMap.dcMotor.get("MotorBL");
         MotorBR = hardwareMap.dcMotor.get("MotorBR");
+
         MotorGlisieraL = hardwareMap.dcMotor.get("MotorGlisieraL");
         MotorGlisieraR = hardwareMap.dcMotor.get("MotorGlisieraR");
+        MotorExtindere = hardwareMap.dcMotor.get("MotorExtindere");
+
         ContinuousServo = hardwareMap.crservo.get("ContinuousServo");
+
         FixedServo = hardwareMap.servo.get("FixedServo");
         PhoneServo = hardwareMap.servo.get("PhoneServo");
         TeamMarkerServo = hardwareMap.servo.get("TeamMarkerServo");
@@ -75,8 +80,10 @@ public abstract class RobotHardwareClass extends LinearOpMode {
         MotorFR.setPower(0);
         MotorBL.setPower(0);
         MotorBR.setPower(0);
+
         MotorGlisieraL.setPower(0);
         MotorGlisieraR.setPower(0);
+        MotorExtindere.setPower(0);
 
         ContinuousServo.setPower(0);
 
@@ -90,8 +97,10 @@ public abstract class RobotHardwareClass extends LinearOpMode {
         MotorFR.setDirection(DcMotorSimple.Direction.FORWARD);
         MotorBL.setDirection(DcMotorSimple.Direction.REVERSE);
         MotorBR.setDirection(DcMotorSimple.Direction.FORWARD);
+
         MotorGlisieraL.setDirection(DcMotorSimple.Direction.FORWARD);
         MotorGlisieraR.setDirection(DcMotorSimple.Direction.REVERSE);
+        MotorExtindere.setDirection(DcMotorSimple.Direction.FORWARD);
 
         ContinuousServo.setDirection(CRServo.Direction.FORWARD);
         FixedServo.setDirection(Servo.Direction.FORWARD);
@@ -104,25 +113,30 @@ public abstract class RobotHardwareClass extends LinearOpMode {
         MotorFR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         MotorBL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         MotorBR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
         MotorGlisieraL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         MotorGlisieraR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
+        MotorExtindere.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         //setare encoder
         MotorFL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         MotorFR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         MotorBL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         MotorBR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
         MotorGlisieraL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         MotorGlisieraR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        MotorExtindere.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         //setare cand power == 0
         MotorFL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         MotorFR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         MotorBL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         MotorBR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
         MotorGlisieraL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         MotorGlisieraR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        MotorExtindere.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         //vuforia
         if(!bIsDriver) {

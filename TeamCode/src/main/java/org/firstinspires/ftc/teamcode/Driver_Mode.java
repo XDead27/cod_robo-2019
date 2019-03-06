@@ -68,6 +68,18 @@ public class Driver_Mode extends RobotHardwareClass {
             MotorGlisieraR.setPower(0);
         }
 
+        //Extend the sliders
+        if (gamepad2.left_bumper){
+            MotorExtindere.setPower(0.5);
+        }
+        else if(gamepad2.right_bumper){
+            MotorExtindere.setPower(-0.5);
+        }
+        else{
+            MotorExtindere.setPower(0);
+        }
+
+        //Rotate the wheel
         if (gamepad2.a) {
             ContinuousServo.setPower(1);
             telemetry.addData("a" , 1);
@@ -80,6 +92,7 @@ public class Driver_Mode extends RobotHardwareClass {
             ContinuousServo.setPower(0);
         }
 
+        //Set blocker position
         if (gamepad2.x) {
             FixedServo.setPosition(0);
             telemetry.addData("x" , 0);
