@@ -22,17 +22,19 @@ import static org.firstinspires.ftc.teamcode.MineralPosition.RIGHT;
 public abstract class Autonomous_Mode extends RobotHardwareClass {
 
     protected static int TICKS_PER_CM = 43;
-    protected static int DIST_GLISIERE = 1;
+    protected static int DIST_GLISIERE = 2600;
+    protected static int DIST_GLISIERE_CRATER = 2200;
     protected static double TOLERANCE = 0.0001;
     Orientation lastAngles = new Orientation();
     double globalAngle;
 
     //functii abstrcte
     protected abstract void runOperations();
+
     protected abstract void endOperations();
 
     @Override
-    public void runOpMode(){
+    public void runOpMode() {
         initialise(false);
 
         waitForStart();
@@ -47,23 +49,23 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
     //************
 
 
-    //We use the phone to identify the qube's position by looking at the 2 minerals in the left and using an A.I. that recognises their type
-    //If we see a qube, we return its position
-    //If we have 2 spheres, that means that the qube is on the right
-    //The function returns an enum that is eithr LEFT, MIDDLE or RIGHT, coresponding to the qube's position
-    
-    protected MineralPosition Position(){
+    //We use the phone to identify the cube's position by looking at the 2 minerals in the left and using an A.I. that recognises their type
+    //If we see a cube, we return its position
+    //If we have 2 spheres, that means that the cube is on the right
+    //The function returns an enum that is eithr LEFT, MIDDLE or RIGHT, coresponding to the cube's position
+
+    protected MineralPosition Position(int elem) {
 
         //TODO : sa inteleg ce este top, bottom, left, right (daca sunt fata de mardinile ecranului sau altceva), dam telemetry sa aflam
         //TODO : atunci cand sunt la crater sa incerc sa nu iau din greseala elem din spate
 
         MineralPosition ret = null;
         tfod.activate();
-        while (opModeIsActive()) {
-            List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
-            if (updatedRecognitions != null) {
-                //telemetry.addData("# Object Detected", updatedRecognitions.size());
-                if (updatedRecognitions.size() >= 2) {
+
+        if (elem == 2) {
+            while (opModeIsActive()) {
+                List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
+                if (updatedRecognitions.size() == 2) {
                     String label1 = "";
                     String label2 = "";
                     int top1 = -1; //top de la tel cand e vertical , deci left pt landscape
@@ -71,7 +73,7 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
                     int left1 = 100000; //top de la tel cand e vertical , deci buttom pt landscape
                     int left2 = 100000;
                     for (Recognition recognition : updatedRecognitions) {
-                        if (left1 > (int) recognition.getLeft()){
+                        if (left1 > (int) recognition.getLeft()) {
                             left2 = left1;
                             top2 = top1;
                             label2 = label1;
@@ -79,47 +81,68 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
                             left1 = (int) recognition.getLeft();
                             top1 = (int) recognition.getTop();
                             label1 = recognition.getLabel();
-                        }
-                        else if (left2 > (int) recognition.getLeft()){
+                        } else if (left2 > (int) recognition.getLeft()) {
                             left2 = (int) recognition.getLeft();
                             top2 = (int) recognition.getTop();
                             label2 = recognition.getLabel();
                         }
                     }
                     if (top1 != -1 && top2 != -1) {
-                        if (label1.equals(LABEL_GOLD_MINERAL) || label2.equals(LABEL_GOLD_MINERAL)){
-                            if (FrontCamera){
+                        if (label1.equals(LABEL_GOLD_MINERAL) || label2.equals(LABEL_GOLD_MINERAL)) {
+                            if (FrontCamera) {
                                 int aux = top1;
                                 top1 = top2;
                                 top2 = aux;
                             }
-                            if (label1.equals(LABEL_GOLD_MINERAL)){
-                                if (top1 < top2){
+                            if (label1.equals(LABEL_GOLD_MINERAL)) {
+                                if (top1 < top2) {
                                     ret = LEFT;
+                                } else {
+                                    ret = MIDDLE;
                                 }
-                                else{
+                            } else {
+                                if (top2 < top1) {
+                                    ret = LEFT;
+                                } else {
                                     ret = MIDDLE;
                                 }
                             }
-                            else {
-                                if (top2 < top1){
-                                    ret = LEFT;
-                                }
-                                else {
-                                    ret = MIDDLE;
-                                }
-                            }
-                        }
-                        else{
+                        } else {
                             ret = RIGHT;
                         }
                         break;
                     }
-                    telemetry.addData("position : " , ret);
                 }
-                telemetry.update();
+            }
+        } else if (elem == 3) {
+            while (opModeIsActive()) {
+                List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
+                if (updatedRecognitions.size() == 3) {
+                    int goldMineralX = -1;
+                    int silverMineral1X = -1;
+                    int silverMineral2X = -1;
+                    for (Recognition recognition : updatedRecognitions) {
+                        if (recognition.getLabel().equals(LABEL_GOLD_MINERAL)) {
+                            goldMineralX = (int) recognition.getTop();
+                        } else if (silverMineral1X == -1) {
+                            silverMineral1X = (int) recognition.getTop();
+                        } else {
+                            silverMineral2X = (int) recognition.getTop();
+                        }
+                    }
+                    if (goldMineralX != -1 && silverMineral1X != -1 && silverMineral2X != -1) {
+                        if (goldMineralX < silverMineral1X && goldMineralX < silverMineral2X) {
+                            return LEFT;
+                        } else if (goldMineralX > silverMineral1X && goldMineralX > silverMineral2X) {
+                            return RIGHT;
+                        } else {
+                            return MIDDLE;
+                        }
+                    }
+                }
             }
         }
+
         tfod.shutdown();
         return ret;
     }
@@ -129,7 +152,7 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
     //************
 
     //Set the motors power individually
-    protected void SetWheelsPower(double FL, double FR, double BL, double BR){
+    protected void SetWheelsPower(double FL, double FR, double BL, double BR) {
         MotorFR.setPower(FR);
         MotorBL.setPower(BL);
         MotorFL.setPower(FL);
@@ -147,9 +170,9 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
 
     //Provided with the speed and the angle in degrees(relative to the current rotation), make the
     //robot pan-move in that direction
-    protected void WalkAtAngle(double speed, double angle){
+    protected void WalkAtAngle(double speed, double angle) {
 
-        if (speed < 0){
+        if (speed < 0) {
             speed *= -1;
             angle += 180;
         }
@@ -169,7 +192,7 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
 
         //Scale that vector by the desired speed, keeping in mind the maximum
         speed = Range.clip(speed, 0, 1);
-        double ScalingCoefficient = speed/Math.max(Math.abs(VectorFLBR) , Math.abs(VectorFRBL));
+        double ScalingCoefficient = speed / Math.max(Math.abs(VectorFLBR), Math.abs(VectorFRBL));
 
         double SpeedFLBR = VectorFLBR * ScalingCoefficient;
         double SpeedFRBL = VectorFRBL * ScalingCoefficient;
@@ -179,7 +202,7 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
     }
 
     //Pan-move a desired distance, being given the speed and the angle as well
-    protected void WalkEncoder(double dist, double speed, double angle){
+    protected void WalkEncoder(double dist, double speed, double angle) {
 
         //TODO : merge mult mai mult ca dist (ii dadeam 10 cm, el mergea un metru, s-ar putea sa fie o greseala de la calcule sau encodere, dam telemetry sa aflam
 
@@ -195,7 +218,7 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
         MotorGlisieraL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         MotorGlisieraR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);*/
 
-        if (dist < 0){
+        if (dist < 0) {
             dist *= -1;
             angle += 180;
         }
@@ -218,14 +241,14 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
 
         ///making run to position by hand, because the normal function sometimes has bugs
         //the motors will not stop unless they have overpassed their target distance
-        while((Math.abs(TargetFRBL) > Math.abs(MotorFR.getCurrentPosition()) || Math.abs(TargetFLBR) > Math.abs(MotorFL.getCurrentPosition())) && opModeIsActive()){
-            telemetry.addData("TargetFLBR : " , TargetFLBR / TICKS_PER_CM);
-            telemetry.addData("MotorFL : " , MotorFL.getCurrentPosition());
-            telemetry.addData("MotorFL mode : " , MotorFL.getMode());
-            telemetry.addData("MotorFL speed : " , MotorFL.getPower());
+        while ((Math.abs(TargetFRBL) > Math.abs(MotorFR.getCurrentPosition()) || Math.abs(TargetFLBR) > Math.abs(MotorFL.getCurrentPosition())) && opModeIsActive()) {
+            telemetry.addData("TargetFLBR : ", TargetFLBR / TICKS_PER_CM);
+            telemetry.addData("MotorFL : ", MotorFL.getCurrentPosition());
+            telemetry.addData("MotorFL mode : ", MotorFL.getMode());
+            telemetry.addData("MotorFL speed : ", MotorFL.getPower());
 
-            telemetry.addData("TargetFRBL : " , TargetFRBL / TICKS_PER_CM);
-            telemetry.addData("MotorFR : " , MotorFR.getCurrentPosition());
+            telemetry.addData("TargetFRBL : ", TargetFRBL / TICKS_PER_CM);
+            telemetry.addData("MotorFR : ", MotorFR.getCurrentPosition());
 
             telemetry.update();
             idle();
@@ -237,7 +260,7 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
 
     //Complex moving function which avoids incoming obstacles and aligns with the wall at the end. It
     //uses a double PID system with two range sensors, each one of them for a side of the robot
-    protected void WalkObstacleAndRangeNORMAL(double distanceFromWall, boolean bStartAlignedWithWall){
+    protected void WalkObstacleAndRangeNORMAL(double distanceFromWall, boolean bStartAlignedWithWall) {
         //IN-DEPTH EXPLANATION
         //
         //  This is a function that makes the robot move forward until there is a target distance
@@ -256,16 +279,16 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
 
 
         //if wanted, the robot aligns with the wall before starting to move towards it
-        if(bStartAlignedWithWall){
-            while(Math.abs(RangeL.rawUltrasonic() - RangeL.rawUltrasonic()) < 10/*magic number*/){
-                int dir = (int)Math.signum(RangeL.rawUltrasonic() - RangeL.rawUltrasonic());
+        if (bStartAlignedWithWall) {
+            while (Math.abs(RangeL.rawUltrasonic() - RangeL.rawUltrasonic()) < 10/*magic number*/) {
+                int dir = (int) Math.signum(RangeL.rawUltrasonic() - RangeL.rawUltrasonic());
                 SetWheelsPower(-0.2 * dir, 0.2 * dir, -0.2 * dir, 0.2 * dir);
             }
         }
 
         //initialising of the timer loop
         final double target = distanceFromWall;
-        final double delay  = 2000;
+        final double delay = 2000;
         final long period = 10L; //while ce opereaza la frecventa de 10 ms
 
         boolean bIsUsingEncoder = false;
@@ -274,7 +297,7 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
         ResetAngle();
         double currentHeading;
 
-        double pGain = 1/(target - 5); //daca zidul sau alt robot se apropie mai mult decat trebuie atunci sa mearga la viteza maxima in spate
+        double pGain = 1 / (target - 5); //daca zidul sau alt robot se apropie mai mult decat trebuie atunci sa mearga la viteza maxima in spate
         double dGain = 0.0;
 
         double errorRight = target - RangeL.getDistance(DistanceUnit.CM);
@@ -289,7 +312,7 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
 
         float steadyTimer = 0;
 
-        while(opModeIsActive() && steadyTimer < delay){
+        while (opModeIsActive() && steadyTimer < delay) {
 
             //*****************************
             //timer condition
@@ -318,28 +341,28 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
 
             //****************************
             //exceptions (if the output is a really small number)
-            if(Math.abs(finalSpeedLeft) < TOLERANCE ){
+            if (Math.abs(finalSpeedLeft) < TOLERANCE) {
                 finalSpeedLeft = 0;
             }
-            if(Math.abs(finalSpeedRight) < TOLERANCE ){
+            if (Math.abs(finalSpeedRight) < TOLERANCE) {
                 finalSpeedRight = 0;
             }
 
             //if the robot has to avoid an obstacle
-            if(finalSpeedLeft > 0 && finalSpeedRight < 0){
+            if (finalSpeedLeft > 0 && finalSpeedRight < 0) {
                 finalSpeedLeft = 0;
             }
-            if(finalSpeedRight > 0 && finalSpeedLeft < 0){
+            if (finalSpeedRight > 0 && finalSpeedLeft < 0) {
                 finalSpeedRight = 0;
             }
 
             //****************************
             //gyro
             currentHeading = GetAngle();
-            if(currentHeading > 180){
+            if (currentHeading > 180) {
                 currentHeading = currentHeading - 360;
             }
-            if(Math.abs(currentHeading) > 2 && !bIsUsingEncoder){
+            if (Math.abs(currentHeading) > 2 && !bIsUsingEncoder) {
                 bIsUsingEncoder = true;
                 initValueL = MotorFL.getCurrentPosition();
                 initValueR = MotorFR.getCurrentPosition();
@@ -347,15 +370,15 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
 
             //****************************
             //get back on previous track (once the obstacle has passed)
-            if(bIsUsingEncoder){
-                if(initValueL <= MotorFL.getCurrentPosition()){
+            if (bIsUsingEncoder) {
+                if (initValueL <= MotorFL.getCurrentPosition()) {
                     finalSpeedLeft = 0;
                 }
-                if(initValueR <= MotorFR.getCurrentPosition()){
+                if (initValueR <= MotorFR.getCurrentPosition()) {
                     finalSpeedRight = 0;
                 }
 
-                if(initValueL < MotorFL.getCurrentPosition() && initValueR < MotorFR.getCurrentPosition()){
+                if (initValueL < MotorFL.getCurrentPosition() && initValueR < MotorFR.getCurrentPosition()) {
                     bIsUsingEncoder = false;
                     ResetAngle();
                 }
@@ -377,22 +400,22 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
     }
 
     //TODO
-    protected void WalkObstacleAndRangeSTRAFE(double distanceFromWall, boolean bStartAllignedWithWall){
+    protected void WalkObstacleAndRangeSTRAFE(double distanceFromWall, boolean bStartAllignedWithWall) {
         //se aliniaza cu zidul din fata
-        if(bStartAllignedWithWall){
-            while(Math.abs(RangeL.rawUltrasonic() - RangeL.rawUltrasonic()) < 10/*magic number*/){
-                int dir = (int)Math.signum(RangeL.rawUltrasonic() - RangeL.rawUltrasonic());
+        if (bStartAllignedWithWall) {
+            while (Math.abs(RangeL.rawUltrasonic() - RangeL.rawUltrasonic()) < 10/*magic number*/) {
+                int dir = (int) Math.signum(RangeL.rawUltrasonic() - RangeL.rawUltrasonic());
                 SetWheelsPower(-0.2 * dir, 0.2 * dir, -0.2 * dir, 0.2 * dir);
             }
         }
 
         final double target = distanceFromWall;
-        final double delay  = 2000;
+        final double delay = 2000;
         final long period = 10L; //while ce opereaza la frecventa de 10 ms
 
-        boolean bIsUsingEncoder = false , bHasFinishedAvoiding = false;
+        boolean bIsUsingEncoder = false, bHasFinishedAvoiding = false;
 
-        double pGain = 1/(target - 5); //daca zidul sau alt robot se apropie mai mult decat trebuie atunci sa mearga la viteza maxima in spate
+        double pGain = 1 / (target - 5); //daca zidul sau alt robot se apropie mai mult decat trebuie atunci sa mearga la viteza maxima in spate
         double dGain = 0.0;
 
         double errorRight = target - RangeL.getDistance(DistanceUnit.CM);
@@ -408,7 +431,7 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
 
         float steadyTimer = 0;
 
-        while(opModeIsActive() && steadyTimer < delay){
+        while (opModeIsActive() && steadyTimer < delay) {
 
             //*****************************
             //conditia de timer
@@ -436,31 +459,29 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
 
             //****************************
             //exceptii
-            if(Math.abs(finalSpeedLeft) < TOLERANCE ){
+            if (Math.abs(finalSpeedLeft) < TOLERANCE) {
                 finalSpeedLeft = 0;
             }
-            if(Math.abs(finalSpeedRight) < TOLERANCE ){
+            if (Math.abs(finalSpeedRight) < TOLERANCE) {
                 finalSpeedRight = 0;
             }
 
             //if the robot has to avoid
-            if(finalSpeedLeft > 0 && finalSpeedRight < 0){
+            if (finalSpeedLeft > 0 && finalSpeedRight < 0) {
                 WalkAtAngle(finalSpeedLeft, 90);
-                if(!bIsUsingEncoder) {
+                if (!bIsUsingEncoder) {
                     initValueFL = MotorFL.getCurrentPosition();
                     initValueFR = MotorFR.getCurrentPosition();
                 }
                 bIsUsingEncoder = true;
-            }
-            else if(finalSpeedRight > 0 && finalSpeedLeft < 0){
+            } else if (finalSpeedRight > 0 && finalSpeedLeft < 0) {
                 WalkAtAngle(finalSpeedLeft, 90);
-                if(!bIsUsingEncoder) {
+                if (!bIsUsingEncoder) {
                     initValueFL = MotorFL.getCurrentPosition();
                     initValueFR = MotorFR.getCurrentPosition();
                 }
                 bIsUsingEncoder = true;
-            }
-            else{
+            } else {
                 StopMotors();
                 bHasFinishedAvoiding = true;
             }
@@ -468,7 +489,7 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
 
             //****************************
             //retrack
-            if(bHasFinishedAvoiding && bIsUsingEncoder){
+            if (bHasFinishedAvoiding && bIsUsingEncoder) {
                 //TODO
             }
 
@@ -488,27 +509,19 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
     }
 
     //stop all motors
-    protected void StopMotors(){
+    protected void StopMotors() {
         MotorBL.setPower(0);
         MotorBR.setPower(0);
         MotorFL.setPower(0);
         MotorFR.setPower(0);
     }
 
-    //rotate at [angle] degrees - negative is clockwise, positive is anticlockwise
-    //citesc culoarea
-    protected boolean GoodColor(){
-        int curColor = color.readUnsignedByte(ModernRoboticsI2cColorSensor.Register.COLOR_NUMBER);
-        if ( curColor >= 8 && curColor <= 10 ) return true;
-        return false;
-    }
-
     //ma rotesc la angle grade; negativ e pentru right, pozitiv e pentru left;
-    protected void Rotate(double angle){
+    protected void Rotate(double angle) {
         boolean bAngleIsNegative = false;
-        double FinalAngle = GetAngle()+angle;
+        double FinalAngle = GetAngle() + angle;
 
-        if ( FinalAngle < 0 ) {
+        if (FinalAngle < 0) {
             FinalAngle += 360;
             bAngleIsNegative = true;
         }
@@ -518,7 +531,7 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
         double FRPower = 0.5;
         double BRPower = 0.5;
 
-        if ( bAngleIsNegative ) {
+        if (bAngleIsNegative) {
             FLPower *= -1;
             BLPower *= -1;
             FRPower *= -1;
@@ -527,22 +540,22 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
 
         SetWheelsPower(FLPower, FRPower, BLPower, BRPower);
 
-        while ( opModeIsActive() && Math.abs(FinalAngle-GetAngle()) > 15 ) {
+        while (opModeIsActive() && Math.abs(FinalAngle - GetAngle()) > 15) {
             telemetry.addData("sunt in modul normal", " ");
             telemetry.addData("uwu m-am rotit la ", GetAngle());
             telemetry.update();
         }
 
-        RotateSlowly(FinalAngle, FLPower/2, BLPower/2, FRPower/2, BRPower/2);
+        RotateSlowly(FinalAngle, FLPower / 2, BLPower / 2, FRPower / 2, BRPower / 2);
         StopMotors();
     }
 
-    protected void RotateSlowly(double angle, double FLPower, double BLPower, double FRPower, double BRPower){
+    protected void RotateSlowly(double angle, double FLPower, double BLPower, double FRPower, double BRPower) {
         double FinalAngle = angle;
 
         SetWheelsPower(FLPower, FRPower, BLPower, BRPower);
 
-        while ( opModeIsActive() && Math.abs(FinalAngle-GetAngle()) > 5 ) {
+        while (opModeIsActive() && Math.abs(FinalAngle - GetAngle()) > 5) {
             idle();
             telemetry.addData("sunt in modul incet", " ");
             telemetry.addData("unghiul de gyro uwu: ", GetAngle());
@@ -551,7 +564,7 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
     }
 
     //align with wall
-    protected void AlignWithWall(){
+    protected void AlignWithWall() {
         double FLPower = 0.7;
         double BLPower = 0.7;
         double FRPower = -0.7;
@@ -559,36 +572,35 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
 
         SetWheelsPower(FLPower, FRPower, BLPower, BRPower);
 
-        while ( opModeIsActive() && Math.abs(RangeL.getDistance(DistanceUnit.CM) - RangeR.getDistance(DistanceUnit.CM)) > 5 ) {
+        while (opModeIsActive() && Math.abs(RangeL.getDistance(DistanceUnit.CM) - RangeR.getDistance(DistanceUnit.CM)) > 5) {
             idle();
         }
 
-        AlignWithWallSlowly(FLPower/2, BLPower/2, FRPower/2, BRPower/2);
+        AlignWithWallSlowly(FLPower / 2, BLPower / 2, FRPower / 2, BRPower / 2);
         StopMotors();
     }
 
-    protected void AlignWithWallSlowly(double FLPower, double BLPower, double FRPower, double BRPower){
+    protected void AlignWithWallSlowly(double FLPower, double BLPower, double FRPower, double BRPower) {
         SetWheelsPower(FLPower, FRPower, BLPower, BRPower);
 
-        while ( opModeIsActive() && Math.abs(RangeL.getDistance(DistanceUnit.CM) - RangeR.getDistance(DistanceUnit.CM)) > 0 ) {
+        while (opModeIsActive() && Math.abs(RangeL.getDistance(DistanceUnit.CM) - RangeR.getDistance(DistanceUnit.CM)) > 0) {
             idle();
         }
         StopMotors();
     }
 
     //Follow a Text Editor pah
-    protected void RunWithPath(File inFile, double OverallSpeed) throws Exception{
+    protected void RunWithPath(File inFile, double OverallSpeed) throws Exception {
         File file = inFile;
         CourseReaderClass Crc = new CourseReaderClass(file);
 
         List<Double> AngleList = Crc.GetAngleMap();
         List<Double> VectorList = Crc.GetVectorMap();
 
-        for(int i = 0; i < Math.min(AngleList.size(), VectorList.size()); i++){
+        for (int i = 0; i < Math.min(AngleList.size(), VectorList.size()); i++) {
             WalkEncoder(VectorList.get(i) * 67, OverallSpeed, AngleList.get(i));
         }
     }
-
 
 
     //************
@@ -630,7 +642,7 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
     //************
 
     //Function that returns either FLBR or FRBL motors speeds based on a vectorial distribution
-    protected double MecanumFunctionCalculator(double VectorX, double VectorY, boolean bFLBR){
+    protected double MecanumFunctionCalculator(double VectorX, double VectorY, boolean bFLBR) {
         //IN-DEPTH EXPLANATION
         //
         //  This function would normally be two separate functions.
@@ -645,12 +657,12 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
         //  This is how we ended up with the function f(x, y) = sig(y)*(y^2) - sig(x)*(x^2) and its
         //conjugate
 
-        return bFLBR? (Math.signum(VectorY) * Math.pow(VectorY, 2)) + (Math.signum(VectorX) * Math.pow(VectorX, 2)) : (Math.signum(VectorY) * Math.pow(VectorY, 2)) - (Math.signum(VectorX) * Math.pow(VectorX, 2));
+        return bFLBR ? (Math.signum(VectorY) * Math.pow(VectorY, 2)) + (Math.signum(VectorX) * Math.pow(VectorX, 2)) : (Math.signum(VectorY) * Math.pow(VectorY, 2)) - (Math.signum(VectorX) * Math.pow(VectorX, 2));
         //return Range.clip(bFLBR? VectorY + VectorX : VectorY - VectorX, -1, 1);
     }
 
     //Reset all encoders
-    protected void ResetAllEncoders(){
+    protected void ResetAllEncoders() {
         MotorBL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         MotorFL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         MotorBR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -659,7 +671,7 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
         MotorGlisieraR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 
-    private void RunWithAllEncoders(){
+    private void RunWithAllEncoders() {
         MotorFL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         MotorFR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         MotorBL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -668,16 +680,52 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
         MotorGlisieraR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
-    protected void LiftDown(){
+    protected void LiftDown() {
         ResetAllEncoders();
         MotorGlisieraL.setPower(0.3);
         MotorGlisieraR.setPower(0.3);
 
-        while (Math.abs(MotorGlisieraL.getCurrentPosition()) < DIST_GLISIERE){
+        while (Math.abs(MotorGlisieraL.getCurrentPosition()) < DIST_GLISIERE) {
             idle();
         }
 
         StopMotors();
+    }
+
+    protected void LiftUp() {
+        ResetAllEncoders();
+        MotorGlisieraL.setPower(-0.5);
+        MotorGlisieraR.setPower(-0.5);
+
+        while (Math.abs(MotorGlisieraL.getCurrentPosition()) < DIST_GLISIERE_CRATER) {
+            idle();
+        }
+
+        StopMotors();
+    }
+
+    protected void LiftPhoneUp() {
+        PhoneServo.setPosition(0);
+    }
+
+    protected void LiftPhoneDown() {
+        PhoneServo.setPosition(0.5);
+    }
+
+    protected void ExtendSlidingSystem() {
+        //TODO ExtendSlidingSystem
+    }
+
+    protected void GetObjects() {
+        ContinuousServo.setPower(1);
+    }
+
+    protected void PlantTeamMarker() {
+        //TODO PlantTeamMarker
+        TeamMarkerServo.setPosition(1);
+        sleep(1000);
+        TeamMarkerServo.setPosition(0);
+        sleep(1000);
     }
 
 

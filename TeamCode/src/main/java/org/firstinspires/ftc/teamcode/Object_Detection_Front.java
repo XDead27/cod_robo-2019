@@ -17,7 +17,7 @@ public final class Object_Detection_Front extends Autonomous_Mode {
     }
 
     void TestPosition(){
-        MineralPosition now = Position();
+        MineralPosition now = Position(2);
         while(opModeIsActive()){
             telemetry.addData("position : " , now);
             telemetry.update();
