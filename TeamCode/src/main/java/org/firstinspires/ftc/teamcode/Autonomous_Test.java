@@ -19,10 +19,10 @@ public final class Autonomous_Test extends Autonomous_Mode {
 
         while(opModeIsActive()) {
             if (gamepad1.a) {
-                TestWalkAtAngle1();
+                LiftPhoneUp();
             }
             else if (gamepad1.b) {
-                TestWalkAtAngle2();
+                LiftPhoneDown();
             }
             else if (gamepad1.x) {
                 TestWalkAtAngle3();
@@ -124,15 +124,15 @@ public final class Autonomous_Test extends Autonomous_Mode {
         sleep(1000);
     }
     private void TestEncoderAngle2(){
-        WalkEncoder(10*67, 0.5, 60);
+        WalkEncoder(10*TICKS_PER_CM, 0.5, 60);
         sleep(1000);
-        WalkEncoder(-10*67, 0.5, 60);
+        WalkEncoder(-10*TICKS_PER_CM, 0.5, 60);
         sleep(1000);
     }
     private void TestEncoderAngle3(){
-        WalkEncoder(10*67, 0.5, -60);
+        WalkEncoder(10*TICKS_PER_CM, 0.5, -60);
         sleep(1000);
-        WalkEncoder(-10*67, 0.5, -60);
+        WalkEncoder(-10*TICKS_PER_CM, 0.5, -60);
         sleep(1000);
     }
 

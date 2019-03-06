@@ -22,7 +22,7 @@ import static org.firstinspires.ftc.teamcode.MineralPosition.RIGHT;
 public abstract class Autonomous_Mode extends RobotHardwareClass {
 
     protected static int TICKS_PER_CM = 67;
-    protected static int DIST_GLISIERE = 1;
+    protected static int DIST_GLISIERE = 2600;
     protected static double TOLERANCE = 0.0001;
     Orientation lastAngles = new Orientation();
     double globalAngle;
@@ -676,6 +676,13 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
         }
 
         StopMotors();
+    }
+
+    protected void LiftPhoneUp(){
+        PhoneServo.setPosition(0);
+    }
+    protected void LiftPhoneDown(){
+        PhoneServo.setPosition(0.5);
     }
 
 

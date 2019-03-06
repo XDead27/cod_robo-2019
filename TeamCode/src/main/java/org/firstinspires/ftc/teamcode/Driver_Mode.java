@@ -20,8 +20,8 @@ public class Driver_Mode extends RobotHardwareClass {
     //constante
     protected final int tics_per_cm = 67;
     protected final double deadzone = 0.1;
-    protected final int GLISIERA_MAX = 2000;
-    protected final int GLISIERA_MIN = -2000;
+    protected final int GLISIERA_MAX = 7000;
+    protected final int GLISIERA_MIN = -7000;
 
     //conditii
     private boolean bNoContraintsMode = false;
@@ -83,7 +83,7 @@ public class Driver_Mode extends RobotHardwareClass {
         }
 
         if (gamepad2.x) {
-            FixedServo.setPosition(FixedServo.MIN_POSITION);
+            FixedServo.setPosition(0);
         } else if (gamepad2.y) {
             FixedServo.setPosition(0.5);
         }
