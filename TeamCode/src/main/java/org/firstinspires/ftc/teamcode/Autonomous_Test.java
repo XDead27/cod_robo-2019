@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import android.content.res.AssetManager;
+
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -116,9 +118,9 @@ public final class Autonomous_Test extends Autonomous_Mode {
     }
 
     private void TestEncoderAngle1(){
-        WalkEncoder(10*67, 0.5, 45);
+        WalkEncoder(10*43, 0.5, 45);
         sleep(1000);
-        WalkEncoder(-10*67, 0.5, 45);
+        WalkEncoder(-10*43, 0.5, 45);
         sleep(1000);
     }
     private void TestEncoderAngle2(){
@@ -136,7 +138,10 @@ public final class Autonomous_Test extends Autonomous_Mode {
 
     private void TestPath(){
         try {
-            File file = new File("./default_path.txt");
+
+            AssetManager asmg;
+
+            File file = new File("/assets/default_path.txt");
             RunWithPath(file, 0.5);
         } catch(Exception e){
             throw new RuntimeException(e);

@@ -217,12 +217,12 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
         ///making run to position by hand, because the normal function sometimes has bugs
         //the motors will not stop unless they have overpassed their target distance
         while((Math.abs(TargetFRBL) > Math.abs(MotorFR.getCurrentPosition()) || Math.abs(TargetFLBR) > Math.abs(MotorFL.getCurrentPosition())) && opModeIsActive()){
-            telemetry.addData("TargetFLBR : " , TargetFLBR);
+            telemetry.addData("TargetFLBR : " , TargetFLBR / 67);
             telemetry.addData("MotorFL : " , MotorFL.getCurrentPosition());
             telemetry.addData("MotorFL mode : " , MotorFL.getMode());
             telemetry.addData("MotorFL speed : " , MotorFL.getPower());
 
-            telemetry.addData("TargetFRBL : " , TargetFRBL);
+            telemetry.addData("TargetFRBL : " , TargetFRBL / 67);
             telemetry.addData("MotorFR : " , MotorFR.getCurrentPosition());
 
             telemetry.update();
