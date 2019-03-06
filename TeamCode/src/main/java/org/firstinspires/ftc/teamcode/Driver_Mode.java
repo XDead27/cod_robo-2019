@@ -20,8 +20,8 @@ public class Driver_Mode extends RobotHardwareClass {
     //constante
     protected final int tics_per_cm = 67;
     protected final double deadzone = 0.1;
-    protected final int GLISIERA_MAX = 2000;
-    protected final int GLISIERA_MIN = -2000;
+    protected final int GLISIERA_MAX = 7000;
+    protected final int GLISIERA_MIN = -7000;
 
     //conditii
     private boolean bNoContraintsMode = false;
@@ -37,17 +37,13 @@ public class Driver_Mode extends RobotHardwareClass {
         {
             gamepad_1();
             gamepad_2();
-            telemetry.addData("speed FL", MotorFL.getPower());
-            telemetry.addData("speed FR", MotorFL.getPower());
-            telemetry.addData("gamepad y", gamepad1.left_stick_y);
-            telemetry.addData("gamepad y dreapta", gamepad1.right_stick_y);
             telemetry.update();
         }
     }
 
     protected void gamepad_1(){
         if ( abs(gamepad1.left_stick_x) > deadzone || abs(gamepad1.left_stick_y) > deadzone || abs(gamepad1.right_stick_x) > deadzone)
-            calculateWheelsPower(-gamepad1.left_stick_y , gamepad1.left_stick_x , gamepad1.right_stick_x);
+            calculateWheelsPower(-gamepad1.left_stick_y , gamepad1.left_stick_x , gamepad1.right_stick_x, 0.7);
         else
             stop_walk();
 
@@ -83,13 +79,13 @@ public class Driver_Mode extends RobotHardwareClass {
         }
 
         if (gamepad2.x) {
-            FixedServo.setPosition(FixedServo.MIN_POSITION);
+            FixedServo.setPosition(0);
         } else if (gamepad2.y) {
             FixedServo.setPosition(0.5);
         }
 
-        telemetry.addData("Encoder Glisiera Dreapta" , MotorGlisieraR.getCurrentPosition());
-        telemetry.addData("Encoder Glisiera Stanga", MotorGlisieraL.getCurrentPosition());
+        //telemetry.addData("Encoder Glisiera Dreapta" , MotorGlisieraR.getCurrentPosition());
+        //telemetry.addData("Encoder Glisiera Stanga", MotorGlisieraL.getCurrentPosition());
         telemetry.addData("No Constraints Mode", bNoContraintsMode);
     }
 
@@ -116,8 +112,8 @@ public class Driver_Mode extends RobotHardwareClass {
             MotorGlisieraR.setPower(0);
         }
 
-        telemetry.addData("pozitie L: ", MotorGlisieraL.getCurrentPosition());
-        telemetry.addData("pozitie R: ", MotorGlisieraR.getCurrentPosition());
+        //telemetry.addData("pozitie L: ", MotorGlisieraL.getCurrentPosition());
+        //telemetry.addData("pozitie R: ", MotorGlisieraR.getCurrentPosition());
     }
 
     protected void stop_walk(){
@@ -127,19 +123,32 @@ public class Driver_Mode extends RobotHardwareClass {
         MotorBR.setPower(0);
     }
 
-    protected void calculateWheelsPower ( double drive, double strafe, double rotate )
+    protected void calculateWheelsPower ( double drive, double strafe, double rotate, double maxspeed)
     {
         double FLBRNormal = Math.signum(drive)*Math.pow(drive,2) + Math.signum(strafe)*Math.pow(strafe,2);
         double FRBLNormal = Math.signum(drive)*Math.pow(drive,2) - Math.signum(strafe)*Math.pow(strafe,2);
 
-        double FL = Range.clip(FLBRNormal + rotate , -0.7 , 0.7);
-        double FR = Range.clip(FRBLNormal - strafe - rotate , -0.7 , 0.7);
-        double BL = Range.clip(FRBLNormal - strafe + rotate , -0.7 , 0.7);
-        double BR = Range.clip(FLBRNormal + strafe - rotate , -0.7 , 0.7);
+        maxspeed = Range.clip(maxspeed, 0, 0.9);
+        double ScalingCoefficient = maxspeed/Math.max(Math.abs(FLBRNormal) , Math.abs(FLBRNormal));
 
-        MotorFL.setPower(FL);
-        MotorFR.setPower(FR);
-        MotorBL.setPower(BL);
-        MotorBR.setPower(BR);
+        double SpeedFLBR = FLBRNormal * ScalingCoefficient;
+        double SpeedFRBL = FRBLNormal * ScalingCoefficient;
+
+        //double FL = Range.clip(FLBRNormal + rotate , -0.7 , 0.7);
+        //double FR = Range.clip(FRBLNormal - rotate , -0.7 , 0.7);
+        //double BL = Range.clip(FRBLNormal + rotate , -0.7 , 0.7);
+        //double BR = Range.clip(FLBRNormal - rotate , -0.7 , 0.7);
+
+        telemetry.addData("FLBR Normal : ", FLBRNormal);
+        telemetry.addData("FLBR Normal : ", FLBRNormal);
+        telemetry.addData("FLBR Speed : ", SpeedFLBR);
+        telemetry.addData("FLBR Speed : ", SpeedFLBR);
+        telemetry.addData("FLBR Final : ", SpeedFLBR + rotate);
+        telemetry.addData("FLBR Final : ", SpeedFLBR + rotate);
+
+        MotorFL.setPower(Range.clip(SpeedFLBR + rotate, -maxspeed, maxspeed));
+        MotorFR.setPower(Range.clip(SpeedFRBL - rotate, -maxspeed, maxspeed));
+        MotorBL.setPower(Range.clip(SpeedFRBL + rotate, -maxspeed, maxspeed));
+        MotorBR.setPower(Range.clip(SpeedFLBR - rotate, -maxspeed, maxspeed));
     }
 }

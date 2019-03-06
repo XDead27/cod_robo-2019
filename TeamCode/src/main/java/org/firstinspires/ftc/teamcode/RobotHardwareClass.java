@@ -33,6 +33,7 @@ public abstract class RobotHardwareClass extends LinearOpMode {
     //servo
     protected CRServo ContinuousServo = null;
     protected Servo FixedServo = null;
+    protected Servo PhoneServo = null;
 
     //senzori
     protected ModernRoboticsI2cColorSensor color = null;
@@ -48,7 +49,7 @@ public abstract class RobotHardwareClass extends LinearOpMode {
     protected static final String VUFORIA_KEY = "AYlEu/7/////AAABmXB1kirNm0vlrZa4DCCmkis6ZNJkEkHGNYjIfoKWcK+yxnJOhuC4Lw3B63L+Y5vrSoTsr1mEe6bvGcMR8Hg+v1Z1Cih0IrBRHdIfrrg6lfa723ft/unZOKgck3ftCj8gWuiM89d+A4smkenUI5P/HXMKMGKCk4xxv5of9YNSX8r4KFO8lD+bqYgnP+GVXzD/TwQo7Dqer3bf0HVbOqP6j6HREHAZdP6Idg/JwyRG8LSdC6ekTwogxCWsuWiaUhuC8uAQ4r/ZfJykZpXYCxhdcLwMM4OaUXkUAPuUenzxlL8MXkwOhsDfqiQNEfSB00BodWKq28EC6cc+Vsko8r9PreeU6jCYR4d84VK8uBFLGaJx";
     protected VuforiaLocalizer vuforia;
     protected TFObjectDetector tfod;
-    protected boolean FrontCamera = false; //false -> back ; true -> front
+    protected boolean FrontCamera = true; //false -> back ; true -> front
 
 
     //************
@@ -65,6 +66,7 @@ public abstract class RobotHardwareClass extends LinearOpMode {
         MotorGlisieraR = hardwareMap.dcMotor.get("MotorGlisieraR");
         ContinuousServo = hardwareMap.crservo.get("ContinuousServo");
         FixedServo = hardwareMap.servo.get("FixedServo");
+        PhoneServo = hardwareMap.servo.get("PhoneServo");
 
         //initializare putere
         MotorFL.setPower(0);
@@ -77,7 +79,8 @@ public abstract class RobotHardwareClass extends LinearOpMode {
         ContinuousServo.setPower(0);
 
         //initializare pozitie
-        FixedServo.setPosition(FixedServo.MIN_POSITION);
+        FixedServo.setPosition(0);
+        PhoneServo.setPosition(0.5);
 
         //setare directii
         MotorFL.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -89,6 +92,7 @@ public abstract class RobotHardwareClass extends LinearOpMode {
 
         ContinuousServo.setDirection(CRServo.Direction.FORWARD);
         FixedServo.setDirection(Servo.Direction.FORWARD);
+        PhoneServo.setDirection(Servo.Direction.FORWARD);
 
 
         //reset encoder
@@ -121,9 +125,9 @@ public abstract class RobotHardwareClass extends LinearOpMode {
             VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
             parameters.vuforiaLicenseKey = VUFORIA_KEY;
             if (FrontCamera) {
-                parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
-            } else {
                 parameters.cameraDirection = VuforiaLocalizer.CameraDirection.FRONT;
+            } else {
+                parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
             }
             vuforia = ClassFactory.getInstance().createVuforia(parameters);
             int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
