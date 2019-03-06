@@ -34,6 +34,7 @@ public abstract class RobotHardwareClass extends LinearOpMode {
     protected CRServo ContinuousServo = null;
     protected Servo FixedServo = null;
     protected Servo PhoneServo = null;
+    protected Servo TeamMarkerServo = null;
 
     //senzori
     protected ModernRoboticsI2cColorSensor color = null;
@@ -67,6 +68,7 @@ public abstract class RobotHardwareClass extends LinearOpMode {
         ContinuousServo = hardwareMap.crservo.get("ContinuousServo");
         FixedServo = hardwareMap.servo.get("FixedServo");
         PhoneServo = hardwareMap.servo.get("PhoneServo");
+        TeamMarkerServo = hardwareMap.servo.get("TeamMarkerServo");
 
         //initializare putere
         MotorFL.setPower(0);
@@ -81,6 +83,7 @@ public abstract class RobotHardwareClass extends LinearOpMode {
         //initializare pozitie
         FixedServo.setPosition(0);
         PhoneServo.setPosition(0.5);
+        TeamMarkerServo.setPosition(0.5);
 
         //setare directii
         MotorFL.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -93,6 +96,7 @@ public abstract class RobotHardwareClass extends LinearOpMode {
         ContinuousServo.setDirection(CRServo.Direction.FORWARD);
         FixedServo.setDirection(Servo.Direction.FORWARD);
         PhoneServo.setDirection(Servo.Direction.FORWARD);
+        TeamMarkerServo.setDirection(Servo.Direction.FORWARD);
 
 
         //reset encoder

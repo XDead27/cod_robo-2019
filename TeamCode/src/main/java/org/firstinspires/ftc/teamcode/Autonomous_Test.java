@@ -16,23 +16,34 @@ public final class Autonomous_Test extends Autonomous_Mode {
     @Override
     protected void runOperations(){
 
-        tfod.shutdown();
+        //tfod.shutdown();
 
         while(opModeIsActive()) {
-            if (gamepad1.x) {
-                TestWalkAtAngle3();
+            if (gamepad1.a){
+                TestPosition(2);
+                return;
+            }
+            else if(gamepad1.b){
+                TestPosition(3);
+                return;
+            }
+            else if (gamepad1.x) {
+                TestWalkAtAngle(0.5 , 45);
             }
             else if (gamepad1.y) {
-                TestWalkAtAngle4();
+
             }
             else if (gamepad1.dpad_up) {
-                TestEncoderAngle1();
+
             }
             else if (gamepad1.dpad_down) {
-                TestEncoderAngle2();
+
+            }
+            else if (gamepad1.dpad_left) {
+                TestWalkEncoder(10 , 0.5 , 45);
             }
             else if (gamepad1.dpad_right) {
-                TestEncoderAngle3();
+
             }
             else if(gamepad1.left_bumper){
                 Rotate(135);
@@ -40,8 +51,11 @@ public final class Autonomous_Test extends Autonomous_Mode {
             else if(gamepad1.right_bumper){
                 TestGyro();
             }
-            else if(gamepad1.right_trigger > 0.1){
+            else if(gamepad1.left_trigger > 0.1){
                 TestPath();
+            }
+            else if(gamepad1.right_trigger > 0.1){
+
             }
             else{
                 idle();
@@ -51,8 +65,14 @@ public final class Autonomous_Test extends Autonomous_Mode {
 
     }
 
-    void TestPosition(){
-        MineralPosition now = Position(2);
+    @Override
+    protected void endOperations() {
+
+
+    }
+
+    void TestPosition(int elem){
+        MineralPosition now = Position(elem);
         while(opModeIsActive() && !gamepad1.dpad_down){
             telemetry.addData("position : " , now);
             telemetry.update();
@@ -60,45 +80,12 @@ public final class Autonomous_Test extends Autonomous_Mode {
         }
     }
 
-    private void TestWalkAtAngle1(){
-        WalkAtAngle(0.5, 30);
+    private void TestWalkAtAngle(double speed , double angle){
+        WalkAtAngle(speed, angle);
 
         sleep(1000);
 
-        WalkAtAngle(-0.5, 30);
-
-        sleep(1000);
-
-        StopMotors();
-    }
-    private void TestWalkAtAngle2(){
-        WalkAtAngle(0.5, 60);
-
-        sleep(1000);
-
-        WalkAtAngle(-0.5, 60);
-
-        sleep(1000);
-
-        StopMotors();
-    }
-    private void TestWalkAtAngle3(){
-        WalkAtAngle(0.5, -30);
-
-        sleep(1000);
-
-        WalkAtAngle(-0.5, -30);
-
-        sleep(1000);
-
-        StopMotors();
-    }
-    private void TestWalkAtAngle4(){
-        WalkAtAngle(0.5, -60);
-
-        sleep(1000);
-
-        WalkAtAngle(-0.5, -60);
+        WalkAtAngle(-speed, angle);
 
         sleep(1000);
 
@@ -112,22 +99,10 @@ public final class Autonomous_Test extends Autonomous_Mode {
         }
     }
 
-    private void TestEncoderAngle1(){
-        WalkEncoder(10*TICKS_PER_CM, 0.3, 45);
+    private void TestWalkEncoder(double dist , double speed , double angle){
+        WalkEncoder(dist*TICKS_PER_CM, speed, angle);
         sleep(1000);
-        WalkEncoder(-10*TICKS_PER_CM, 0.5, 45);
-        sleep(1000);
-    }
-    private void TestEncoderAngle2(){
-        WalkEncoder(10*TICKS_PER_CM, 0.5, 60);
-        sleep(1000);
-        WalkEncoder(-10*TICKS_PER_CM, 0.5, 60);
-        sleep(1000);
-    }
-    private void TestEncoderAngle3(){
-        WalkEncoder(10*TICKS_PER_CM, 0.5, -60);
-        sleep(1000);
-        WalkEncoder(-10*TICKS_PER_CM, 0.5, -60);
+        WalkEncoder(-dist*TICKS_PER_CM, speed, angle);
         sleep(1000);
     }
 
@@ -148,12 +123,6 @@ public final class Autonomous_Test extends Autonomous_Mode {
         } catch(Exception e){
             throw new RuntimeException(e);
         }
-    }
-
-    @Override
-    protected void endOperations() {
-
-
     }
 
 }

@@ -722,6 +722,10 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
 
     protected void PlantTeamMarker() {
         //TODO PlantTeamMarker
+        TeamMarkerServo.setPosition(1);
+        sleep(1000);
+        TeamMarkerServo.setPosition(0);
+        sleep(1000);
     }
 
 
