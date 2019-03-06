@@ -128,8 +128,15 @@ public class Driver_Mode extends RobotHardwareClass {
         double FLBRNormal = Math.signum(drive)*Math.pow(drive,2) + Math.signum(strafe)*Math.pow(strafe,2);
         double FRBLNormal = Math.signum(drive)*Math.pow(drive,2) - Math.signum(strafe)*Math.pow(strafe,2);
 
+        double ScalingCoefficient;
+
         maxspeed = Range.clip(maxspeed, 0, 0.9);
-        double ScalingCoefficient = maxspeed/Math.max(Math.abs(FLBRNormal) , Math.abs(FLBRNormal));
+        if(Math.max(Math.abs(FLBRNormal), Math.abs(FLBRNormal)) > 0) {
+            ScalingCoefficient = maxspeed / Math.max(Math.abs(FLBRNormal), Math.abs(FLBRNormal));
+        }
+        else{
+            ScalingCoefficient = 0;
+        }
 
         double SpeedFLBR = FLBRNormal * ScalingCoefficient;
         double SpeedFRBL = FRBLNormal * ScalingCoefficient;
@@ -140,11 +147,12 @@ public class Driver_Mode extends RobotHardwareClass {
         //double BR = Range.clip(FLBRNormal - rotate , -0.7 , 0.7);
 
         telemetry.addData("FLBR Normal : ", FLBRNormal);
-        telemetry.addData("FLBR Normal : ", FLBRNormal);
+        telemetry.addData("FLBR Normal : ", FRBLNormal);
         telemetry.addData("FLBR Speed : ", SpeedFLBR);
-        telemetry.addData("FLBR Speed : ", SpeedFLBR);
+        telemetry.addData("FLBR Speed : ", SpeedFRBL);
         telemetry.addData("FLBR Final : ", SpeedFLBR + rotate);
-        telemetry.addData("FLBR Final : ", SpeedFLBR + rotate);
+        telemetry.addData("FLBR Final : ", SpeedFRBL + rotate);
+        telemetry.addData("Scaling Coefficient : ", ScalingCoefficient);
 
         MotorFL.setPower(Range.clip(SpeedFLBR + rotate, -maxspeed, maxspeed));
         MotorFR.setPower(Range.clip(SpeedFRBL - rotate, -maxspeed, maxspeed));

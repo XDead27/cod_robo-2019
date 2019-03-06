@@ -16,12 +16,7 @@ public final class Autonomous_Crater_Simpla extends Autonomous_Mode {
         WalkEncoder(10*TICKS_PER_CM , 0.5 , 90);
         WalkEncoder(10*TICKS_PER_CM , 0.5 , 0);
 
-        //see where the qube is
-        LiftPhoneUp();
-        MineralPosition now = Position();
-        LiftPhoneDown();
-
-        //
+        //see where the qube
 
 
 
