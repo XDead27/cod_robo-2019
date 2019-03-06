@@ -132,7 +132,7 @@ public class Driver_Mode extends RobotHardwareClass {
 
         maxspeed = Range.clip(maxspeed, 0, 0.9);
         if(Math.max(Math.abs(FLBRNormal), Math.abs(FLBRNormal)) > 0) {
-            ScalingCoefficient = maxspeed / Math.max(Math.abs(FLBRNormal), Math.abs(FLBRNormal));
+            ScalingCoefficient = maxspeed / Math.max(Math.abs(FLBRNormal), Math.abs(FRBLNormal));
         }
         else{
             ScalingCoefficient = 0;
