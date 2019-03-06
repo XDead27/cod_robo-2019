@@ -52,7 +52,7 @@ public final class Autonomous_Test extends Autonomous_Mode {
     }
 
     void TestPosition(){
-        MineralPosition now = Position();
+        MineralPosition now = Position(2);
         while(opModeIsActive() && !gamepad1.dpad_down){
             telemetry.addData("position : " , now);
             telemetry.update();
