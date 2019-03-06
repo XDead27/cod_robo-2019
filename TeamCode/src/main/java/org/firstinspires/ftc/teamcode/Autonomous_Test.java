@@ -19,13 +19,7 @@ public final class Autonomous_Test extends Autonomous_Mode {
         tfod.shutdown();
 
         while(opModeIsActive()) {
-            if (gamepad1.a) {
-                LiftPhoneUp();
-            }
-            else if (gamepad1.b) {
-                LiftPhoneDown();
-            }
-            else if (gamepad1.x) {
+            if (gamepad1.x) {
                 TestWalkAtAngle3();
             }
             else if (gamepad1.y) {

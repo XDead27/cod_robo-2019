@@ -496,14 +496,6 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
         MotorFR.setPower(0);
     }
 
-    //rotate at [angle] degrees - negative is clockwise, positive is anticlockwise
-    //citesc culoarea
-    protected boolean GoodColor(){
-        int curColor = color.readUnsignedByte(ModernRoboticsI2cColorSensor.Register.COLOR_NUMBER);
-        if ( curColor >= 8 && curColor <= 10 ) return true;
-        return false;
-    }
-
     //ma rotesc la angle grade; negativ e pentru right, pozitiv e pentru left;
     protected void Rotate(double angle){
         boolean bAngleIsNegative = false;
