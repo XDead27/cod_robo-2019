@@ -20,10 +20,10 @@ public final class Autonomous_Test extends Autonomous_Mode {
 
         while(opModeIsActive()) {
             if (gamepad1.a) {
-                TestWalkAtAngle1();
+                LiftPhoneUp();
             }
             else if (gamepad1.b) {
-                TestWalkAtAngle2();
+                LiftPhoneDown();
             }
             else if (gamepad1.x) {
                 TestWalkAtAngle3();
