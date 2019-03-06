@@ -69,10 +69,12 @@ public class Driver_Mode extends RobotHardwareClass {
         }
 
         if (gamepad2.a) {
-            ContinuousServo.setPower(0.9);
+            ContinuousServo.setPower(1);
+            telemetry.addData("a" , 1);
         }
         else if (gamepad2.b) {
-            ContinuousServo.setPower(-0.9);
+            ContinuousServo.setPower(-1);
+            telemetry.addData("b" , -1);
         }
         else {
             ContinuousServo.setPower(0);
@@ -80,8 +82,10 @@ public class Driver_Mode extends RobotHardwareClass {
 
         if (gamepad2.x) {
             FixedServo.setPosition(0);
+            telemetry.addData("x" , 0);
         } else if (gamepad2.y) {
-            FixedServo.setPosition(0.5);
+            FixedServo.setPosition(0.6);
+            telemetry.addData("y" , 0.6);
         }
 
         //telemetry.addData("Encoder Glisiera Dreapta" , MotorGlisieraR.getCurrentPosition());

@@ -22,7 +22,8 @@ import static org.firstinspires.ftc.teamcode.MineralPosition.RIGHT;
 public abstract class Autonomous_Mode extends RobotHardwareClass {
 
     protected static int TICKS_PER_CM = 43;
-    protected static int DIST_GLISIERE = 1;
+    protected static int DIST_GLISIERE = 2600;
+    protected static int DIST_GLISIERE_CRATER = 2200;
     protected static double TOLERANCE = 0.0001;
     Orientation lastAngles = new Orientation();
     double globalAngle;
@@ -680,5 +681,31 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
         StopMotors();
     }
 
+    protected void LiftUp(){
+        ResetAllEncoders();
+        MotorGlisieraL.setPower(-0.5);
+        MotorGlisieraR.setPower(-0.5);
+
+        while (Math.abs(MotorGlisieraL.getCurrentPosition()) < DIST_GLISIERE_CRATER){
+            idle();
+        }
+
+        StopMotors();
+    }
+
+    protected void LiftPhoneUp(){
+        PhoneServo.setPosition(0);
+    }
+    protected void LiftPhoneDown(){
+        PhoneServo.setPosition(0.5);
+    }
+
+    protected void ExtendSlidingSystem(){
+
+    }
+
+    protected void GetObjects(){
+        ContinuousServo.setPower(1);
+    }
 
 }

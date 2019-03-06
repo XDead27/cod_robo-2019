@@ -21,11 +21,14 @@ public final class Autonomous_Crater_Simpla extends Autonomous_Mode {
         MineralPosition now = Position();
         LiftPhoneDown();
 
-        //
+        //TODO : go the qube and push it
 
+        //extend sliding system and let it down in the crater
+        ExtendSlidingSystem();
+        LiftUp();
 
-
-
+        //try to capture objects until the end
+        GetObjects();
     }
 
     @Override
