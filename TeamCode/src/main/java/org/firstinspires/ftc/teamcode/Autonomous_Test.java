@@ -16,34 +16,32 @@ public final class Autonomous_Test extends Autonomous_Mode {
     @Override
     protected void runOperations(){
 
-        //tfod.shutdown();
+        tfod.shutdown();
 
         while(opModeIsActive()) {
             if (gamepad1.a){
-                TestPosition(2);
-                return;
+                TestWalkEncoder(DIAGONAL_CONSTANT * 15 , 0.3 , 45+90);
             }
             else if(gamepad1.b){
-                TestPosition(3);
-                return;
+                TestWalkEncoder(DIAGONAL_CONSTANT * 15 , 0.5 , 45+180);
             }
             else if (gamepad1.x) {
-                TestWalkAtAngle(0.5 , 45);
+                TestWalkEncoder(DIAGONAL_CONSTANT * 15 , 0.5 , 45);
             }
             else if (gamepad1.y) {
-
+                TestWalkEncoder(DIAGONAL_CONSTANT * 15 , 0.5 , -45);
             }
             else if (gamepad1.dpad_up) {
-
+                TestWalkEncoder(15 , 0.5 , 0);
             }
             else if (gamepad1.dpad_down) {
-
+                TestWalkEncoder(15 , 0.5 , 180);
             }
             else if (gamepad1.dpad_left) {
-                TestWalkEncoder(10 , 0.5 , 0);
+                TestWalkEncoder(15 , 0.5 , 90);
             }
             else if (gamepad1.dpad_right) {
-
+                TestWalkEncoder(15 , 0.5 , -90);
             }
             else if(gamepad1.left_bumper){
                 Rotate(135);
@@ -52,7 +50,7 @@ public final class Autonomous_Test extends Autonomous_Mode {
                 TestGyro();
             }
             else if(gamepad1.left_trigger > 0.1){
-                TestPath();
+                //TestPath();
             }
             else if(gamepad1.right_trigger > 0.1){
 
@@ -101,12 +99,12 @@ public final class Autonomous_Test extends Autonomous_Mode {
 
     private void TestWalkEncoder(double dist , double speed , double angle){
         WalkEncoder(dist*TICKS_PER_CM, speed, angle);
-        sleep(1000);
-        WalkEncoder(-dist*TICKS_PER_CM, speed, angle);
-        sleep(1000);
+        //sleep(1000);
+        //WalkEncoder(-dist*TICKS_PER_CM, speed, angle);
+        //sleep(1000);
     }
 
-    private void TestPath(){
+    /*private void TestPath(){
         try {
 
             Activity a = new Activity();
@@ -123,6 +121,6 @@ public final class Autonomous_Test extends Autonomous_Mode {
         } catch(Exception e){
             throw new RuntimeException(e);
         }
-    }
+    }*/
 
 }

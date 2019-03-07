@@ -39,8 +39,13 @@ public class Driver_Mode extends RobotHardwareClass {
     }
 
     protected void gamepad_1(){
-        if ( abs(gamepad1.left_stick_x) > deadzone || abs(gamepad1.left_stick_y) > deadzone || abs(gamepad1.right_stick_x) > deadzone)
+        if ( abs(gamepad1.left_stick_x) > deadzone || abs(gamepad1.left_stick_y) > deadzone || abs(gamepad1.right_stick_x) > deadzone){
             calculateWheelsPower(-gamepad1.left_stick_y , gamepad1.left_stick_x , gamepad1.right_stick_x, 0.7);
+            telemetry.addData("FL" , MotorFL.getCurrentPosition());
+            telemetry.addData("FR" , MotorFR.getCurrentPosition());
+            telemetry.addData("BL" , MotorBL.getCurrentPosition());
+            telemetry.addData("BR" , MotorBR.getCurrentPosition());
+        }
         else
             stop_walk();
 
@@ -56,7 +61,7 @@ public class Driver_Mode extends RobotHardwareClass {
 
         double MosorCoefficient = (double)MotorGlisieraR.getCurrentPosition() / (double)GLISIERA_MAX;
         double MosorMax = (EXTINDERE_DIFERENTA * MosorCoefficient) + EXTINDERE_MAX_GLISIERA_MIN;
-        telemetry.addData("Mosor max : ", MosorMax);
+        //telemetry.addData("Mosor max : ", MosorMax);
 
         //Pressing the two bumpers will activate constraints.
         if(gamepad2.left_bumper && gamepad2.right_bumper){
@@ -73,7 +78,7 @@ public class Driver_Mode extends RobotHardwareClass {
         }
         else if(gamepad2.right_bumper){
             //MotorExtindere.setPower(-0.9); //TODO: switch to no constraints mode
-            MotorExtindere.setPower(bNoConstraintsMode ? 0.9 : MotorExtindere.getCurrentPosition() < EXTINDERE_MIN ? 0.9 : 0);
+            MotorExtindere.setPower(bNoConstraintsMode ? -0.9 : MotorExtindere.getCurrentPosition() > EXTINDERE_MIN ? -0.9 : 0);
         }
         else{
             MotorExtindere.setPower(0);
@@ -110,9 +115,9 @@ public class Driver_Mode extends RobotHardwareClass {
             telemetry.addData("y" , 0.6);
         }
 
-        telemetry.addData("Encoder Mosor : " , MotorExtindere.getCurrentPosition());
-        telemetry.addData("Encoder Glisiera Stanga : ", MotorGlisieraL.getCurrentPosition());
-        telemetry.addData("No Constraints Mode : ", bNoConstraintsMode);
+        //telemetry.addData("Encoder Mosor : " , MotorExtindere.getCurrentPosition());
+        //telemetry.addData("Encoder Glisiera Stanga : ", MotorGlisieraL.getCurrentPosition());
+        //telemetry.addData("No Constraints Mode : ", bNoConstraintsMode);
     }
 
     //FUNCTIONS
@@ -147,13 +152,13 @@ public class Driver_Mode extends RobotHardwareClass {
         //double BL = Range.clip(FRBLNormal + rotate , -0.7 , 0.7);
         //double BR = Range.clip(FLBRNormal - rotate , -0.7 , 0.7);
 
-        telemetry.addData("FLBR Normal : ", FLBRNormal);
+        /*telemetry.addData("FLBR Normal : ", FLBRNormal);
         telemetry.addData("FLBR Normal : ", FRBLNormal);
         telemetry.addData("FLBR Speed : ", SpeedFLBR);
         telemetry.addData("FLBR Speed : ", SpeedFRBL);
         telemetry.addData("FLBR Final : ", SpeedFLBR + rotate);
         telemetry.addData("FLBR Final : ", SpeedFRBL + rotate);
-        telemetry.addData("Scaling Coefficient : ", ScalingCoefficient);
+        telemetry.addData("Scaling Coefficient : ", ScalingCoefficient);*/
 
         MotorFL.setPower(Range.clip(SpeedFLBR + rotate, -maxspeed, maxspeed));
         MotorFR.setPower(Range.clip(SpeedFRBL - rotate, -maxspeed, maxspeed));

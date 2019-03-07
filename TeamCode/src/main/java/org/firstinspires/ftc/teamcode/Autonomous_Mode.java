@@ -21,10 +21,11 @@ import static org.firstinspires.ftc.teamcode.MineralPosition.RIGHT;
 
 public abstract class Autonomous_Mode extends RobotHardwareClass {
 
-    protected static int TICKS_PER_CM = 43; //TODO: chiar trebuie sa il aflam
+    protected static int TICKS_PER_CM = 8; //TODO: chiar trebuie sa il aflam
     protected static int DIST_GLISIERE = 2600;
     protected static int DIST_GLISIERE_CRATER = 2200;
     protected static double TOLERANCE = 0.0001;
+    protected static double DIAGONAL_CONSTANT = 2.0; //TODO
     //Integrated gyro variables
     Orientation lastAngles = new Orientation();
     double globalAngle;
@@ -188,8 +189,8 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
 
         //Power the wheel motors according to the vectorial distribution
         //The function that describes the vectorial distribution is
-        double VectorFLBR = MecanumFunctionCalculator(AxisXVector, AxisYVector, true);
-        double VectorFRBL = MecanumFunctionCalculator(AxisXVector, AxisYVector, false);
+        double VectorFLBR = Range.clip(MecanumFunctionCalculator(AxisXVector, AxisYVector, true) , -1 , 1);
+        double VectorFRBL = Range.clip(MecanumFunctionCalculator(AxisXVector, AxisYVector, false) , -1 , 1);
 
         //Scale that vector by the desired speed, keeping in mind the maximum
         speed = Range.clip(speed, 0, 1);
@@ -211,13 +212,10 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
 
         RunWithAllEncoders();
 
-        //Nush de ce merge doar asa
-        /*MotorFL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        MotorFR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        MotorBL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        MotorBR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        MotorGlisieraL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        MotorGlisieraR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);*/
+        boolean bSpecial = false;
+        if (angle % 90 == 0){
+            bSpecial = true;
+        }
 
         if (dist < 0) {
             dist *= -1;
@@ -239,19 +237,36 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
         double TargetFLBR = dist * MecanumFunctionCalculator(TargetXVector, TargetYVector, true);
         double TargetFRBL = dist * MecanumFunctionCalculator(TargetXVector, TargetYVector, false);
 
+        double FLBRMean = 0;
+        double FRBLMean = 0;
 
         ///making run to position by hand, because the normal function sometimes has bugs
         //the motors will not stop unless they have overpassed their target distance
-        while ((Math.abs(TargetFRBL) > Math.abs(MotorFR.getCurrentPosition()) || Math.abs(TargetFLBR) > Math.abs(MotorFL.getCurrentPosition())) && opModeIsActive()) {
-            telemetry.addData("TargetFLBR : ", TargetFLBR / TICKS_PER_CM);
-            telemetry.addData("MotorFL : ", MotorFL.getCurrentPosition());
-            telemetry.addData("MotorFL mode : ", MotorFL.getMode());
-            telemetry.addData("MotorFL speed : ", MotorFL.getPower());
+        while ((Math.abs(TargetFRBL) > Math.abs(FRBLMean) || Math.abs(TargetFLBR) > Math.abs(FLBRMean)) && opModeIsActive()) {
 
-            telemetry.addData("TargetFRBL : ", TargetFRBL / TICKS_PER_CM);
-            telemetry.addData("MotorFR : ", MotorFR.getCurrentPosition());
+            FLBRMean = (double)(Math.abs(MotorFL.getCurrentPosition()) + Math.abs(MotorBR.getCurrentPosition())) / 2.0;
+            FRBLMean = (double)(Math.abs(MotorFR.getCurrentPosition()) + Math.abs(MotorBL.getCurrentPosition())) / 2.0;
+            if (bSpecial){
+                FLBRMean = (FLBRMean + FRBLMean) / 2.0;
+                FRBLMean = FLBRMean;
+            }
+
+            //telemetry.addData("angle" , angle);
+            //telemetry.addData("TargetXVector" , TargetXVector);
+            //telemetry.addData("TargetYVector" , TargetYVector);
+
+            telemetry.addData("TargetFLBR" , TargetFLBR);
+            telemetry.addData("FLBRMean" , FLBRMean);
+            telemetry.addData("TargetFRBL" , TargetFRBL);
+            telemetry.addData("FRBLMean" , FRBLMean);
+
+            telemetry.addData("FL" , MotorFL.getCurrentPosition());
+            telemetry.addData("FR" , MotorFR.getCurrentPosition());
+            telemetry.addData("BL" , MotorBL.getCurrentPosition());
+            telemetry.addData("BR" , MotorBR.getCurrentPosition());
 
             telemetry.update();
+
             idle();
         }
 
@@ -658,8 +673,9 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
         //  This is how we ended up with the function f(x, y) = sig(y)*(y^2) - sig(x)*(x^2) and its
         //conjugate
 
-        return bFLBR ? (Math.signum(VectorY) * Math.pow(VectorY, 2)) + (Math.signum(VectorX) * Math.pow(VectorX, 2)) : (Math.signum(VectorY) * Math.pow(VectorY, 2)) - (Math.signum(VectorX) * Math.pow(VectorX, 2));
-        //return Range.clip(bFLBR? VectorY + VectorX : VectorY - VectorX, -1, 1);
+        //return bFLBR ? (Math.signum(VectorY) * Math.pow(VectorY, 2)) + (Math.signum(VectorX) * Math.pow(VectorX, 2)) : (Math.signum(VectorY) * Math.pow(VectorY, 2)) - (Math.signum(VectorX) * Math.pow(VectorX, 2));
+        //return bFLBR? VectorY + VectorX : VectorY - VectorX;
+        return Range.clip(bFLBR? VectorY + VectorX : VectorY - VectorX, -1, 1);
     }
 
     //Reset all encoders
