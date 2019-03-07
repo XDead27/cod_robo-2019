@@ -14,6 +14,7 @@ import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 
 import static org.firstinspires.ftc.teamcode.MineralPosition.LEFT;
 import static org.firstinspires.ftc.teamcode.MineralPosition.MIDDLE;
@@ -26,6 +27,8 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
     protected static int DIST_GLISIERE_CRATER = 2200;
     protected static double TOLERANCE = 0.0001;
     protected static double DIAGONAL_CONSTANT = 2.0; //TODO
+    protected static double VERTICAL_CONSTANT = 1.0; //TODO
+    protected static double HORIZONTAL_CONSTANT = 1.5; //TODO
     //Integrated gyro variables
     Orientation lastAngles = new Orientation();
     double globalAngle;
@@ -67,7 +70,7 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
         if (elem == 2) {
             while (opModeIsActive()) {
                 List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
-                if (updatedRecognitions.size() == 2) {
+                if (updatedRecognitions != null && updatedRecognitions.size() == 2) {
                     String label1 = "";
                     String label2 = "";
                     int top1 = -1; //top de la tel cand e vertical , deci left pt landscape
@@ -91,19 +94,14 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
                     }
                     if (top1 != -1 && top2 != -1) {
                         if (label1.equals(LABEL_GOLD_MINERAL) || label2.equals(LABEL_GOLD_MINERAL)) {
-                            if (FrontCamera) {
-                                int aux = top1;
-                                top1 = top2;
-                                top2 = aux;
-                            }
                             if (label1.equals(LABEL_GOLD_MINERAL)) {
-                                if (top1 < top2) {
+                                if (top1 > top2) {
                                     ret = LEFT;
                                 } else {
                                     ret = MIDDLE;
                                 }
                             } else {
-                                if (top2 < top1) {
+                                if (top2 > top1) {
                                     ret = LEFT;
                                 } else {
                                     ret = MIDDLE;
@@ -119,7 +117,7 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
         } else if (elem == 3) {
             while (opModeIsActive()) {
                 List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
-                if (updatedRecognitions.size() == 3) {
+                if (updatedRecognitions != null && updatedRecognitions.size() == 3) {
                     int goldMineralX = -1;
                     int silverMineral1X = -1;
                     int silverMineral2X = -1;
@@ -133,9 +131,9 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
                         }
                     }
                     if (goldMineralX != -1 && silverMineral1X != -1 && silverMineral2X != -1) {
-                        if (goldMineralX < silverMineral1X && goldMineralX < silverMineral2X) {
+                        if (goldMineralX > silverMineral1X && goldMineralX > silverMineral2X) {
                             return LEFT;
-                        } else if (goldMineralX > silverMineral1X && goldMineralX > silverMineral2X) {
+                        } else if (goldMineralX < silverMineral1X && goldMineralX < silverMineral2X) {
                             return RIGHT;
                         } else {
                             return MIDDLE;
@@ -211,6 +209,18 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
         ResetAllEncoders();
 
         RunWithAllEncoders();
+
+        dist *= TICKS_PER_CM;
+
+        if (angle % 180 == 0){
+            dist *= VERTICAL_CONSTANT;
+        }
+        else if (angle % 90 == 0){
+            dist *= HORIZONTAL_CONSTANT;
+        }
+        else {
+            dist *= DIAGONAL_CONSTANT;
+        }
 
         boolean bSpecial = false;
         if (angle % 90 == 0){
@@ -537,15 +547,15 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
         boolean bAngleIsNegative = false;
         double FinalAngle = GetAngle() + angle;
 
-        if (FinalAngle < 0) {
+        if (angle < 0) {
             FinalAngle += 360;
             bAngleIsNegative = true;
         }
 
-        double FLPower = -0.5;
-        double BLPower = -0.5;
-        double FRPower = 0.5;
-        double BRPower = 0.5;
+        double FLPower = -0.4;
+        double BLPower = -0.4;
+        double FRPower = 0.4;
+        double BRPower = 0.4;
 
         if (bAngleIsNegative) {
             FLPower *= -1;
@@ -553,12 +563,11 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
             FRPower *= -1;
             BRPower *= -1;
         }
-
-        SetWheelsPower(FLPower, FRPower, BLPower, BRPower);
+            SetWheelsPower(FLPower, FRPower, BLPower, BRPower);
 
         while (opModeIsActive() && Math.abs(FinalAngle - GetAngle()) > 15) {
-            telemetry.addData("sunt in modul normal", " ");
-            telemetry.addData("uwu m-am rotit la ", GetAngle());
+            telemetry.addData("sunt in modul normal", FinalAngle);
+            telemetry.addData(" m-am rotit pana la ", GetAngle());
             telemetry.update();
         }
 
@@ -574,7 +583,7 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
         while (opModeIsActive() && Math.abs(FinalAngle - GetAngle()) > 5) {
             idle();
             telemetry.addData("sunt in modul incet", " ");
-            telemetry.addData("unghiul de gyro uwu: ", GetAngle());
+            telemetry.addData("m-am rotit pana la ", GetAngle());
             telemetry.update();
         }
     }
@@ -702,7 +711,7 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
         MotorGlisieraL.setPower(0);
         MotorGlisieraR.setPower(0);
 
-        while (Math.abs(MotorGlisieraL.getCurrentPosition()) < DIST_GLISIERE) {
+        while (Math.abs(MotorGlisieraR.getCurrentPosition()) < DIST_GLISIERE) {
             idle();
         }
 
@@ -741,7 +750,7 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
         //TODO PlantTeamMarker
         TeamMarkerServo.setPosition(1);
         sleep(1000);
-        TeamMarkerServo.setPosition(0);
+        TeamMarkerServo.setPosition(0.5);
         sleep(1000);
     }
 

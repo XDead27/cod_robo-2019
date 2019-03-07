@@ -49,12 +49,6 @@ public class Driver_Mode extends RobotHardwareClass {
         else
             stop_walk();
 
-        if (gamepad1.a){
-            TeamMarkerServo.setPosition(0.5);
-        }
-        else if(gamepad1.b){
-            TeamMarkerServo.setPosition(1);
-        }
     }
 
     protected void gamepad_2(){
@@ -74,11 +68,11 @@ public class Driver_Mode extends RobotHardwareClass {
         //Extend the sliders
         else if (gamepad2.left_bumper){
             //MotorExtindere.setPower(0.9); //TODO: switch to no constraints mode
-            MotorExtindere.setPower(bNoConstraintsMode ? 0.9 : MotorExtindere.getCurrentPosition() < MosorMax ? 0.9 : 0);
+            MotorExtindere.setPower(bNoConstraintsMode ? -0.9 : MotorExtindere.getCurrentPosition() > EXTINDERE_MIN ? -0.9 : 0);
         }
         else if(gamepad2.right_bumper){
             //MotorExtindere.setPower(-0.9); //TODO: switch to no constraints mode
-            MotorExtindere.setPower(bNoConstraintsMode ? -0.9 : MotorExtindere.getCurrentPosition() > EXTINDERE_MIN ? -0.9 : 0);
+            MotorExtindere.setPower(bNoConstraintsMode ? 0.9 : MotorExtindere.getCurrentPosition() < MosorMax ? 0.9 : 0);
         }
         else{
             MotorExtindere.setPower(0);
@@ -88,7 +82,7 @@ public class Driver_Mode extends RobotHardwareClass {
         if(gamepad2.left_trigger > deadzone) {
             PowerMotoareGlisiera(bNoConstraintsMode ? -gamepad2.left_trigger : MotorGlisieraR.getCurrentPosition() > GLISIERA_MIN? -gamepad2.left_trigger : 0);
         }else if(gamepad2.right_trigger > deadzone){
-            PowerMotoareGlisiera(bNoConstraintsMode ? gamepad2.right_trigger : MotorGlisieraR.getCurrentPosition() < GLISIERA_MAX? gamepad2.right_trigger : 0);
+            PowerMotoareGlisiera(bNoConstraintsMode ? +gamepad2.right_trigger : MotorGlisieraR.getCurrentPosition() < GLISIERA_MAX? +gamepad2.right_trigger : 0);
         }else{
             PowerMotoareGlisiera(0);
         }
@@ -115,9 +109,9 @@ public class Driver_Mode extends RobotHardwareClass {
             telemetry.addData("y" , 0.6);
         }
 
-        //telemetry.addData("Encoder Mosor : " , MotorExtindere.getCurrentPosition());
-        //telemetry.addData("Encoder Glisiera Stanga : ", MotorGlisieraL.getCurrentPosition());
-        //telemetry.addData("No Constraints Mode : ", bNoConstraintsMode);
+        telemetry.addData("Encoder Mosor : " , MotorExtindere.getCurrentPosition());
+        telemetry.addData("Encoder Glisiera Stanga : ", MotorGlisieraL.getCurrentPosition());
+        telemetry.addData("No Constraints Mode : ", bNoConstraintsMode);
     }
 
     //FUNCTIONS

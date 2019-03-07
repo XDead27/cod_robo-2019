@@ -11,14 +11,22 @@ import static org.firstinspires.ftc.teamcode.MineralPosition.RIGHT;
 public final class Autonomous_Crater_Simpla extends Autonomous_Mode {
 
     @Override
+    protected void initialise(boolean bIsDriver) {
+        super.initialise(bIsDriver);
+
+        MotorGlisieraL.setPower(-0.7);
+        MotorGlisieraR.setPower(-0.7);
+    }
+
+    @Override
     protected void runOperations() {
 
         //let the robot down
+
         LiftDown();
 
-        //move left and forward a little
-        WalkEncoder(15*TICKS_PER_CM , 0.5 , 90);
-        WalkEncoder(30*TICKS_PER_CM , 0.5 , 0);
+        //move left
+        WalkEncoder(17 , 0.5 , 90);
 
         //see where the cube is
         LiftPhoneUp();
@@ -27,33 +35,27 @@ public final class Autonomous_Crater_Simpla extends Autonomous_Mode {
 
         //TODO : go the cube and push it
         if (now == LEFT){
-            //strafa de 30 la 45
-            //mers in fata 20
-            //ers in spate 20
-            //strafa de -30 la 45
-            //strafa de 15 la -90
-
-            //acum este in centru la aprox 20 de cm de ob din mijloc
+            WalkEncoder(35 , 0.5 , 0);
+            WalkEncoder(70 , 0.5 , 45);
+            WalkEncoder(20 , 0.5 , 0);
         }
         else if (now == MIDDLE){
-            //strafa de 30 la -45
-            //mers in fata 20
-            //mers in spate 40
-
-            //acum este in centru la aprox 20 de cm de ob din mijloc
+            WalkEncoder(35 , 0.5 , 0);
+            WalkEncoder(35 , 0.5 , -45);
+            WalkEncoder(20 , 0.5 , 0);
         }
         else if (now == RIGHT){
-
-
-
+            WalkEncoder(65 , 0.5 , -45);
+            WalkEncoder(35 , 0.5 , -90);
+            WalkEncoder(20 , 0.5 , 0);
         }
 
-        //extend sliding system and let it down in the crater
+        /*//extend sliding system and let it down in the crater
         ExtendSlidingSystem();
         LiftUp();
 
         //try to capture objects until the end
-        GetObjects();
+        GetObjects();*/
     }
 
     @Override
