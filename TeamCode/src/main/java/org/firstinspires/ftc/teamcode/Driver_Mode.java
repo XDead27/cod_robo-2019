@@ -25,6 +25,7 @@ public class Driver_Mode extends RobotHardwareClass {
 
     //conditii
     private boolean bNoContraintsMode = false;
+    private boolean bHasPressedBumpers = false;
 
     @Override
     public void runOpMode()
@@ -47,13 +48,21 @@ public class Driver_Mode extends RobotHardwareClass {
         else
             stop_walk();
 
-        //test_glisiera();
+        if (gamepad1.a){
+            TeamMarkerServo.setPosition(0.5);
+        }
+        else if(gamepad1.b){
+            TeamMarkerServo.setPosition(1);
+        }
     }
 
     protected void gamepad_2(){
         //Pressing the two bumpers will activate constraints.
         if(gamepad2.left_bumper && gamepad2.right_bumper){
+            bHasPressedBumpers = true;
+        }else if(bHasPressedBumpers){
             bNoContraintsMode = !bNoContraintsMode;
+            bHasPressedBumpers = false;
         }
 
         //By pressing one of the triggers, the sliding mechanism will move upwards or downwards.
@@ -70,10 +79,10 @@ public class Driver_Mode extends RobotHardwareClass {
 
         //Extend the sliders
         if (gamepad2.left_bumper){
-            MotorExtindere.setPower(0.5);
+            MotorExtindere.setPower(0.7);
         }
         else if(gamepad2.right_bumper){
-            MotorExtindere.setPower(-0.5);
+            MotorExtindere.setPower(-0.7);
         }
         else{
             MotorExtindere.setPower(0);
@@ -101,36 +110,9 @@ public class Driver_Mode extends RobotHardwareClass {
             telemetry.addData("y" , 0.6);
         }
 
-        //telemetry.addData("Encoder Glisiera Dreapta" , MotorGlisieraR.getCurrentPosition());
+        telemetry.addData("Encoder Mosor" , MotorExtindere.getCurrentPosition());
         //telemetry.addData("Encoder Glisiera Stanga", MotorGlisieraL.getCurrentPosition());
         telemetry.addData("No Constraints Mode", bNoContraintsMode);
-    }
-
-    protected void test_glisiera()
-    {
-        if (gamepad1.a) {
-            MotorGlisieraL.setPower(0.9);
-            MotorGlisieraR.setPower(0.9);
-        }
-        else if (gamepad1.b) {
-            MotorGlisieraL.setPower(-0.9);
-            MotorGlisieraR.setPower(-0.9);
-        }
-        else if (gamepad1.x) {
-            MotorGlisieraL.setPower(0.6);
-            MotorGlisieraR.setPower(0.6);
-        }
-        else if (gamepad1.y) {
-            MotorGlisieraL.setPower(-0.6);
-            MotorGlisieraR.setPower(-0.6);
-        }
-        else {
-            MotorGlisieraL.setPower(0);
-            MotorGlisieraR.setPower(0);
-        }
-
-        //telemetry.addData("pozitie L: ", MotorGlisieraL.getCurrentPosition());
-        //telemetry.addData("pozitie R: ", MotorGlisieraR.getCurrentPosition());
     }
 
     protected void stop_walk(){

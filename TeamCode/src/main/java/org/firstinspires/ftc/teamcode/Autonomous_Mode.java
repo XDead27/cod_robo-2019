@@ -682,8 +682,8 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
 
     protected void LiftDown() {
         ResetAllEncoders();
-        MotorGlisieraL.setPower(0.3);
-        MotorGlisieraR.setPower(0.3);
+        MotorGlisieraL.setPower(0);
+        MotorGlisieraR.setPower(0);
 
         while (Math.abs(MotorGlisieraL.getCurrentPosition()) < DIST_GLISIERE) {
             idle();
