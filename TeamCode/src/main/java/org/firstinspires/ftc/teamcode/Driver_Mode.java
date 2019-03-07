@@ -1,16 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
-import android.support.annotation.IntRange;
-
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
-
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 import static java.lang.Math.abs;
 
@@ -20,12 +11,17 @@ public class Driver_Mode extends RobotHardwareClass {
     //constante
     protected final int tics_per_cm = 67;
     protected final double deadzone = 0.1;
-    protected final int GLISIERA_MAX = 7000;
-    protected final int GLISIERA_MIN = -7000;
+    protected final int GLISIERA_MAX = 3200;
+    protected final int GLISIERA_MIN = 0;
+    private final int EXTINDERE_MAX_GLISIERA_MAX = 2421;
+    private final int EXTINDERE_MAX_GLISIERA_MIN = 1850;
+    private final int EXTINDERE_DIFERENTA = EXTINDERE_MAX_GLISIERA_MAX - EXTINDERE_MAX_GLISIERA_MIN;
+    private final int EXTINDERE_MIN = 0; //TODO: gaseste valori:
 
     //conditii
-    private boolean bNoContraintsMode = false;
+    private boolean bNoConstraintsMode = false;
     private boolean bHasPressedBumpers = false;
+    private boolean bHasReachedMax = false;
 
     @Override
     public void runOpMode()
@@ -57,35 +53,39 @@ public class Driver_Mode extends RobotHardwareClass {
     }
 
     protected void gamepad_2(){
+
+        double MosorCoefficient = (double)MotorGlisieraR.getCurrentPosition() / (double)GLISIERA_MAX;
+        double MosorMax = (EXTINDERE_DIFERENTA * MosorCoefficient) + EXTINDERE_MAX_GLISIERA_MIN;
+        telemetry.addData("Mosor max : ", MosorMax);
+
         //Pressing the two bumpers will activate constraints.
         if(gamepad2.left_bumper && gamepad2.right_bumper){
             bHasPressedBumpers = true;
-        }else if(bHasPressedBumpers){
-            bNoContraintsMode = !bNoContraintsMode;
+        }
+        else if(bHasPressedBumpers){
+            bNoConstraintsMode = !bNoConstraintsMode;
             bHasPressedBumpers = false;
+        }
+        //Extend the sliders
+        else if (gamepad2.left_bumper){
+            //MotorExtindere.setPower(0.9); //TODO: switch to no constraints mode
+            MotorExtindere.setPower(bNoConstraintsMode ? 0.9 : MotorExtindere.getCurrentPosition() < MosorMax ? 0.9 : 0);
+        }
+        else if(gamepad2.right_bumper){
+            //MotorExtindere.setPower(-0.9); //TODO: switch to no constraints mode
+            MotorExtindere.setPower(bNoConstraintsMode ? 0.9 : MotorExtindere.getCurrentPosition() < EXTINDERE_MIN ? 0.9 : 0);
+        }
+        else{
+            MotorExtindere.setPower(0);
         }
 
         //By pressing one of the triggers, the sliding mechanism will move upwards or downwards.
         if(gamepad2.left_trigger > deadzone) {
-            MotorGlisieraL.setPower(bNoContraintsMode? gamepad2.left_trigger : MotorGlisieraL.getCurrentPosition() < GLISIERA_MAX? gamepad2.left_trigger : 0);
-            MotorGlisieraR.setPower(bNoContraintsMode? gamepad2.left_trigger : MotorGlisieraL.getCurrentPosition() < GLISIERA_MAX? gamepad2.left_trigger : 0);
+            PowerMotoareGlisiera(bNoConstraintsMode ? -gamepad2.left_trigger : MotorGlisieraR.getCurrentPosition() > GLISIERA_MIN? -gamepad2.left_trigger : 0);
         }else if(gamepad2.right_trigger > deadzone){
-            MotorGlisieraL.setPower(bNoContraintsMode? -gamepad2.right_trigger : MotorGlisieraL.getCurrentPosition() > GLISIERA_MIN? -gamepad2.right_trigger : 0);
-            MotorGlisieraR.setPower(bNoContraintsMode? -gamepad2.right_trigger : MotorGlisieraL.getCurrentPosition() > GLISIERA_MIN? -gamepad2.right_trigger : 0);
+            PowerMotoareGlisiera(bNoConstraintsMode ? gamepad2.right_trigger : MotorGlisieraR.getCurrentPosition() < GLISIERA_MAX? gamepad2.right_trigger : 0);
         }else{
-            MotorGlisieraL.setPower(0);
-            MotorGlisieraR.setPower(0);
-        }
-
-        //Extend the sliders
-        if (gamepad2.left_bumper){
-            MotorExtindere.setPower(0.7);
-        }
-        else if(gamepad2.right_bumper){
-            MotorExtindere.setPower(-0.7);
-        }
-        else{
-            MotorExtindere.setPower(0);
+            PowerMotoareGlisiera(0);
         }
 
         //Rotate the wheel
@@ -110,10 +110,12 @@ public class Driver_Mode extends RobotHardwareClass {
             telemetry.addData("y" , 0.6);
         }
 
-        telemetry.addData("Encoder Mosor" , MotorExtindere.getCurrentPosition());
-        //telemetry.addData("Encoder Glisiera Stanga", MotorGlisieraL.getCurrentPosition());
-        telemetry.addData("No Constraints Mode", bNoContraintsMode);
+        telemetry.addData("Encoder Mosor : " , MotorExtindere.getCurrentPosition());
+        telemetry.addData("Encoder Glisiera Stanga : ", MotorGlisieraL.getCurrentPosition());
+        telemetry.addData("No Constraints Mode : ", bNoConstraintsMode);
     }
+
+    //FUNCTIONS
 
     protected void stop_walk(){
         MotorFL.setPower(0);
@@ -130,7 +132,7 @@ public class Driver_Mode extends RobotHardwareClass {
         double ScalingCoefficient;
 
         maxspeed = Range.clip(maxspeed, 0, 0.9);
-        if(Math.max(Math.abs(FLBRNormal), Math.abs(FLBRNormal)) > 0) {
+        if(Math.max(Math.abs(FLBRNormal), Math.abs(FLBRNormal)) > deadzone) {
             ScalingCoefficient = maxspeed / Math.max(Math.abs(FLBRNormal), Math.abs(FRBLNormal));
         }
         else{
@@ -157,5 +159,19 @@ public class Driver_Mode extends RobotHardwareClass {
         MotorFR.setPower(Range.clip(SpeedFRBL - rotate, -maxspeed, maxspeed));
         MotorBL.setPower(Range.clip(SpeedFRBL + rotate, -maxspeed, maxspeed));
         MotorBR.setPower(Range.clip(SpeedFLBR - rotate, -maxspeed, maxspeed));
+    }
+
+    private void PowerMotoareGlisiera(double speed){
+        speed = Range.clip(speed, -0.9, 0.9);
+
+        MotorGlisieraR.setPower(speed);
+        MotorGlisieraL.setPower(speed);
+    }
+
+    //MACROS
+
+    private boolean GatherAndExtendMACRO(byte dir){
+        PowerMotoareGlisiera(dir * 0.7);
+        return false;
     }
 }

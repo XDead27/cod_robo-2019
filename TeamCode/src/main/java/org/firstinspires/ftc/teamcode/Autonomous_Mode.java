@@ -21,10 +21,11 @@ import static org.firstinspires.ftc.teamcode.MineralPosition.RIGHT;
 
 public abstract class Autonomous_Mode extends RobotHardwareClass {
 
-    protected static int TICKS_PER_CM = 43;
+    protected static int TICKS_PER_CM = 43; //TODO: chiar trebuie sa il aflam
     protected static int DIST_GLISIERE = 2600;
     protected static int DIST_GLISIERE_CRATER = 2200;
     protected static double TOLERANCE = 0.0001;
+    //Integrated gyro variables
     Orientation lastAngles = new Orientation();
     double globalAngle;
 

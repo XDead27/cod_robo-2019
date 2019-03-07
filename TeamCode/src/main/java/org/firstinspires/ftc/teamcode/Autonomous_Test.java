@@ -40,7 +40,7 @@ public final class Autonomous_Test extends Autonomous_Mode {
 
             }
             else if (gamepad1.dpad_left) {
-                TestWalkEncoder(10 , 0.5 , 45);
+                TestWalkEncoder(10 , 0.5 , 0);
             }
             else if (gamepad1.dpad_right) {
 
