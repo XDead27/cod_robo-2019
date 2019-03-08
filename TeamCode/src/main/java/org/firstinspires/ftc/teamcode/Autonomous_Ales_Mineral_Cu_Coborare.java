@@ -1,22 +1,21 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 import static org.firstinspires.ftc.teamcode.MineralPosition.LEFT;
 import static org.firstinspires.ftc.teamcode.MineralPosition.MIDDLE;
 import static org.firstinspires.ftc.teamcode.MineralPosition.RIGHT;
 
-@Autonomous(name = "Autonomous_Square", group = "Autonomous")
+@Autonomous(name = "Autonomous_Ales_Mineral_Cu_Coborare", group = "Autonomous")
 
-public final class Autonomous_Square_Aliat extends Autonomous_Mode {
+public final class Autonomous_Ales_Mineral_Cu_Coborare extends Autonomous_Mode {
 
     @Override
     protected void initialise(boolean bIsDriver) {
         super.initialise(bIsDriver);
 
-        MotorGlisieraL.setPower(-0.07);
-        MotorGlisieraR.setPower(-0.07);
+        MotorGlisieraL.setPower(-0.05);
+        MotorGlisieraR.setPower(-0.05);
     }
 
     @Override
@@ -40,23 +39,18 @@ public final class Autonomous_Square_Aliat extends Autonomous_Mode {
         if (now == LEFT){
             WalkEncoder(35 , 0.5 , 0);
             WalkEncoder(45 , 0.5 , 45);
-            WalkEncoder(80 , 0.5 , 0);
-            Rotate(-135);
+            WalkEncoder(30 , 0.5 , 0);
         }
         else if (now == MIDDLE){
             WalkEncoder(30 , 0.5 , 0);
             WalkEncoder(45 , 0.5 , -45);
-            WalkEncoder(90 , 0.5 , 0);
-            Rotate(-90);
+            WalkEncoder(30 , 0.5 , 0);
         }
         else if (now == RIGHT){
             WalkEncoder(55 , 0.5 , -45);
             WalkEncoder(50 , 0.5 , -90);
-            WalkEncoder(90 , 0.5 , 0);
-            Rotate(-70);
+            WalkEncoder(30 , 0.5 , 0);
         }
-
-        PlantTeamMarker();
 
     }
 
@@ -64,4 +58,5 @@ public final class Autonomous_Square_Aliat extends Autonomous_Mode {
     protected void endOperations() {
 
     }
+
 }

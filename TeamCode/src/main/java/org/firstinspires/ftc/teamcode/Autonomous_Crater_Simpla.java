@@ -22,44 +22,44 @@ public final class Autonomous_Crater_Simpla extends Autonomous_Mode {
     protected void runOperations() {
 
         //let the robot down
-
         LiftDown();
 
+        //calibrate gyro
         CalibrateGyro();
 
         //move left
-        WalkEncoder(15 , 0.5 , 90);
+        WalkEncoder(8 , 0.5 , 90);
 
         //see where the cube is
         LiftPhoneUp();
         MineralPosition now = Position(2);
         LiftPhoneDown();
 
-        //TODO : go the cube and push it
+        //go the cube and push it
         if (now == LEFT){
             WalkEncoder(35 , 0.5 , 0);
-            WalkEncoder(70 , 0.5 , 45);
+            WalkEncoder(45 , 0.5 , 45);
             WalkEncoder(30 , 0.5 , 0);
         }
         else if (now == MIDDLE){
             WalkEncoder(30 , 0.5 , 0);
             WalkEncoder(45 , 0.5 , -45);
-            WalkEncoder(20 , 0.5 , 0);
+            WalkEncoder(30 , 0.5 , 0);
         }
         else if (now == RIGHT){
-            WalkEncoder(65 , 0.5 , -45);
-            WalkEncoder(35 , 0.5 , -90);
+            WalkEncoder(55 , 0.5 , -45);
+            WalkEncoder(50 , 0.5 , -90);
             WalkEncoder(30 , 0.5 , 0);
         }
 
         //lower the sliders
-        //MoveSlidersEncoder(0 , 0.5);
+        MoveSlidersEncoder(0 , 0.5);
 
         //extend the sliders
-        //ExtendSlidingSystem();
+        ExtendSlidingSystem();
 
         //try to capture objects until the end
-        //GetObjects();
+        GetObjects();
     }
 
     @Override

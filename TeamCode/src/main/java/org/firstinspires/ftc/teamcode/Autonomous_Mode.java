@@ -24,7 +24,7 @@ import static org.firstinspires.ftc.teamcode.MineralPosition.RIGHT;
 public abstract class Autonomous_Mode extends RobotHardwareClass {
 
     protected static int TICKS_PER_CM = 8; //TODO: chiar trebuie sa il aflam
-    protected static int DIST_GLISIERE = 2300;
+    protected static int DIST_GLISIERE = 2500;
     protected static int EXTINDERE_MAX = 3500;
     protected static double TOLERANCE = 0.0001;
     protected static double DIAGONAL_CONSTANT = 2.0;
@@ -738,8 +738,13 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
             idle();
         }
 
-        StopGlisiere();
         StopMotors();
+
+        MotorGlisieraL.setPower(0.7);
+        MotorGlisieraR.setPower(0.7);
+        sleep(100);
+
+        StopGlisiere();
     }
 
     protected void MoveSlidersEncoder(int dist , double speed) {
@@ -793,11 +798,12 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
     }
 
     protected void PlantTeamMarker() {
-        //TODO PlantTeamMarker
-        TeamMarkerServo.setPosition(1);
-        sleep(1000);
-        TeamMarkerServo.setPosition(0.5);
-        sleep(1000);
+        while (opModeIsActive()){
+            TeamMarkerServo.setPosition(1);
+            sleep(1000);
+            TeamMarkerServo.setPosition(0.5);
+            sleep(1000);
+        }
     }
 
     protected void StopGlisiere(){
