@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.Range;
@@ -23,7 +24,7 @@ import static org.firstinspires.ftc.teamcode.MineralPosition.RIGHT;
 public abstract class Autonomous_Mode extends RobotHardwareClass {
 
     protected static int TICKS_PER_CM = 8; //TODO: chiar trebuie sa il aflam
-    protected static int DIST_GLISIERE = 1700;
+    protected static int DIST_GLISIERE = 2400;
     protected static int DIST_GLISIERE_CRATER = 2200;
     protected static double TOLERANCE = 0.0001;
     protected static double DIAGONAL_CONSTANT = 2.0; //TODO
@@ -625,6 +626,31 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
     //GYRO REV
     //************
 
+    protected void CalibrateGyro(){
+        BNO055IMU.Parameters REVGyroParameters = new BNO055IMU.Parameters();
+
+        REVGyroParameters.mode = BNO055IMU.SensorMode.IMU;
+        REVGyroParameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+        REVGyroParameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        REVGyroParameters.loggingEnabled = false;
+
+
+        imuGyro.initialize(REVGyroParameters);
+
+        telemetry.addData("Mode", "calibrating...");
+        telemetry.update();
+
+        // make sure the imu gyro is calibrated before continuing.
+        while (!isStopRequested() && !imuGyro.isGyroCalibrated()) {
+            sleep(50);
+            idle();
+        }
+
+        telemetry.addData("Mode", "waiting for start");
+        telemetry.addData("imu calib status", imuGyro.getCalibrationStatus().toString());
+        telemetry.update();
+    }
+
     //Function that adds the orientation of the REV integrated gyro to the globalAngle variable
     protected double GetAngle() {
         // We have to process the angle because the imu works in euler angles so the Z axis is
@@ -701,13 +727,20 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
 
     protected void LiftDown() {
         ResetAllEncoders();
-        MotorGlisieraL.setPower(0.1);
-        MotorGlisieraR.setPower(0.1);
 
-        while (Math.abs(MotorGlisieraR.getCurrentPosition()) < DIST_GLISIERE) {
+        RunWithAllEncoders();
+
+        MotorGlisieraL.setPower(0.3);
+        MotorGlisieraR.setPower(0.3);
+        SetWheelsPower(0 , 0 , -0.3 , -0.3);
+
+        while (Math.abs(MotorGlisieraR.getCurrentPosition()) < DIST_GLISIERE && opModeIsActive()) {
+            telemetry.addData("encoder" , MotorGlisieraR.getCurrentPosition());
+            telemetry.update();
             idle();
         }
 
+        StopGlisiere();
         StopMotors();
     }
 
@@ -716,10 +749,11 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
         MotorGlisieraL.setPower(-0.5);
         MotorGlisieraR.setPower(-0.5);
 
-        while (Math.abs(MotorGlisieraL.getCurrentPosition()) < DIST_GLISIERE_CRATER) {
+        while (Math.abs(MotorGlisieraL.getCurrentPosition()) < DIST_GLISIERE_CRATER && opModeIsActive()) {
             idle();
         }
 
+        StopGlisiere();
         StopMotors();
     }
 
@@ -745,6 +779,11 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
         sleep(1000);
         TeamMarkerServo.setPosition(0.5);
         sleep(1000);
+    }
+
+    protected void StopGlisiere(){
+        MotorGlisieraL.setPower(0);
+        MotorGlisieraR.setPower(0);
     }
 
 
