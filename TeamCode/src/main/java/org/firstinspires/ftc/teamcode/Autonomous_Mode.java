@@ -23,7 +23,7 @@ import static org.firstinspires.ftc.teamcode.MineralPosition.RIGHT;
 public abstract class Autonomous_Mode extends RobotHardwareClass {
 
     protected static int TICKS_PER_CM = 8; //TODO: chiar trebuie sa il aflam
-    protected static int DIST_GLISIERE = 2600;
+    protected static int DIST_GLISIERE = 1700;
     protected static int DIST_GLISIERE_CRATER = 2200;
     protected static double TOLERANCE = 0.0001;
     protected static double DIAGONAL_CONSTANT = 2.0; //TODO
@@ -701,8 +701,8 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
 
     protected void LiftDown() {
         ResetAllEncoders();
-        MotorGlisieraL.setPower(0);
-        MotorGlisieraR.setPower(0);
+        MotorGlisieraL.setPower(0.1);
+        MotorGlisieraR.setPower(0.1);
 
         while (Math.abs(MotorGlisieraR.getCurrentPosition()) < DIST_GLISIERE) {
             idle();
