@@ -544,48 +544,41 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
 
     //ma rotesc la angle grade; negativ e pentru right, pozitiv e pentru left;
     protected void Rotate(double angle) {
-        boolean bAngleIsNegative = false;
-        double FinalAngle = GetAngle() + angle;
 
-        if (angle < 0) {
-            FinalAngle += 360;
-            bAngleIsNegative = true;
-        }
+        double FinalAngle = GetAngle() + angle;
 
         double FLPower = -0.4;
         double BLPower = -0.4;
         double FRPower = 0.4;
         double BRPower = 0.4;
 
-        if (bAngleIsNegative) {
+        if (angle < 0) {
             FLPower *= -1;
             BLPower *= -1;
             FRPower *= -1;
             BRPower *= -1;
         }
-            SetWheelsPower(FLPower, FRPower, BLPower, BRPower);
+
+        SetWheelsPower(FLPower, FRPower, BLPower, BRPower);
 
         while (opModeIsActive() && Math.abs(FinalAngle - GetAngle()) > 15) {
             telemetry.addData("sunt in modul normal", FinalAngle);
             telemetry.addData(" m-am rotit pana la ", GetAngle());
             telemetry.update();
+            idle();
         }
 
-        RotateSlowly(FinalAngle, FLPower / 2, BLPower / 2, FRPower / 2, BRPower / 2);
-        StopMotors();
-    }
+        SetWheelsPower(FLPower/2, FRPower/2, BLPower/2, BRPower/2);
 
-    protected void RotateSlowly(double angle, double FLPower, double BLPower, double FRPower, double BRPower) {
-        double FinalAngle = angle;
-
-        SetWheelsPower(FLPower, FRPower, BLPower, BRPower);
 
         while (opModeIsActive() && Math.abs(FinalAngle - GetAngle()) > 5) {
-            idle();
             telemetry.addData("sunt in modul incet", " ");
             telemetry.addData("m-am rotit pana la ", GetAngle());
             telemetry.update();
+            idle();
         }
+
+        StopMotors();
     }
 
     //align with wall
