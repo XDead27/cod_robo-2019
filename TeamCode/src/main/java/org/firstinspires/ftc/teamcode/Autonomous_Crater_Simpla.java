@@ -14,8 +14,8 @@ public final class Autonomous_Crater_Simpla extends Autonomous_Mode {
     protected void initialise(boolean bIsDriver) {
         super.initialise(bIsDriver);
 
-        MotorGlisieraL.setPower(-0.7);
-        MotorGlisieraR.setPower(-0.7);
+        //MotorGlisieraL.setPower(-0.7);
+        //MotorGlisieraR.setPower(-0.7);
     }
 
     @Override
@@ -23,7 +23,7 @@ public final class Autonomous_Crater_Simpla extends Autonomous_Mode {
 
         //let the robot down
 
-        LiftDown();
+        //LiftDown();
 
         //move left
         WalkEncoder(17 , 0.5 , 90);

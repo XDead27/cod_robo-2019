@@ -18,6 +18,8 @@ import static org.firstinspires.ftc.teamcode.MineralPosition.MIDDLE;
 import static org.firstinspires.ftc.teamcode.MineralPosition.RIGHT;
 
 @Autonomous(name = "Object_Detection_Front_Camera", group = "Vuforia")
+@Disabled
+
 
 public class Object_Detection_Front_Camera extends LinearOpMode {
     private static final String TFOD_MODEL_ASSET = "RoverRuckus.tflite";

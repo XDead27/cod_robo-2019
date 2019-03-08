@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -9,6 +10,7 @@ import com.qualcomm.robotcore.util.Range;
 import static java.lang.Math.abs;
 
 @TeleOp (name = "Driver_Mode_Button_Wheels", group = "Driver")
+@Disabled
 
 public class Driver_Mode_Button_Wheels extends LinearOpMode {
 

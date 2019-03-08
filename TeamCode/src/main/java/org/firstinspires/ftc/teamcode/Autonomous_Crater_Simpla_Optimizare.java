@@ -1,8 +1,10 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 @Autonomous(name = "Autonomous_Crater_Simpla_Optimizare", group = "Autonomous")
+@Disabled
 
 public final class Autonomous_Crater_Simpla_Optimizare extends Autonomous_Mode {
 
