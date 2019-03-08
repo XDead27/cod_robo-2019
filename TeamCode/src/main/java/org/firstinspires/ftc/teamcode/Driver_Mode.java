@@ -41,10 +41,10 @@ public class Driver_Mode extends RobotHardwareClass {
     protected void gamepad_1(){
         if ( abs(gamepad1.left_stick_x) > deadzone || abs(gamepad1.left_stick_y) > deadzone || abs(gamepad1.right_stick_x) > deadzone){
             calculateWheelsPower(-gamepad1.left_stick_y , gamepad1.left_stick_x , gamepad1.right_stick_x, 0.7);
-            telemetry.addData("FL" , MotorFL.getCurrentPosition());
-            telemetry.addData("FR" , MotorFR.getCurrentPosition());
-            telemetry.addData("BL" , MotorBL.getCurrentPosition());
-            telemetry.addData("BR" , MotorBR.getCurrentPosition());
+            //telemetry.addData("FL" , MotorFL.getCurrentPosition());
+            //telemetry.addData("FR" , MotorFR.getCurrentPosition());
+            //telemetry.addData("BL" , MotorBL.getCurrentPosition());
+            //telemetry.addData("BR" , MotorBR.getCurrentPosition());
         }
         else
             stop_walk();
@@ -69,10 +69,12 @@ public class Driver_Mode extends RobotHardwareClass {
         else if (gamepad2.left_bumper){
             //MotorExtindere.setPower(0.9); //TODO: switch to no constraints mode
             MotorExtindere.setPower(bNoConstraintsMode ? -0.9 : MotorExtindere.getCurrentPosition() > EXTINDERE_MIN ? -0.9 : 0);
+            //telemetry.addData("extindere" , MotorExtindere.getCurrentPosition());
         }
         else if(gamepad2.right_bumper){
             //MotorExtindere.setPower(-0.9); //TODO: switch to no constraints mode
             MotorExtindere.setPower(bNoConstraintsMode ? 0.9 : MotorExtindere.getCurrentPosition() < MosorMax ? 0.9 : 0);
+            //telemetry.addData("extindere" , MotorExtindere.getCurrentPosition());
         }
         else{
             MotorExtindere.setPower(0);
@@ -90,11 +92,11 @@ public class Driver_Mode extends RobotHardwareClass {
         //Rotate the wheel
         if (gamepad2.a) {
             ContinuousServo.setPower(1);
-            telemetry.addData("a" , 1);
+            //telemetry.addData("a" , 1);
         }
         else if (gamepad2.b) {
             ContinuousServo.setPower(-1);
-            telemetry.addData("b" , -1);
+            //telemetry.addData("b" , -1);
         }
         else {
             ContinuousServo.setPower(0);
@@ -103,10 +105,10 @@ public class Driver_Mode extends RobotHardwareClass {
         //Set blocker position
         if (gamepad2.x) {
             FixedServo.setPosition(0);
-            telemetry.addData("x" , 0);
+            //telemetry.addData("x" , 0);
         } else if (gamepad2.y) {
             FixedServo.setPosition(0.6);
-            telemetry.addData("y" , 0.6);
+            //telemetry.addData("y" , 0.6);
         }
 
         telemetry.addData("Encoder Mosor : " , MotorExtindere.getCurrentPosition());

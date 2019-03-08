@@ -33,7 +33,6 @@ public final class Autonomous_Square_Aliat extends Autonomous_Mode {
         //TODO : go to the ally crater
 
         ExtendSlidingSystem();
-        LiftUp();
 
         //try to capture objects until the end
         GetObjects();
