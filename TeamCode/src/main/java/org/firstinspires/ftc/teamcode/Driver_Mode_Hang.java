@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -8,6 +9,9 @@ import com.qualcomm.robotcore.util.Range;
 
 
 @TeleOp(name = "Driver_Mode_Hang", group = "driver")
+@Disabled
+
+
 public class Driver_Mode_Hang extends LinearOpMode {
 
     protected DcMotor MotorGlisieraL = null;

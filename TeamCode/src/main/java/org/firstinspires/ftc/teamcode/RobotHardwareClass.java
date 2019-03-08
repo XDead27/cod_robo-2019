@@ -100,7 +100,7 @@ public abstract class RobotHardwareClass extends LinearOpMode {
 
         MotorGlisieraL.setDirection(DcMotorSimple.Direction.FORWARD);
         MotorGlisieraR.setDirection(DcMotorSimple.Direction.REVERSE);
-        MotorExtindere.setDirection(DcMotorSimple.Direction.FORWARD);
+        MotorExtindere.setDirection(DcMotorSimple.Direction.REVERSE);
 
         ContinuousServo.setDirection(CRServo.Direction.FORWARD);
         FixedServo.setDirection(Servo.Direction.FORWARD);
@@ -159,30 +159,6 @@ public abstract class RobotHardwareClass extends LinearOpMode {
         //
         //
 
-        BNO055IMU.Parameters REVGyroParameters = new BNO055IMU.Parameters();
-
-        REVGyroParameters.mode = BNO055IMU.SensorMode.IMU;
-        REVGyroParameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
-        REVGyroParameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
-        REVGyroParameters.loggingEnabled = false;
-
         imuGyro = hardwareMap.get(BNO055IMU.class, "imu");
-
-        if(!bIsDriver) {
-            imuGyro.initialize(REVGyroParameters);
-
-            telemetry.addData("Mode", "calibrating...");
-            telemetry.update();
-
-            // make sure the imu gyro is calibrated before continuing.
-            while (!isStopRequested() && !imuGyro.isGyroCalibrated()) {
-                sleep(50);
-                idle();
-            }
-
-            telemetry.addData("Mode", "waiting for start");
-            telemetry.addData("imu calib status", imuGyro.getCalibrationStatus().toString());
-            telemetry.update();
-        }
     }
 }

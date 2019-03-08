@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.Range;
@@ -14,6 +15,7 @@ import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 
 import static org.firstinspires.ftc.teamcode.MineralPosition.LEFT;
 import static org.firstinspires.ftc.teamcode.MineralPosition.MIDDLE;
@@ -21,10 +23,14 @@ import static org.firstinspires.ftc.teamcode.MineralPosition.RIGHT;
 
 public abstract class Autonomous_Mode extends RobotHardwareClass {
 
-    protected static int TICKS_PER_CM = 43;
-    protected static int DIST_GLISIERE = 2600;
+    protected static int TICKS_PER_CM = 8; //TODO: chiar trebuie sa il aflam
+    protected static int DIST_GLISIERE = 2400;
     protected static int DIST_GLISIERE_CRATER = 2200;
     protected static double TOLERANCE = 0.0001;
+    protected static double DIAGONAL_CONSTANT = 2.0; //TODO
+    protected static double VERTICAL_CONSTANT = 1.0; //TODO
+    protected static double HORIZONTAL_CONSTANT = 1.5; //TODO
+    //Integrated gyro variables
     Orientation lastAngles = new Orientation();
     double globalAngle;
 
@@ -65,7 +71,7 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
         if (elem == 2) {
             while (opModeIsActive()) {
                 List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
-                if (updatedRecognitions.size() == 2) {
+                if (updatedRecognitions != null && updatedRecognitions.size() == 2) {
                     String label1 = "";
                     String label2 = "";
                     int top1 = -1; //top de la tel cand e vertical , deci left pt landscape
@@ -89,19 +95,14 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
                     }
                     if (top1 != -1 && top2 != -1) {
                         if (label1.equals(LABEL_GOLD_MINERAL) || label2.equals(LABEL_GOLD_MINERAL)) {
-                            if (FrontCamera) {
-                                int aux = top1;
-                                top1 = top2;
-                                top2 = aux;
-                            }
                             if (label1.equals(LABEL_GOLD_MINERAL)) {
-                                if (top1 < top2) {
+                                if (top1 > top2) {
                                     ret = LEFT;
                                 } else {
                                     ret = MIDDLE;
                                 }
                             } else {
-                                if (top2 < top1) {
+                                if (top2 > top1) {
                                     ret = LEFT;
                                 } else {
                                     ret = MIDDLE;
@@ -117,7 +118,7 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
         } else if (elem == 3) {
             while (opModeIsActive()) {
                 List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
-                if (updatedRecognitions.size() == 3) {
+                if (updatedRecognitions != null && updatedRecognitions.size() == 3) {
                     int goldMineralX = -1;
                     int silverMineral1X = -1;
                     int silverMineral2X = -1;
@@ -131,9 +132,9 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
                         }
                     }
                     if (goldMineralX != -1 && silverMineral1X != -1 && silverMineral2X != -1) {
-                        if (goldMineralX < silverMineral1X && goldMineralX < silverMineral2X) {
+                        if (goldMineralX > silverMineral1X && goldMineralX > silverMineral2X) {
                             return LEFT;
-                        } else if (goldMineralX > silverMineral1X && goldMineralX > silverMineral2X) {
+                        } else if (goldMineralX < silverMineral1X && goldMineralX < silverMineral2X) {
                             return RIGHT;
                         } else {
                             return MIDDLE;
@@ -187,8 +188,8 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
 
         //Power the wheel motors according to the vectorial distribution
         //The function that describes the vectorial distribution is
-        double VectorFLBR = MecanumFunctionCalculator(AxisXVector, AxisYVector, true);
-        double VectorFRBL = MecanumFunctionCalculator(AxisXVector, AxisYVector, false);
+        double VectorFLBR = Range.clip(MecanumFunctionCalculator(AxisXVector, AxisYVector, true) , -1 , 1);
+        double VectorFRBL = Range.clip(MecanumFunctionCalculator(AxisXVector, AxisYVector, false) , -1 , 1);
 
         //Scale that vector by the desired speed, keeping in mind the maximum
         speed = Range.clip(speed, 0, 1);
@@ -210,13 +211,22 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
 
         RunWithAllEncoders();
 
-        //Nush de ce merge doar asa
-        /*MotorFL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        MotorFR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        MotorBL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        MotorBR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        MotorGlisieraL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        MotorGlisieraR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);*/
+        dist *= TICKS_PER_CM;
+
+        if (angle % 180 == 0){
+            dist *= VERTICAL_CONSTANT;
+        }
+        else if (angle % 90 == 0){
+            dist *= HORIZONTAL_CONSTANT;
+        }
+        else {
+            dist *= DIAGONAL_CONSTANT;
+        }
+
+        boolean bSpecial = false;
+        if (angle % 90 == 0){
+            bSpecial = true;
+        }
 
         if (dist < 0) {
             dist *= -1;
@@ -238,19 +248,36 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
         double TargetFLBR = dist * MecanumFunctionCalculator(TargetXVector, TargetYVector, true);
         double TargetFRBL = dist * MecanumFunctionCalculator(TargetXVector, TargetYVector, false);
 
+        double FLBRMean = 0;
+        double FRBLMean = 0;
 
         ///making run to position by hand, because the normal function sometimes has bugs
         //the motors will not stop unless they have overpassed their target distance
-        while ((Math.abs(TargetFRBL) > Math.abs(MotorFR.getCurrentPosition()) || Math.abs(TargetFLBR) > Math.abs(MotorFL.getCurrentPosition())) && opModeIsActive()) {
-            telemetry.addData("TargetFLBR : ", TargetFLBR / TICKS_PER_CM);
-            telemetry.addData("MotorFL : ", MotorFL.getCurrentPosition());
-            telemetry.addData("MotorFL mode : ", MotorFL.getMode());
-            telemetry.addData("MotorFL speed : ", MotorFL.getPower());
+        while ((Math.abs(TargetFRBL) > Math.abs(FRBLMean) || Math.abs(TargetFLBR) > Math.abs(FLBRMean)) && opModeIsActive()) {
 
-            telemetry.addData("TargetFRBL : ", TargetFRBL / TICKS_PER_CM);
-            telemetry.addData("MotorFR : ", MotorFR.getCurrentPosition());
+            FLBRMean = (double)(Math.abs(MotorFL.getCurrentPosition()) + Math.abs(MotorBR.getCurrentPosition())) / 2.0;
+            FRBLMean = (double)(Math.abs(MotorFR.getCurrentPosition()) + Math.abs(MotorBL.getCurrentPosition())) / 2.0;
+            if (bSpecial){
+                FLBRMean = (FLBRMean + FRBLMean) / 2.0;
+                FRBLMean = FLBRMean;
+            }
+
+            //telemetry.addData("angle" , angle);
+            //telemetry.addData("TargetXVector" , TargetXVector);
+            //telemetry.addData("TargetYVector" , TargetYVector);
+
+            telemetry.addData("TargetFLBR" , TargetFLBR);
+            telemetry.addData("FLBRMean" , FLBRMean);
+            telemetry.addData("TargetFRBL" , TargetFRBL);
+            telemetry.addData("FRBLMean" , FRBLMean);
+
+            telemetry.addData("FL" , MotorFL.getCurrentPosition());
+            telemetry.addData("FR" , MotorFR.getCurrentPosition());
+            telemetry.addData("BL" , MotorBL.getCurrentPosition());
+            telemetry.addData("BR" , MotorBR.getCurrentPosition());
 
             telemetry.update();
+
             idle();
         }
 
@@ -518,20 +545,15 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
 
     //ma rotesc la angle grade; negativ e pentru right, pozitiv e pentru left;
     protected void Rotate(double angle) {
-        boolean bAngleIsNegative = false;
+
         double FinalAngle = GetAngle() + angle;
 
-        if (FinalAngle < 0) {
-            FinalAngle += 360;
-            bAngleIsNegative = true;
-        }
+        double FLPower = -0.4;
+        double BLPower = -0.4;
+        double FRPower = 0.4;
+        double BRPower = 0.4;
 
-        double FLPower = -0.5;
-        double BLPower = -0.5;
-        double FRPower = 0.5;
-        double BRPower = 0.5;
-
-        if (bAngleIsNegative) {
+        if (angle < 0) {
             FLPower *= -1;
             BLPower *= -1;
             FRPower *= -1;
@@ -541,26 +563,23 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
         SetWheelsPower(FLPower, FRPower, BLPower, BRPower);
 
         while (opModeIsActive() && Math.abs(FinalAngle - GetAngle()) > 15) {
-            telemetry.addData("sunt in modul normal", " ");
-            telemetry.addData("uwu m-am rotit la ", GetAngle());
+            telemetry.addData("sunt in modul normal", FinalAngle);
+            telemetry.addData(" m-am rotit pana la ", GetAngle());
             telemetry.update();
+            idle();
         }
 
-        RotateSlowly(FinalAngle, FLPower / 2, BLPower / 2, FRPower / 2, BRPower / 2);
-        StopMotors();
-    }
+        SetWheelsPower(FLPower/2, FRPower/2, BLPower/2, BRPower/2);
 
-    protected void RotateSlowly(double angle, double FLPower, double BLPower, double FRPower, double BRPower) {
-        double FinalAngle = angle;
-
-        SetWheelsPower(FLPower, FRPower, BLPower, BRPower);
 
         while (opModeIsActive() && Math.abs(FinalAngle - GetAngle()) > 5) {
-            idle();
             telemetry.addData("sunt in modul incet", " ");
-            telemetry.addData("unghiul de gyro uwu: ", GetAngle());
+            telemetry.addData("m-am rotit pana la ", GetAngle());
             telemetry.update();
+            idle();
         }
+
+        StopMotors();
     }
 
     //align with wall
@@ -606,6 +625,31 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
     //************
     //GYRO REV
     //************
+
+    protected void CalibrateGyro(){
+        BNO055IMU.Parameters REVGyroParameters = new BNO055IMU.Parameters();
+
+        REVGyroParameters.mode = BNO055IMU.SensorMode.IMU;
+        REVGyroParameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+        REVGyroParameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        REVGyroParameters.loggingEnabled = false;
+
+
+        imuGyro.initialize(REVGyroParameters);
+
+        telemetry.addData("Mode", "calibrating...");
+        telemetry.update();
+
+        // make sure the imu gyro is calibrated before continuing.
+        while (!isStopRequested() && !imuGyro.isGyroCalibrated()) {
+            sleep(50);
+            idle();
+        }
+
+        telemetry.addData("Mode", "waiting for start");
+        telemetry.addData("imu calib status", imuGyro.getCalibrationStatus().toString());
+        telemetry.update();
+    }
 
     //Function that adds the orientation of the REV integrated gyro to the globalAngle variable
     protected double GetAngle() {
@@ -657,8 +701,9 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
         //  This is how we ended up with the function f(x, y) = sig(y)*(y^2) - sig(x)*(x^2) and its
         //conjugate
 
-        return bFLBR ? (Math.signum(VectorY) * Math.pow(VectorY, 2)) + (Math.signum(VectorX) * Math.pow(VectorX, 2)) : (Math.signum(VectorY) * Math.pow(VectorY, 2)) - (Math.signum(VectorX) * Math.pow(VectorX, 2));
-        //return Range.clip(bFLBR? VectorY + VectorX : VectorY - VectorX, -1, 1);
+        //return bFLBR ? (Math.signum(VectorY) * Math.pow(VectorY, 2)) + (Math.signum(VectorX) * Math.pow(VectorX, 2)) : (Math.signum(VectorY) * Math.pow(VectorY, 2)) - (Math.signum(VectorX) * Math.pow(VectorX, 2));
+        //return bFLBR? VectorY + VectorX : VectorY - VectorX;
+        return Range.clip(bFLBR? VectorY + VectorX : VectorY - VectorX, -1, 1);
     }
 
     //Reset all encoders
@@ -682,13 +727,20 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
 
     protected void LiftDown() {
         ResetAllEncoders();
+
+        RunWithAllEncoders();
+
         MotorGlisieraL.setPower(0.3);
         MotorGlisieraR.setPower(0.3);
+        SetWheelsPower(0 , 0 , -0.3 , -0.3);
 
-        while (Math.abs(MotorGlisieraL.getCurrentPosition()) < DIST_GLISIERE) {
+        while (Math.abs(MotorGlisieraR.getCurrentPosition()) < DIST_GLISIERE && opModeIsActive()) {
+            telemetry.addData("encoder" , MotorGlisieraR.getCurrentPosition());
+            telemetry.update();
             idle();
         }
 
+        StopGlisiere();
         StopMotors();
     }
 
@@ -697,10 +749,11 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
         MotorGlisieraL.setPower(-0.5);
         MotorGlisieraR.setPower(-0.5);
 
-        while (Math.abs(MotorGlisieraL.getCurrentPosition()) < DIST_GLISIERE_CRATER) {
+        while (Math.abs(MotorGlisieraL.getCurrentPosition()) < DIST_GLISIERE_CRATER && opModeIsActive()) {
             idle();
         }
 
+        StopGlisiere();
         StopMotors();
     }
 
@@ -724,8 +777,13 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
         //TODO PlantTeamMarker
         TeamMarkerServo.setPosition(1);
         sleep(1000);
-        TeamMarkerServo.setPosition(0);
+        TeamMarkerServo.setPosition(0.5);
         sleep(1000);
+    }
+
+    protected void StopGlisiere(){
+        MotorGlisieraL.setPower(0);
+        MotorGlisieraR.setPower(0);
     }
 
 

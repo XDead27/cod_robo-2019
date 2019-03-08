@@ -13,46 +13,58 @@ import java.io.File;
 
 public final class Autonomous_Test extends Autonomous_Mode {
 
+    double argument = 0;
+    double acceleration = 1.0;
+    double delay = 10.0;
+
     @Override
     protected void runOperations(){
 
-        //tfod.shutdown();
+        tfod.shutdown();
 
         while(opModeIsActive()) {
             if (gamepad1.a){
-                TestPosition(2);
-                return;
+                /*LiftPhoneUp();
+                MineralPosition now = Position(2);
+                LiftPhoneDown();
+                while (opModeIsActive() && !gamepad1.dpad_up){
+                    telemetry.addData("position" , now);
+                    telemetry.update();
+                }*/
+                TestWalkEncoder(argument , 0.5 , 90+45);
+
             }
             else if(gamepad1.b){
-                TestPosition(3);
-                return;
+                TestWalkEncoder(argument , 0.5 , 180+45);
+
             }
             else if (gamepad1.x) {
-                TestWalkAtAngle(0.5 , 45);
+                TestWalkEncoder(argument , 0.5 , 45);
+                //PlantTeamMarker();
             }
             else if (gamepad1.y) {
-
+                TestWalkEncoder(argument , 0.5 , -45);
             }
             else if (gamepad1.dpad_up) {
-
+                TestWalkEncoder(argument , 0.5 , 0);
             }
             else if (gamepad1.dpad_down) {
-
+                TestWalkEncoder(argument , 0.5 , 180);
             }
             else if (gamepad1.dpad_left) {
-                TestWalkEncoder(10 , 0.5 , 45);
+                TestWalkEncoder(argument , 0.5 , 90);
             }
             else if (gamepad1.dpad_right) {
-
+                TestWalkEncoder(argument , 0.5 , -90);
             }
             else if(gamepad1.left_bumper){
-                Rotate(135);
+                Rotate(argument);
             }
             else if(gamepad1.right_bumper){
                 TestGyro();
             }
             else if(gamepad1.left_trigger > 0.1){
-                TestPath();
+                //TestPath();
             }
             else if(gamepad1.right_trigger > 0.1){
 
@@ -61,6 +73,17 @@ public final class Autonomous_Test extends Autonomous_Mode {
                 idle();
             }
 
+            if(Math.abs(gamepad1.right_stick_y) > 0.1){
+                argument += -gamepad1.right_stick_y * (delay / 1000) * acceleration;
+                acceleration += (delay / 1000) * 4;
+            }else{
+                acceleration = 1;
+            }
+
+            telemetry.addData("Argument :", argument);
+            telemetry.update();
+
+            sleep((long)delay);
         }
 
     }
@@ -100,13 +123,13 @@ public final class Autonomous_Test extends Autonomous_Mode {
     }
 
     private void TestWalkEncoder(double dist , double speed , double angle){
-        WalkEncoder(dist*TICKS_PER_CM, speed, angle);
-        sleep(1000);
-        WalkEncoder(-dist*TICKS_PER_CM, speed, angle);
-        sleep(1000);
+        WalkEncoder(dist, speed, angle);
+        //sleep(1000);
+        //WalkEncoder(-dist*TICKS_PER_CM, speed, angle);
+        //sleep(1000);
     }
 
-    private void TestPath(){
+    /*private void TestPath(){
         try {
 
             Activity a = new Activity();
@@ -123,6 +146,6 @@ public final class Autonomous_Test extends Autonomous_Mode {
         } catch(Exception e){
             throw new RuntimeException(e);
         }
-    }
+    }*/
 
 }
