@@ -100,7 +100,7 @@ public abstract class RobotHardwareClass extends LinearOpMode {
 
         MotorGlisieraL.setDirection(DcMotorSimple.Direction.FORWARD);
         MotorGlisieraR.setDirection(DcMotorSimple.Direction.REVERSE);
-        MotorExtindere.setDirection(DcMotorSimple.Direction.FORWARD);
+        MotorExtindere.setDirection(DcMotorSimple.Direction.REVERSE);
 
         ContinuousServo.setDirection(CRServo.Direction.FORWARD);
         FixedServo.setDirection(Servo.Direction.FORWARD);
