@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 @Autonomous(name = "Autonomous_Crater_Simpla_Optimizare", group = "Autonomous")
 @Disabled
 
-public final class Autonomous_Crater_Simpla_Optimizare extends Autonomous_Mode {
+public final class  Autonomous_Crater_Simpla_Optimizare extends Autonomous_Mode {
 
     @Override
     protected void runOperations() {

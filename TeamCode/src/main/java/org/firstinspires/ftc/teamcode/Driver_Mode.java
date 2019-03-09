@@ -17,11 +17,21 @@ public class Driver_Mode extends RobotHardwareClass {
     private final int EXTINDERE_MAX_GLISIERA_MIN = 1850;
     private final int EXTINDERE_DIFERENTA = EXTINDERE_MAX_GLISIERA_MAX - EXTINDERE_MAX_GLISIERA_MIN;
     private final int EXTINDERE_MIN = 0; //TODO: gaseste valori:
+    private static final double INIT_ACC_SPEED = 0.2;
+    private static final double MAX_ACC_SPEED = 0.8;
+    private static final double ACCELERATION_INCREMENT = 0.3;
 
     //conditii
     private boolean bNoConstraintsMode = false;
+    private boolean bAccelerationMode = false;
     private boolean bHasPressedBumpers = false;
     private boolean bHasReachedMax = false;
+
+    private static final double delay = 10;
+
+    //variables
+    private static double AccelerationSpeed = 0;
+
 
     @Override
     public void runOpMode()
@@ -39,16 +49,34 @@ public class Driver_Mode extends RobotHardwareClass {
     }
 
     protected void gamepad_1(){
-        if ( abs(gamepad1.left_stick_x) > deadzone || abs(gamepad1.left_stick_y) > deadzone || abs(gamepad1.right_stick_x) > deadzone){
-            calculateWheelsPower(-gamepad1.left_stick_y , gamepad1.left_stick_x , gamepad1.right_stick_x, 0.7);
-            //telemetry.addData("FL" , MotorFL.getCurrentPosition());
-            //telemetry.addData("FR" , MotorFR.getCurrentPosition());
-            //telemetry.addData("BL" , MotorBL.getCurrentPosition());
-            //telemetry.addData("BR" , MotorBR.getCurrentPosition());
-        }
-        else
-            stop_walk();
 
+        if(!bAccelerationMode) {
+            if (abs(gamepad1.left_stick_x) > deadzone || abs(gamepad1.left_stick_y) > deadzone || abs(gamepad1.right_stick_x) > deadzone) {
+                calculateWheelsPower(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x, 0.7);
+            }
+            else
+                stop_walk();
+        }
+        else{
+            if (abs(gamepad1.left_stick_x) > deadzone || abs(gamepad1.left_stick_y) > deadzone || abs(gamepad1.right_stick_x) > deadzone) {
+                AccelerationSpeed += (delay / 1000) * ACCELERATION_INCREMENT;
+                AccelerationSpeed = Range.clip(AccelerationSpeed, -MAX_ACC_SPEED, MAX_ACC_SPEED);
+                calculateWheelsPower(-gamepad1.left_stick_y * AccelerationSpeed, gamepad1.left_stick_x * AccelerationSpeed, gamepad1.right_stick_x * AccelerationSpeed, 0.8);
+            }
+            else {
+                AccelerationSpeed = INIT_ACC_SPEED;
+                stop_walk();
+            }
+        }
+
+        if(gamepad1.right_bumper){
+            bAccelerationMode = true;
+        }
+        else if(gamepad1.left_bumper){
+            bAccelerationMode = false;
+        }
+
+        telemetry.addData("Acceleration mode : ", bAccelerationMode);
     }
 
     protected void gamepad_2(){
@@ -65,29 +93,32 @@ public class Driver_Mode extends RobotHardwareClass {
             bNoConstraintsMode = !bNoConstraintsMode;
             bHasPressedBumpers = false;
         }
+
+
         //Extend the sliders
-        else if (gamepad2.left_bumper){
-            //MotorExtindere.setPower(0.9); //TODO: switch to no constraints mode
-            MotorExtindere.setPower(bNoConstraintsMode ? -0.9 : MotorExtindere.getCurrentPosition() > EXTINDERE_MIN ? -0.9 : 0);
-            //telemetry.addData("extindere" , MotorExtindere.getCurrentPosition());
-        }
-        else if(gamepad2.right_bumper){
-            //MotorExtindere.setPower(-0.9); //TODO: switch to no constraints mode
+        if (gamepad2.right_bumper){
             MotorExtindere.setPower(bNoConstraintsMode ? 0.9 : MotorExtindere.getCurrentPosition() < MosorMax ? 0.9 : 0);
-            //telemetry.addData("extindere" , MotorExtindere.getCurrentPosition());
+        }
+        else if(gamepad2.left_bumper){
+            MotorExtindere.setPower(bNoConstraintsMode ? -0.9 : MotorExtindere.getCurrentPosition() > EXTINDERE_MIN ? -0.9 : 0);
         }
         else{
             MotorExtindere.setPower(0);
         }
 
+
         //By pressing one of the triggers, the sliding mechanism will move upwards or downwards.
-        if(gamepad2.left_trigger > deadzone) {
-            PowerMotoareGlisiera(bNoConstraintsMode ? -gamepad2.left_trigger : MotorGlisieraR.getCurrentPosition() > GLISIERA_MIN? -gamepad2.left_trigger : 0);
-        }else if(gamepad2.right_trigger > deadzone){
-            PowerMotoareGlisiera(bNoConstraintsMode ? +gamepad2.right_trigger : MotorGlisieraR.getCurrentPosition() < GLISIERA_MAX? +gamepad2.right_trigger : 0);
-        }else{
-            PowerMotoareGlisiera(0);
+        if(gamepad2.right_trigger > deadzone) {
+            PowerMotoareGlisiera(bNoConstraintsMode ? gamepad2.right_trigger : MotorGlisieraR.getCurrentPosition() < GLISIERA_MAX? gamepad2.right_trigger : 0);
         }
+        else if(gamepad2.left_trigger > deadzone){
+            PowerMotoareGlisiera(bNoConstraintsMode ? -gamepad2.left_trigger : MotorGlisieraR.getCurrentPosition() > GLISIERA_MIN? -gamepad2.left_trigger : 0);
+        }
+        else{
+            PowerMotoareGlisiera(0);
+            //telemetry.addData("Ar trebui sa se opreasca", " ");
+        }
+
 
         //Rotate the wheel
         if (gamepad2.a) {
@@ -102,6 +133,7 @@ public class Driver_Mode extends RobotHardwareClass {
             ContinuousServo.setPower(0);
         }
 
+
         //Set blocker position
         if (gamepad2.x) {
             FixedServo.setPosition(0);
@@ -111,7 +143,7 @@ public class Driver_Mode extends RobotHardwareClass {
             //telemetry.addData("y" , 0.6);
         }
 
-        telemetry.addData("Encoder Mosor : " , MotorExtindere.getCurrentPosition());
+        telemetry.addData("Encoder Mosor : " , MotorExtindere.getCurrentPosition() + " din mososr max : " + MosorMax);
         telemetry.addData("Encoder Glisiera Stanga : ", MotorGlisieraL.getCurrentPosition());
         telemetry.addData("No Constraints Mode : ", bNoConstraintsMode);
     }
