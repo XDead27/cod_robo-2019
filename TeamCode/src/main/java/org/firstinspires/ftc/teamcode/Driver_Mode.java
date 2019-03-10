@@ -62,7 +62,7 @@ public class Driver_Mode extends RobotHardwareClass {
         else{
             if (abs(gamepad1.left_stick_x) > deadzone || abs(gamepad1.left_stick_y) > deadzone || abs(gamepad1.right_stick_x) > deadzone) {
                 AccelerationSpeed += (delay / 1000) * ACCELERATION_INCREMENT;
-                AccelerationSpeed = Range.clip(AccelerationSpeed, -MAX_ACC_SPEED, MAX_ACC_SPEED);
+                AccelerationSpeed = Range.clip(AccelerationSpeed, 0, MAX_ACC_SPEED);
                 calculateWheelsPower(-gamepad1.left_stick_y * AccelerationSpeed, gamepad1.left_stick_x * AccelerationSpeed, gamepad1.right_stick_x * AccelerationSpeed, 0.8);
             }
             else {
@@ -85,6 +85,7 @@ public class Driver_Mode extends RobotHardwareClass {
         }
 
         telemetry.addData("Acceleration mode : ", bAccelerationMode);
+        telemetry.addData("Acceleration speed : ", AccelerationSpeed);
     }
 
     protected void gamepad_2(){

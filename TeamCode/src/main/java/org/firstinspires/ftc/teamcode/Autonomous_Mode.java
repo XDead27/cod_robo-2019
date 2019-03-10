@@ -848,6 +848,17 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
         PlantTeamMarker();
     }
 
+    protected void ContinuareCrater(MineralPosition now){
+        if(now == LEFT){
+            Rotate(-60);
+        }
+        else if(now == RIGHT){
+            Rotate(45);
+        }
+    }
+
+
+
     protected void ParkAtCrater(){
         //lower the sliders
         MoveSlidersEncoder(200 , 0.5);
