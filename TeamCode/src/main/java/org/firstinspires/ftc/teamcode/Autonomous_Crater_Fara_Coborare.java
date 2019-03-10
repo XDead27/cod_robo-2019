@@ -34,6 +34,8 @@ public final class Autonomous_Crater_Fara_Coborare extends Autonomous_Mode {
         //choose cube
         ChooseCube(now);
 
+        ContinuareCrater(now);
+
         //park
         ParkAtCrater();
     }

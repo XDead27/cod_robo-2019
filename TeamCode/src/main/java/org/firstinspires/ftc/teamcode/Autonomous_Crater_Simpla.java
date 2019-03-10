@@ -35,6 +35,8 @@ public final class Autonomous_Crater_Simpla extends Autonomous_Mode {
         //choose cube
         ChooseCube(now);
 
+        ContinuareCrater(now);
+
         //park
         ParkAtCrater();
     }
