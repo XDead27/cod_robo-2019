@@ -24,12 +24,12 @@ import static org.firstinspires.ftc.teamcode.MineralPosition.RIGHT;
 public abstract class Autonomous_Mode extends RobotHardwareClass {
 
     protected static int TICKS_PER_CM = 8; //TODO: chiar trebuie sa il aflam
-    protected static int DIST_GLISIERE = 2400;
-    protected static int DIST_GLISIERE_CRATER = 2200;
+    protected static int DIST_GLISIERE = 2500;
+    protected static int EXTINDERE_MAX = 3500;
     protected static double TOLERANCE = 0.0001;
-    protected static double DIAGONAL_CONSTANT = 2.0; //TODO
-    protected static double VERTICAL_CONSTANT = 1.0; //TODO
-    protected static double HORIZONTAL_CONSTANT = 1.5; //TODO
+    protected static double DIAGONAL_CONSTANT = 2.0;
+    protected static double VERTICAL_CONSTANT = 1.0;
+    protected static double HORIZONTAL_CONSTANT = 1.5;
     //Integrated gyro variables
     Orientation lastAngles = new Orientation();
     double globalAngle;
@@ -40,7 +40,7 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
     protected abstract void endOperations();
 
     @Override
-    public void runOpMode() {
+    public void runOpMode() throws  InterruptedException{
         initialise(false);
 
         waitForStart();
@@ -712,8 +712,6 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
         MotorFL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         MotorBR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         MotorFR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        MotorGlisieraL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        MotorGlisieraR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 
     private void RunWithAllEncoders() {
@@ -721,14 +719,14 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
         MotorFR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         MotorBL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         MotorBR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        MotorGlisieraL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        MotorGlisieraR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
     protected void LiftDown() {
-        ResetAllEncoders();
 
-        RunWithAllEncoders();
+        MotorGlisieraL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        MotorGlisieraR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        MotorGlisieraL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        MotorGlisieraR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         MotorGlisieraL.setPower(0.3);
         MotorGlisieraR.setPower(0.3);
@@ -740,21 +738,39 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
             idle();
         }
 
-        StopGlisiere();
         StopMotors();
+
+        MotorGlisieraL.setPower(0.7);
+        MotorGlisieraR.setPower(0.7);
+        sleep(100);
+
+        StopGlisiere();
     }
 
-    protected void LiftUp() {
-        ResetAllEncoders();
-        MotorGlisieraL.setPower(-0.5);
-        MotorGlisieraR.setPower(-0.5);
+    protected void MoveSlidersEncoder(int dist , double speed) {
 
-        while (Math.abs(MotorGlisieraL.getCurrentPosition()) < DIST_GLISIERE_CRATER && opModeIsActive()) {
+        //dist < 0 -> glisierele coboara
+        //dist > 0 -> glisierele urca
+
+        speed = Math.abs(speed);
+
+        int dir = 1;
+
+        if (dist < MotorGlisieraR.getCurrentPosition()){
+            speed *= -1;
+            dir = -1;
+        }
+
+        MotorGlisieraL.setPower(speed);
+        MotorGlisieraR.setPower(speed);
+
+        while (MotorGlisieraR.getCurrentPosition()*dir < dist*dir && opModeIsActive()) {
+            telemetry.addData("glisiere" , MotorGlisieraR.getCurrentPosition());
+            telemetry.update();
             idle();
         }
 
         StopGlisiere();
-        StopMotors();
     }
 
     protected void LiftPhoneUp() {
@@ -766,25 +782,33 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
     }
 
     protected void ExtendSlidingSystem() {
-        //TODO ExtendSlidingSystem
+        MotorExtindere.setPower(0.7);
+        while (Math.abs(MotorExtindere.getCurrentPosition()) < EXTINDERE_MAX && opModeIsActive()){
+            telemetry.addData("extindere" , MotorExtindere.getCurrentPosition());
+            telemetry.update();
+            idle();
+        }
+        MotorExtindere.setPower(0);
     }
 
     protected void GetObjects() {
-        ContinuousServo.setPower(1);
+        while (opModeIsActive()){
+            ContinuousServo.setPower(-1);
+        }
     }
 
     protected void PlantTeamMarker() {
-        //TODO PlantTeamMarker
-        TeamMarkerServo.setPosition(1);
-        sleep(1000);
-        TeamMarkerServo.setPosition(0.5);
-        sleep(1000);
+        while (opModeIsActive()){
+            TeamMarkerServo.setPosition(1);
+            sleep(1000);
+            TeamMarkerServo.setPosition(0.5);
+            sleep(1000);
+        }
     }
 
     protected void StopGlisiere(){
         MotorGlisieraL.setPower(0);
         MotorGlisieraR.setPower(0);
     }
-
 
 }

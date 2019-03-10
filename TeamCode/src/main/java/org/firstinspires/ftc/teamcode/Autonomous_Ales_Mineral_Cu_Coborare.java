@@ -1,24 +1,21 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 import static org.firstinspires.ftc.teamcode.MineralPosition.LEFT;
 import static org.firstinspires.ftc.teamcode.MineralPosition.MIDDLE;
 import static org.firstinspires.ftc.teamcode.MineralPosition.RIGHT;
 
-@Autonomous(name = "Autonomous_Square", group = "Autonomous")
+@Autonomous(name = "Autonomous_Ales_Mineral_Cu_Coborare", group = "Autonomous")
 
-public final class Autonomous_Square_Aliat extends Autonomous_Mode {
+public final class Autonomous_Ales_Mineral_Cu_Coborare extends Autonomous_Mode {
 
     @Override
-    protected void initialise(boolean bIsDriver){
+    protected void initialise(boolean bIsDriver) {
         super.initialise(bIsDriver);
 
-        //while(!(isStarted() && !Thread.currentThread().isInterrupted())) {
-            MotorGlisieraL.setPower(-0.03);
-            MotorGlisieraR.setPower(-0.03);
-        //}
+        MotorGlisieraL.setPower(-0.05);
+        MotorGlisieraR.setPower(-0.05);
     }
 
     @Override
@@ -31,7 +28,7 @@ public final class Autonomous_Square_Aliat extends Autonomous_Mode {
         CalibrateGyro();
 
         //move left
-        WalkEncoder(9 , 0.5 , 90);
+        WalkEncoder(8 , 0.5 , 90);
 
         //see where the cube is
         LiftPhoneUp();
@@ -40,11 +37,10 @@ public final class Autonomous_Square_Aliat extends Autonomous_Mode {
 
         //go the cube and push it
         if (now == LEFT){
-            WalkEncoder(20 , 0.5 , 0);
-            WalkEncoder(40 , 0.5 , 45);
-            WalkEncoder(50 , 0.5 , 0);
+            WalkEncoder(30 , 0.5 , 0);
+            WalkEncoder(55 , 0.5 , 45);
+            WalkEncoder(80 , 0.5 , 0);
             Rotate(-135);
-            WalkEncoder(65 , 0.5 , 90);
         }
         else if (now == MIDDLE){
             WalkEncoder(30 , 0.5 , 0);
@@ -57,10 +53,7 @@ public final class Autonomous_Square_Aliat extends Autonomous_Mode {
             WalkEncoder(40 , 0.5 , -90);
             WalkEncoder(80 , 0.5 , 0);
             Rotate(-70);
-            WalkEncoder( 30, 0.5, 90);
         }
-
-        PlantTeamMarker();
 
     }
 
@@ -68,4 +61,5 @@ public final class Autonomous_Square_Aliat extends Autonomous_Mode {
     protected void endOperations() {
 
     }
+
 }

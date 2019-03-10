@@ -24,26 +24,20 @@ public final class Autonomous_Test extends Autonomous_Mode {
 
         while(opModeIsActive()) {
             if (gamepad1.a){
-                /*LiftPhoneUp();
-                MineralPosition now = Position(2);
-                LiftPhoneDown();
-                while (opModeIsActive() && !gamepad1.dpad_up){
-                    telemetry.addData("position" , now);
-                    telemetry.update();
-                }*/
-                TestWalkEncoder(argument , 0.5 , 90+45);
-
+                ExtendSlidingSystem();
+                GetObjects();
+                //TestWalkEncoder(argument , 0.5 , 90+45);
             }
             else if(gamepad1.b){
-                TestWalkEncoder(argument , 0.5 , 180+45);
+                //TestWalkEncoder(argument , 0.5 , 180+45);
 
             }
             else if (gamepad1.x) {
-                TestWalkEncoder(argument , 0.5 , 45);
+                //TestWalkEncoder(argument , 0.5 , 45);
                 //PlantTeamMarker();
             }
             else if (gamepad1.y) {
-                TestWalkEncoder(argument , 0.5 , -45);
+                //TestWalkEncoder(argument , 0.5 , -45);
             }
             else if (gamepad1.dpad_up) {
                 TestWalkEncoder(argument , 0.5 , 0);

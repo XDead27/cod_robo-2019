@@ -36,7 +36,6 @@ public final class Autonomous_Crater_Complexa_Optimizare extends Autonomous_Mode
 
         //extend sliding system and let it down in the crater
         ExtendSlidingSystem();
-        LiftUp();
 
         //try to capture objects until the end
         GetObjects();

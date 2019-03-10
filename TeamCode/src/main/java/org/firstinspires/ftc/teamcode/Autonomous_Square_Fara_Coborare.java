@@ -7,28 +7,22 @@ import static org.firstinspires.ftc.teamcode.MineralPosition.LEFT;
 import static org.firstinspires.ftc.teamcode.MineralPosition.MIDDLE;
 import static org.firstinspires.ftc.teamcode.MineralPosition.RIGHT;
 
-@Autonomous(name = "Autonomous_Square", group = "Autonomous")
+@Autonomous(name = "Autonomous_Square_Fara_Coborare", group = "Autonomous")
 
-public final class Autonomous_Square_Aliat extends Autonomous_Mode {
+public final class Autonomous_Square_Fara_Coborare extends Autonomous_Mode {
 
     @Override
     protected void initialise(boolean bIsDriver){
         super.initialise(bIsDriver);
-
-        //while(!(isStarted() && !Thread.currentThread().isInterrupted())) {
-            MotorGlisieraL.setPower(-0.03);
-            MotorGlisieraR.setPower(-0.03);
-        //}
     }
 
     @Override
     protected void runOperations() {
 
-        //let the robot down
-        LiftDown();
-
         //calibrate gyro
         CalibrateGyro();
+
+        MoveSlidersEncoder(1000 , 0.5);
 
         //move left
         WalkEncoder(9 , 0.5 , 90);
