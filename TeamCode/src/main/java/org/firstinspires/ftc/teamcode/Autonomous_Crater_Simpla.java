@@ -14,8 +14,8 @@ public final class Autonomous_Crater_Simpla extends Autonomous_Mode {
     protected void initialise(boolean bIsDriver) {
         super.initialise(bIsDriver);
 
-        MotorGlisieraL.setPower(-0.05);
-        MotorGlisieraR.setPower(-0.05);
+        MotorGlisieraL.setPower(-0.035);
+        MotorGlisieraR.setPower(-0.035);
     }
 
     @Override
@@ -28,7 +28,7 @@ public final class Autonomous_Crater_Simpla extends Autonomous_Mode {
         CalibrateGyro();
 
         //move left
-        WalkEncoder(8 , 0.5 , 90);
+        WalkEncoder(10 , 0.5 , 90);
 
         //see where the cube is
         LiftPhoneUp();
@@ -37,23 +37,23 @@ public final class Autonomous_Crater_Simpla extends Autonomous_Mode {
 
         //go the cube and push it
         if (now == LEFT){
-            WalkEncoder(35 , 0.5 , 0);
-            WalkEncoder(45 , 0.5 , 45);
             WalkEncoder(30 , 0.5 , 0);
+            WalkEncoder(55 , 0.5 , 45);
+            WalkEncoder(20 , 0.5 , 0);
         }
         else if (now == MIDDLE){
             WalkEncoder(30 , 0.5 , 0);
             WalkEncoder(45 , 0.5 , -45);
-            WalkEncoder(30 , 0.5 , 0);
+            WalkEncoder(25 , 0.5 , 0);
         }
         else if (now == RIGHT){
             WalkEncoder(55 , 0.5 , -45);
-            WalkEncoder(50 , 0.5 , -90);
+            WalkEncoder(40 , 0.5 , -90);
             WalkEncoder(30 , 0.5 , 0);
         }
 
         //lower the sliders
-        MoveSlidersEncoder(0 , 0.5);
+        MoveSlidersEncoder(200 , 0.5);
 
         //extend the sliders
         ExtendSlidingSystem();

@@ -40,7 +40,7 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
     protected abstract void endOperations();
 
     @Override
-    public void runOpMode() {
+    public void runOpMode() throws  InterruptedException{
         initialise(false);
 
         waitForStart();
@@ -782,7 +782,7 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
     }
 
     protected void ExtendSlidingSystem() {
-        MotorExtindere.setPower(-0.7);
+        MotorExtindere.setPower(0.7);
         while (Math.abs(MotorExtindere.getCurrentPosition()) < EXTINDERE_MAX && opModeIsActive()){
             telemetry.addData("extindere" , MotorExtindere.getCurrentPosition());
             telemetry.update();
@@ -810,6 +810,5 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
         MotorGlisieraL.setPower(0);
         MotorGlisieraR.setPower(0);
     }
-
 
 }

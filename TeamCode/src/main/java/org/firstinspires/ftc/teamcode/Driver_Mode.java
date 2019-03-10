@@ -13,8 +13,8 @@ public class Driver_Mode extends RobotHardwareClass {
     protected final double deadzone = 0.1;
     protected final int GLISIERA_MAX = 3200;
     protected final int GLISIERA_MIN = 0;
-    private final int EXTINDERE_MAX_GLISIERA_MAX = 2421;
-    private final int EXTINDERE_MAX_GLISIERA_MIN = 1850;
+    private final int EXTINDERE_MAX_GLISIERA_MAX = 5150;
+    private final int EXTINDERE_MAX_GLISIERA_MIN = 3600;
     private final int EXTINDERE_DIFERENTA = EXTINDERE_MAX_GLISIERA_MAX - EXTINDERE_MAX_GLISIERA_MIN;
     private final int EXTINDERE_MIN = 0; //TODO: gaseste valori:
     private static final double INIT_ACC_SPEED = 0.2;
@@ -30,7 +30,7 @@ public class Driver_Mode extends RobotHardwareClass {
     private static final double delay = 10;
 
     //variables
-    private static double AccelerationSpeed = 0;
+    private static double AccelerationSpeed = INIT_ACC_SPEED;
 
 
     @Override
@@ -45,6 +45,8 @@ public class Driver_Mode extends RobotHardwareClass {
             gamepad_1();
             gamepad_2();
             telemetry.update();
+
+            sleep((long) delay);
         }
     }
 
@@ -66,6 +68,12 @@ public class Driver_Mode extends RobotHardwareClass {
             else {
                 AccelerationSpeed = INIT_ACC_SPEED;
                 stop_walk();
+            }
+        }
+
+        if (gamepad1.dpad_up){
+            while (opModeIsActive() && !gamepad1.dpad_down){
+                PowerMotoareGlisiera(-0.4);
             }
         }
 
@@ -97,10 +105,10 @@ public class Driver_Mode extends RobotHardwareClass {
 
         //Extend the sliders
         if (gamepad2.right_bumper){
-            MotorExtindere.setPower(bNoConstraintsMode ? 0.9 : MotorExtindere.getCurrentPosition() < MosorMax ? 0.9 : 0);
+            MotorExtindere.setPower(bNoConstraintsMode ? -0.9 : MotorExtindere.getCurrentPosition() > EXTINDERE_MIN? -0.9 : 0);
         }
         else if(gamepad2.left_bumper){
-            MotorExtindere.setPower(bNoConstraintsMode ? -0.9 : MotorExtindere.getCurrentPosition() > EXTINDERE_MIN ? -0.9 : 0);
+            MotorExtindere.setPower(bNoConstraintsMode ? 0.9 : MotorExtindere.getCurrentPosition() < MosorMax ? 0.9 : 0);
         }
         else{
             MotorExtindere.setPower(0);

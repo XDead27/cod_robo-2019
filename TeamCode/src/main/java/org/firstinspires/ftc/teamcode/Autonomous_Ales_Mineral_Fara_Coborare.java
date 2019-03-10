@@ -34,21 +34,23 @@ public final class Autonomous_Ales_Mineral_Fara_Coborare extends Autonomous_Mode
 
         //go the cube and push it
         if (now == LEFT){
-            WalkEncoder(35 , 0.5 , 0);
-            WalkEncoder(45 , 0.5 , 45);
             WalkEncoder(30 , 0.5 , 0);
+            WalkEncoder(55 , 0.5 , 45);
+            WalkEncoder(80 , 0.5 , 0);
+            Rotate(-135);
         }
         else if (now == MIDDLE){
             WalkEncoder(30 , 0.5 , 0);
             WalkEncoder(45 , 0.5 , -45);
-            WalkEncoder(30 , 0.5 , 0);
+            WalkEncoder(80 , 0.5 , 0);
+            Rotate(-90);
         }
         else if (now == RIGHT){
             WalkEncoder(55 , 0.5 , -45);
-            WalkEncoder(50 , 0.5 , -90);
-            WalkEncoder(30 , 0.5 , 0);
+            WalkEncoder(40 , 0.5 , -90);
+            WalkEncoder(80 , 0.5 , 0);
+            Rotate(-70);
         }
-
     }
 
     @Override
