@@ -811,4 +811,52 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
         MotorGlisieraR.setPower(0);
     }
 
+    protected void ChooseCube(MineralPosition now){
+        if (now == LEFT){
+            WalkEncoder(30 , 0.5 , 0);
+            WalkEncoder(55 , 0.5 , 45);
+            WalkEncoder(20 , 0.5 , 0);
+        }
+        else if (now == MIDDLE){
+            WalkEncoder(30 , 0.5 , 0);
+            WalkEncoder(45 , 0.5 , -45);
+            WalkEncoder(25 , 0.5 , 0);
+        }
+        else if (now == RIGHT){
+            WalkEncoder(55 , 0.5 , -45);
+            WalkEncoder(40 , 0.5 , -90);
+            WalkEncoder(30 , 0.5 , 0);
+        }
+    }
+
+    protected void LetTeamMarker(MineralPosition now){
+        if (now == LEFT){
+            WalkEncoder(30 , 0.5 , 0);
+            Rotate(-135);
+            WalkEncoder(65 , 0.5 , 90);
+        }
+        else if (now == MIDDLE){
+            WalkEncoder(55 , 0.5 , 0);
+            Rotate(-90);
+        }
+        else if (now == RIGHT){
+            WalkEncoder(50 , 0.5 , 0);
+            Rotate(-70);
+            WalkEncoder( 30, 0.5, 90);
+        }
+
+        PlantTeamMarker();
+    }
+
+    protected void ParkAtCrater(){
+        //lower the sliders
+        MoveSlidersEncoder(200 , 0.5);
+
+        //extend the sliders
+        ExtendSlidingSystem();
+
+        //try to capture objects until the end
+        GetObjects();
+    }
+
 }
