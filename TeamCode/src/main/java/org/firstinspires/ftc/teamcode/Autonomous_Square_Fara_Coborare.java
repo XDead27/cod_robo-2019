@@ -14,13 +14,18 @@ public final class Autonomous_Square_Fara_Coborare extends Autonomous_Mode {
     @Override
     protected void initialise(boolean bIsDriver){
         super.initialise(bIsDriver);
+
+        //calibrate gyro
+        CalibrateGyro();
+
+        telemetry.addData("waiting for start " , "");
+        telemetry.update();
     }
 
     @Override
     protected void runOperations() {
 
-        //calibrate gyro
-        CalibrateGyro();
+
 
         MoveSlidersEncoder(1000 , 0.5);
 

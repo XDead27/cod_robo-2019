@@ -11,15 +11,20 @@ import static org.firstinspires.ftc.teamcode.MineralPosition.RIGHT;
 public final class Autonomous_Crater_Fara_Coborare extends Autonomous_Mode {
 
     @Override
-    protected void initialise(boolean bIsDriver){
+    protected void initialise(boolean bIsDriver) {
         super.initialise(bIsDriver);
+
+        //calibrate gyro
+        CalibrateGyro();
+
+        telemetry.addData("waiting for start " , "");
+        telemetry.update();
     }
 
     @Override
     protected void runOperations() {
 
-        //calibrate gyro
-        CalibrateGyro();
+
 
         MoveSlidersEncoder(1000 , 0.5);
 
