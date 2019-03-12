@@ -17,8 +17,8 @@ public class Driver_Mode extends RobotHardwareClass {
     private final int EXTINDERE_MAX_GLISIERA_MIN = 3600;
     private final int EXTINDERE_DIFERENTA = EXTINDERE_MAX_GLISIERA_MAX - EXTINDERE_MAX_GLISIERA_MIN;
     private final int EXTINDERE_MIN = 0; //TODO: gaseste valori:
-    private static final double INIT_ACC_SPEED = 0.2;
-    private static final double MAX_ACC_SPEED = 0.8;
+    private static final double INIT_ACC_SPEED = 0.6;
+    private static final double MAX_ACC_SPEED = 0.9;
     private static final double ACCELERATION_INCREMENT = 0.3;
 
     //conditii
