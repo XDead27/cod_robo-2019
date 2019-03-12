@@ -189,13 +189,13 @@ public class Driver_Mode extends RobotHardwareClass {
         //double BL = Range.clip(FRBLNormal + rotate , -0.7 , 0.7);
         //double BR = Range.clip(FLBRNormal - rotate , -0.7 , 0.7);
 
-        /*telemetry.addData("FLBR Normal : ", FLBRNormal);
+        telemetry.addData("FLBR Normal : ", FLBRNormal);
         telemetry.addData("FLBR Normal : ", FRBLNormal);
         telemetry.addData("FLBR Speed : ", SpeedFLBR);
         telemetry.addData("FLBR Speed : ", SpeedFRBL);
         telemetry.addData("FLBR Final : ", SpeedFLBR + rotate);
         telemetry.addData("FLBR Final : ", SpeedFRBL + rotate);
-        telemetry.addData("Scaling Coefficient : ", ScalingCoefficient);*/
+        telemetry.addData("Scaling Coefficient : ", ScalingCoefficient);
 
         MotorFL.setPower(Range.clip(SpeedFLBR + rotate, -maxspeed, maxspeed));
         MotorFR.setPower(Range.clip(SpeedFRBL - rotate, -maxspeed, maxspeed));
