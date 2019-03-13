@@ -9,12 +9,11 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
 @TeleOp (name = "Driver_Mode_Servos", group = "Driver")
-@Disabled
 
 public class Driver_Mode_Servos extends LinearOpMode {
 
-    protected CRServo ContinuousServo = null;
-    protected Servo FixedServo = null;
+    protected CRServo ContinuousServoL = null;
+    protected CRServo ContinuousServoR = null;
 
     @Override
     public void runOpMode() {
@@ -24,37 +23,34 @@ public class Driver_Mode_Servos extends LinearOpMode {
 
         while (opModeIsActive()) {
             if (gamepad1.a) {
-                ContinuousServo.setPower(0.9);
+                ContinuousServoL.setPower(0.9);
+                ContinuousServoR.setPower(-0.9);
             }
             else if (gamepad1.b) {
-                ContinuousServo.setPower(-0.9);
+                ContinuousServoL.setPower(-0.9);
+                ContinuousServoR.setPower(0.9);
             }
             else {
-                ContinuousServo.setPower(0);
-            }
-
-            if (gamepad1.x) {
-                FixedServo.setPosition(0);
-            } else if (gamepad1.y) {
-                FixedServo.setPosition(0.7);
+                ContinuousServoL.setPower(0);
+                ContinuousServoR.setPower(0);
             }
         }
     }
 
     public void initialise () {
         //mapare
-        ContinuousServo = hardwareMap.crservo.get("ContinuousServo");
-        FixedServo = hardwareMap.servo.get("FixedServo");
+        ContinuousServoL = hardwareMap.crservo.get("ContinuousServoL");
+        ContinuousServoR = hardwareMap.crservo.get("ContinuousServoR");
 
         //putere initiala
-        ContinuousServo.setPower(0);
+        ContinuousServoL.setPower(0);
+        ContinuousServoR.setPower(0);
 
         //pozitie initiala
-        FixedServo.setPosition(FixedServo.MIN_POSITION);
 
         //directii
-        ContinuousServo.setDirection(CRServo.Direction.FORWARD);
-        FixedServo.setDirection(Servo.Direction.FORWARD);
+        ContinuousServoL.setDirection(CRServo.Direction.FORWARD);
+        ContinuousServoR.setDirection(CRServo.Direction.FORWARD);
     }
 }
 
