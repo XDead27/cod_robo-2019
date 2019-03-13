@@ -14,6 +14,7 @@ public class Driver_Mode_Servos extends LinearOpMode {
 
     protected CRServo ContinuousServoL = null;
     protected CRServo ContinuousServoR = null;
+    protected Servo SelectionServo = null;
 
     @Override
     public void runOpMode() {
@@ -34,6 +35,16 @@ public class Driver_Mode_Servos extends LinearOpMode {
                 ContinuousServoL.setPower(0);
                 ContinuousServoR.setPower(0);
             }
+
+            if (gamepad1.dpad_up){
+                SelectionServo.setPosition(0.6);
+            }
+            else if (gamepad1.dpad_left){
+                SelectionServo.setPosition(0.35);
+            }
+            else if (gamepad1.dpad_down){
+                SelectionServo.setPosition(0);
+            }
         }
     }
 
@@ -41,16 +52,19 @@ public class Driver_Mode_Servos extends LinearOpMode {
         //mapare
         ContinuousServoL = hardwareMap.crservo.get("ContinuousServoL");
         ContinuousServoR = hardwareMap.crservo.get("ContinuousServoR");
+        SelectionServo = hardwareMap.servo.get("SelectionServo");
 
         //putere initiala
         ContinuousServoL.setPower(0);
         ContinuousServoR.setPower(0);
 
         //pozitie initiala
+        SelectionServo.setPosition(0);
 
         //directii
         ContinuousServoL.setDirection(CRServo.Direction.FORWARD);
         ContinuousServoR.setDirection(CRServo.Direction.FORWARD);
+        SelectionServo.setDirection(Servo.Direction.FORWARD);
     }
 }
 
