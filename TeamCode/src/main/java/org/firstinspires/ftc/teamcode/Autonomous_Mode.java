@@ -71,7 +71,7 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
         if (elem == 2) {
             while (opModeIsActive()) {
                 List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
-                if (updatedRecognitions != null && updatedRecognitions.size() == 2) {
+                if (updatedRecognitions != null && updatedRecognitions.size() >= 2) {
                     String label1 = "";
                     String label2 = "";
                     int top1 = -1; //top de la tel cand e vertical , deci left pt landscape
@@ -774,7 +774,7 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
     }
 
     protected void LiftPhoneUp() {
-        PhoneServo.setPosition(0);
+        PhoneServo.setPosition(0.1);
     }
 
     protected void LiftPhoneDown() {
@@ -814,18 +814,18 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
     protected void ChooseCube(MineralPosition now){
         if (now == LEFT){
             WalkEncoder(30 , 0.5 , 0);
-            WalkEncoder(55 , 0.5 , 45);
+            WalkEncoder(15 , 0.5 , 45);
             WalkEncoder(20 , 0.5 , 0);
         }
         else if (now == MIDDLE){
             WalkEncoder(30 , 0.5 , 0);
-            WalkEncoder(45 , 0.5 , -45);
+            WalkEncoder(50 , 0.5 , -45);
             WalkEncoder(25 , 0.5 , 0);
         }
         else if (now == RIGHT){
             WalkEncoder(55 , 0.5 , -45);
-            WalkEncoder(40 , 0.5 , -90);
-            WalkEncoder(30 , 0.5 , 0);
+            WalkEncoder(35 , 0.5 , -90);
+            WalkEncoder(40 , 0.5 , 0);
         }
     }
 
@@ -833,14 +833,14 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
         if (now == LEFT){
             WalkEncoder(30 , 0.5 , 0);
             Rotate(-135);
-            WalkEncoder(65 , 0.5 , 90);
+            WalkEncoder(70 , 0.5 , 90);
         }
         else if (now == MIDDLE){
             WalkEncoder(55 , 0.5 , 0);
-            Rotate(-90);
+            Rotate(-100);
         }
         else if (now == RIGHT){
-            WalkEncoder(50 , 0.5 , 0);
+            WalkEncoder(45 , 0.5 , 0);
             Rotate(-70);
             WalkEncoder( 30, 0.5, 90);
         }
@@ -850,10 +850,10 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
 
     protected void ContinuareCrater(MineralPosition now){
         if(now == LEFT){
-            Rotate(-60);
+            Rotate(-20);
         }
         else if(now == RIGHT){
-            Rotate(45);
+            Rotate(10);
         }
     }
 

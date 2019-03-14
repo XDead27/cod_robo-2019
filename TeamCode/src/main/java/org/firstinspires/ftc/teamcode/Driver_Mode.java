@@ -17,8 +17,8 @@ public class Driver_Mode extends RobotHardwareClass {
     private final int EXTINDERE_MAX_GLISIERA_MIN = 3600;
     private final int EXTINDERE_DIFERENTA = EXTINDERE_MAX_GLISIERA_MAX - EXTINDERE_MAX_GLISIERA_MIN;
     private final int EXTINDERE_MIN = 0; //TODO: gaseste valori:
-    private static final double INIT_ACC_SPEED = 0.2;
-    private static final double MAX_ACC_SPEED = 0.8;
+    private static final double INIT_ACC_SPEED = 0.6;
+    private static final double MAX_ACC_SPEED = 0.9;
     private static final double ACCELERATION_INCREMENT = 0.3;
 
     //conditii
@@ -63,7 +63,7 @@ public class Driver_Mode extends RobotHardwareClass {
             if (abs(gamepad1.left_stick_x) > deadzone || abs(gamepad1.left_stick_y) > deadzone || abs(gamepad1.right_stick_x) > deadzone) {
                 AccelerationSpeed += (delay / 1000) * ACCELERATION_INCREMENT;
                 AccelerationSpeed = Range.clip(AccelerationSpeed, 0, MAX_ACC_SPEED);
-                calculateWheelsPower(-gamepad1.left_stick_y * AccelerationSpeed, gamepad1.left_stick_x * AccelerationSpeed, gamepad1.right_stick_x * AccelerationSpeed, 0.8);
+                calculateWheelsPower(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x, AccelerationSpeed);
             }
             else {
                 AccelerationSpeed = INIT_ACC_SPEED;
