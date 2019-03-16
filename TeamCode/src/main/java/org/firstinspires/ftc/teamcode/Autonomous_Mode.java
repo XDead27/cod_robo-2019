@@ -589,27 +589,23 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
 
     //align with wall
     protected void AlignWithWall() {
-        double FLPower = 0.7;
-        double BLPower = 0.7;
-        double FRPower = -0.7;
-        double BRPower = -0.7;
+        if (RangeL.getDistance(DistanceUnit.CM) > RangeR.getDistance(DistanceUnit.CM)){
 
-        SetWheelsPower(FLPower, FRPower, BLPower, BRPower);
+            SetWheelsPower(0.3, -0.3, 0.3, -0.3);
 
-        while (opModeIsActive() && Math.abs(RangeL.getDistance(DistanceUnit.CM) - RangeR.getDistance(DistanceUnit.CM)) > 5) {
-            idle();
+            while (opModeIsActive() && RangeL.getDistance(DistanceUnit.CM) - RangeR.getDistance(DistanceUnit.CM) > 0) {
+                idle();
+            }
+        }
+        else{
+            SetWheelsPower(-0.3, 0.3, -0.3, 0.3);
+
+            while (opModeIsActive() && RangeR.getDistance(DistanceUnit.CM) - RangeL.getDistance(DistanceUnit.CM) > 0) {
+                idle();
+            }
         }
 
-        AlignWithWallSlowly(FLPower / 2, BLPower / 2, FRPower / 2, BRPower / 2);
-        StopMotors();
-    }
 
-    protected void AlignWithWallSlowly(double FLPower, double BLPower, double FRPower, double BRPower) {
-        SetWheelsPower(FLPower, FRPower, BLPower, BRPower);
-
-        while (opModeIsActive() && Math.abs(RangeL.getDistance(DistanceUnit.CM) - RangeR.getDistance(DistanceUnit.CM)) > 0) {
-            idle();
-        }
         StopMotors();
     }
 
@@ -870,8 +866,6 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
         }
     }
 
-
-
     protected void ParkAtCrater(){
         //lower the sliders
         MoveSlidersEncoder(200 , 0.5);
@@ -881,6 +875,20 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
 
         //try to capture objects until the end
         GetObjects();
+    }
+
+    protected void GoBackAndTurn(){
+        WalkEncoder(-10 , 0.5 , 0);
+        Rotate(90);
+    }
+
+    protected void WalkToWall(){
+        double DeadZoneRange = 3;
+        SetWheelsPower(0.3 , 0.3);
+        while (!(RangeL.getDistance(DistanceUnit.CM) > DeadZoneRange && RangeL.getDistance(DistanceUnit.CM) < 20) && !(RangeR.getDistance(DistanceUnit.CM) > DeadZoneRange && RangeR.getDistance(DistanceUnit.CM) < 20)){
+            idle();
+        }
+        StopMotors();
     }
 
 }

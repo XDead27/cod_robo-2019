@@ -35,6 +35,9 @@ public final class Autonomous_Test extends Autonomous_Mode {
                 //TestWalkEncoder(argument , 0.5 , 90+45);
             }
             else if(gamepad1.b){
+                WalkToWall();
+
+                AlignWithWall();
                 //TestWalkEncoder(argument , 0.5 , 180+45);
 
             }
