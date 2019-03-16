@@ -26,7 +26,7 @@ public final class Autonomous_Square extends Autonomous_Mode {
         CalibrateGyro();
 
         //move left
-        WalkEncoder(10 , 0.5 , 90);
+        MoveToUnlatch();
 
         //see where the cube is
         LiftPhoneUp();

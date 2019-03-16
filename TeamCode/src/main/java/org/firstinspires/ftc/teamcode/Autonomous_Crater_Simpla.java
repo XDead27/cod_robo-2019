@@ -25,7 +25,7 @@ public final class Autonomous_Crater_Simpla extends Autonomous_Mode {
         CalibrateGyro();
 
         //move left
-        WalkEncoder(10 , 0.5 , 90);
+        MoveToUnlatch();
 
         //see where the cube is
         LiftPhoneUp();

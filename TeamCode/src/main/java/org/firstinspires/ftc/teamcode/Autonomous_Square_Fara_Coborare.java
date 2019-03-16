@@ -25,12 +25,10 @@ public final class Autonomous_Square_Fara_Coborare extends Autonomous_Mode {
     @Override
     protected void runOperations() {
 
-
-
-        MoveSlidersEncoder(1000 , 0.5);
+        LiftSlidersUpABit();
 
         //move left
-        WalkEncoder(10 , 0.5 , 90);
+        MoveToUnlatch();
 
         //see where the cube is
         LiftPhoneUp();

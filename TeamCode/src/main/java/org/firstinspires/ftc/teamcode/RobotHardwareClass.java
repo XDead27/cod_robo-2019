@@ -38,10 +38,8 @@ public abstract class RobotHardwareClass extends LinearOpMode {
     protected Servo TeamMarkerServo = null;
 
     //senzori
-    protected ModernRoboticsI2cColorSensor color = null;
     protected ModernRoboticsI2cRangeSensor RangeL = null;
     protected ModernRoboticsI2cRangeSensor RangeR = null;
-    protected ModernRoboticsI2cGyro gyro = null;
     BNO055IMU imuGyro;
 
     //vuforia stuff
@@ -74,6 +72,11 @@ public abstract class RobotHardwareClass extends LinearOpMode {
         FixedServo = hardwareMap.servo.get("FixedServo");
         PhoneServo = hardwareMap.servo.get("PhoneServo");
         TeamMarkerServo = hardwareMap.servo.get("TeamMarkerServo");
+
+        RangeL = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "RangeL");
+        RangeR = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "RangeR");
+
+        //RangeL.setI2cAddress(RangeR.getI2cAddress());
 
         //initializare putere
         MotorFL.setPower(0);

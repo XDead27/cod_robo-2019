@@ -86,6 +86,10 @@ public class Driver_Mode extends RobotHardwareClass {
 
         telemetry.addData("Acceleration mode : ", bAccelerationMode);
         telemetry.addData("Acceleration speed : ", AccelerationSpeed);
+        telemetry.addData("FL" , MotorFL.getCurrentPosition());
+        telemetry.addData("FR" , MotorFR.getCurrentPosition());
+        telemetry.addData("BL" , MotorBL.getCurrentPosition());
+        telemetry.addData("BR" , MotorBR.getCurrentPosition());
     }
 
     protected void gamepad_2(){

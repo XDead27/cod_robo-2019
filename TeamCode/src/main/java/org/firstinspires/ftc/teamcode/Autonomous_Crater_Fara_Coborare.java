@@ -24,12 +24,10 @@ public final class Autonomous_Crater_Fara_Coborare extends Autonomous_Mode {
     @Override
     protected void runOperations() {
 
-
-
-        MoveSlidersEncoder(1000 , 0.5);
+        LiftSlidersUpABit();
 
         //move left
-        WalkEncoder(10 , 0.5 , 90);
+        MoveToUnlatch();
 
         //see where the cube is
         LiftPhoneUp();
@@ -39,10 +37,10 @@ public final class Autonomous_Crater_Fara_Coborare extends Autonomous_Mode {
         //choose cube
         ChooseCube(now);
 
-        ContinuareCrater(now);
+        //ContinuareCrater(now);
 
         //park
-        ParkAtCrater();
+        //ParkAtCrater();
     }
 
     @Override

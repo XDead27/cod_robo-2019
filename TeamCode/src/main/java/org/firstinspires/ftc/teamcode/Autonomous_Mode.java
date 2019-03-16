@@ -23,7 +23,7 @@ import static org.firstinspires.ftc.teamcode.MineralPosition.RIGHT;
 
 public abstract class Autonomous_Mode extends RobotHardwareClass {
 
-    protected static int TICKS_PER_CM = 8; //TODO: chiar trebuie sa il aflam
+    protected static int TICKS_PER_CM = 15; //TODO: chiar trebuie sa il aflam
     protected static int DIST_GLISIERE = 2500;
     protected static int EXTINDERE_MAX = 3500;
     protected static double TOLERANCE = 0.0001;
@@ -65,11 +65,14 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
         //TODO : sa inteleg ce este top, bottom, left, right (daca sunt fata de mardinile ecranului sau altceva), dam telemetry sa aflam
         //TODO : atunci cand sunt la crater sa incerc sa nu iau din greseala elem din spate
 
-        MineralPosition ret = null;
+        MineralPosition ret = RIGHT;
         tfod.activate();
 
         if (elem == 2) {
-            while (opModeIsActive()) {
+            int MaxTime = 4000;
+            int CurTime = 0;
+            int period = 5;
+            while (opModeIsActive() && CurTime < MaxTime) {
                 List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
                 if (updatedRecognitions != null && updatedRecognitions.size() >= 2) {
                     String label1 = "";
@@ -114,6 +117,8 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
                         break;
                     }
                 }
+                sleep(period);
+                CurTime+=period;
             }
         } else if (elem == 3) {
             while (opModeIsActive()) {
@@ -774,7 +779,7 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
     }
 
     protected void LiftPhoneUp() {
-        PhoneServo.setPosition(0.1);
+        PhoneServo.setPosition(0.115);
     }
 
     protected void LiftPhoneDown() {
@@ -811,21 +816,29 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
         MotorGlisieraR.setPower(0);
     }
 
+    protected void LiftSlidersUpABit(){
+        MoveSlidersEncoder(500 , 0.5);
+    }
+
+    protected void MoveToUnlatch(){
+        WalkEncoder(8 , 0.5 , 90);
+    }
+
     protected void ChooseCube(MineralPosition now){
         if (now == LEFT){
-            WalkEncoder(30 , 0.5 , 0);
-            WalkEncoder(15 , 0.5 , 45);
             WalkEncoder(20 , 0.5 , 0);
+            WalkEncoder(30 , 0.5 , 45);
+            WalkEncoder(10 , 0.5 , 0);
         }
         else if (now == MIDDLE){
-            WalkEncoder(30 , 0.5 , 0);
-            WalkEncoder(50 , 0.5 , -45);
-            WalkEncoder(25 , 0.5 , 0);
+            WalkEncoder(20 , 0.5 , 0);
+            WalkEncoder(30 , 0.5 , -45);
+            WalkEncoder(10 , 0.5 , 0);
         }
         else if (now == RIGHT){
-            WalkEncoder(55 , 0.5 , -45);
-            WalkEncoder(35 , 0.5 , -90);
-            WalkEncoder(40 , 0.5 , 0);
+            WalkEncoder(35 , 0.5 , -45);
+            WalkEncoder(20 , 0.5 , -90);
+            WalkEncoder(10 , 0.5 , 0);
         }
     }
 
