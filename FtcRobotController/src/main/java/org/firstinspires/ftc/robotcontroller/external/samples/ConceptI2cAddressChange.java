@@ -45,9 +45,10 @@ import java.util.concurrent.locks.Lock;
  */
 @TeleOp(name = "Concept: I2c Address Change", group = "Concept")
 @Disabled
+
 public class ConceptI2cAddressChange extends LinearOpMode {
 
-  public static final int ADDRESS_SET_NEW_I2C_ADDRESS = 0x70;
+  public static final int ADDRESS_SET_NEW_I2C_ADDRESS = 0x28;
   // trigger bytes used to change I2C address on ModernRobotics sensors.
   public static final byte TRIGGER_BYTE_1 = 0x55;
   public static final byte TRIGGER_BYTE_2 = (byte) 0xaa;

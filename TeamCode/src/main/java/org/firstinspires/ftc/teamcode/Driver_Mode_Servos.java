@@ -9,13 +9,18 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
 @TeleOp (name = "Driver_Mode_Servos", group = "Driver")
-@Disabled
 
 public class Driver_Mode_Servos extends LinearOpMode {
 
+<<<<<<< HEAD
     protected CRServo ContinuousServo = null;
     protected Servo FixedServo = null;
     boolean left = false;
+=======
+    protected CRServo ContinuousServoL = null;
+    protected CRServo ContinuousServoR = null;
+    protected Servo SelectionServo = null;
+>>>>>>> 95e7a2767e919f953cd7f4e26b59d86943316946
 
     @Override
     public void runOpMode() {
@@ -37,27 +42,54 @@ public class Driver_Mode_Servos extends LinearOpMode {
            }
 =======
             if (gamepad1.a) {
-                ContinuousServo.setPower(0.9);
+                ContinuousServoL.setPower(0.9);
+                ContinuousServoR.setPower(-0.9);
             }
             else if (gamepad1.b) {
-                ContinuousServo.setPower(-0.9);
+                ContinuousServoL.setPower(-0.9);
+                ContinuousServoR.setPower(0.9);
             }
             else {
-                ContinuousServo.setPower(0);
+                ContinuousServoL.setPower(0);
+                ContinuousServoR.setPower(0);
             }
 
-            if (gamepad1.x) {
-                FixedServo.setPosition(0);
-            } else if (gamepad1.y) {
-                FixedServo.setPosition(0.7);
+            if (gamepad1.dpad_up){
+                SelectionServo.setPosition(0.6);
+            }
+            else if (gamepad1.dpad_left){
+                SelectionServo.setPosition(0.35);
+            }
+            else if (gamepad1.dpad_down){
+                SelectionServo.setPosition(0);
             }
 >>>>>>> bdf9a695e918826f3c0436e224b6ea081ec564b3
         }
     }
 
+<<<<<<< HEAD
     protected void initialise(){
         ContinuousServo = hardwareMap.crservo.get("ContinuousServo");
         FixedServo = hardwareMap.servo.get("FixedServo");
+=======
+    public void initialise () {
+        //mapare
+        ContinuousServoL = hardwareMap.crservo.get("ContinuousServoL");
+        ContinuousServoR = hardwareMap.crservo.get("ContinuousServoR");
+        SelectionServo = hardwareMap.servo.get("SelectionServo");
+
+        //putere initiala
+        ContinuousServoL.setPower(0);
+        ContinuousServoR.setPower(0);
+
+        //pozitie initiala
+        SelectionServo.setPosition(0);
+
+        //directii
+        ContinuousServoL.setDirection(CRServo.Direction.FORWARD);
+        ContinuousServoR.setDirection(CRServo.Direction.FORWARD);
+        SelectionServo.setDirection(Servo.Direction.FORWARD);
+>>>>>>> 95e7a2767e919f953cd7f4e26b59d86943316946
     }
 
 }

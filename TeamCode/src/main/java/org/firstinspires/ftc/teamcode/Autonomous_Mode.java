@@ -23,7 +23,7 @@ import static org.firstinspires.ftc.teamcode.MineralPosition.RIGHT;
 
 public abstract class Autonomous_Mode extends RobotHardwareClass {
 
-    protected static int TICKS_PER_CM = 8; //TODO: chiar trebuie sa il aflam
+    protected static int TICKS_PER_CM = 15; //TODO: chiar trebuie sa il aflam
     protected static int DIST_GLISIERE = 2500;
     protected static int EXTINDERE_MAX = 3500;
     protected static double TOLERANCE = 0.0001;
@@ -65,13 +65,16 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
         //TODO : sa inteleg ce este top, bottom, left, right (daca sunt fata de mardinile ecranului sau altceva), dam telemetry sa aflam
         //TODO : atunci cand sunt la crater sa incerc sa nu iau din greseala elem din spate
 
-        MineralPosition ret = null;
+        MineralPosition ret = RIGHT;
         tfod.activate();
 
         if (elem == 2) {
-            while (opModeIsActive()) {
+            int MaxTime = 4000;
+            int CurTime = 0;
+            int period = 5;
+            while (opModeIsActive() && CurTime < MaxTime) {
                 List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
-                if (updatedRecognitions != null && updatedRecognitions.size() == 2) {
+                if (updatedRecognitions != null && updatedRecognitions.size() >= 2) {
                     String label1 = "";
                     String label2 = "";
                     int top1 = -1; //top de la tel cand e vertical , deci left pt landscape
@@ -114,6 +117,8 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
                         break;
                     }
                 }
+                sleep(period);
+                CurTime+=period;
             }
         } else if (elem == 3) {
             while (opModeIsActive()) {
@@ -584,27 +589,23 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
 
     //align with wall
     protected void AlignWithWall() {
-        double FLPower = 0.7;
-        double BLPower = 0.7;
-        double FRPower = -0.7;
-        double BRPower = -0.7;
+        if (RangeL.getDistance(DistanceUnit.CM) > RangeR.getDistance(DistanceUnit.CM)){
 
-        SetWheelsPower(FLPower, FRPower, BLPower, BRPower);
+            SetWheelsPower(0.3, -0.3, 0.3, -0.3);
 
-        while (opModeIsActive() && Math.abs(RangeL.getDistance(DistanceUnit.CM) - RangeR.getDistance(DistanceUnit.CM)) > 5) {
-            idle();
+            while (opModeIsActive() && RangeL.getDistance(DistanceUnit.CM) - RangeR.getDistance(DistanceUnit.CM) > 0) {
+                idle();
+            }
+        }
+        else{
+            SetWheelsPower(-0.3, 0.3, -0.3, 0.3);
+
+            while (opModeIsActive() && RangeR.getDistance(DistanceUnit.CM) - RangeL.getDistance(DistanceUnit.CM) > 0) {
+                idle();
+            }
         }
 
-        AlignWithWallSlowly(FLPower / 2, BLPower / 2, FRPower / 2, BRPower / 2);
-        StopMotors();
-    }
 
-    protected void AlignWithWallSlowly(double FLPower, double BLPower, double FRPower, double BRPower) {
-        SetWheelsPower(FLPower, FRPower, BLPower, BRPower);
-
-        while (opModeIsActive() && Math.abs(RangeL.getDistance(DistanceUnit.CM) - RangeR.getDistance(DistanceUnit.CM)) > 0) {
-            idle();
-        }
         StopMotors();
     }
 
@@ -774,7 +775,7 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
     }
 
     protected void LiftPhoneUp() {
-        PhoneServo.setPosition(0);
+        PhoneServo.setPosition(0.115);
     }
 
     protected void LiftPhoneDown() {
@@ -809,6 +810,85 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
     protected void StopGlisiere(){
         MotorGlisieraL.setPower(0);
         MotorGlisieraR.setPower(0);
+    }
+
+    protected void LiftSlidersUpABit(){
+        MoveSlidersEncoder(500 , 0.5);
+    }
+
+    protected void MoveToUnlatch(){
+        WalkEncoder(8 , 0.5 , 90);
+    }
+
+    protected void ChooseCube(MineralPosition now){
+        if (now == LEFT){
+            WalkEncoder(20 , 0.5 , 0);
+            WalkEncoder(30 , 0.5 , 45);
+            WalkEncoder(10 , 0.5 , 0);
+        }
+        else if (now == MIDDLE){
+            WalkEncoder(20 , 0.5 , 0);
+            WalkEncoder(30 , 0.5 , -45);
+            WalkEncoder(10 , 0.5 , 0);
+        }
+        else if (now == RIGHT){
+            WalkEncoder(35 , 0.5 , -45);
+            WalkEncoder(20 , 0.5 , -90);
+            WalkEncoder(10 , 0.5 , 0);
+        }
+    }
+
+    protected void LetTeamMarker(MineralPosition now){
+        if (now == LEFT){
+            WalkEncoder(30 , 0.5 , 0);
+            Rotate(-135);
+            WalkEncoder(70 , 0.5 , 90);
+        }
+        else if (now == MIDDLE){
+            WalkEncoder(55 , 0.5 , 0);
+            Rotate(-100);
+        }
+        else if (now == RIGHT){
+            WalkEncoder(45 , 0.5 , 0);
+            Rotate(-70);
+            WalkEncoder( 30, 0.5, 90);
+        }
+
+        PlantTeamMarker();
+    }
+
+    protected void ContinuareCrater(MineralPosition now){
+        if(now == LEFT){
+            Rotate(-20);
+        }
+        else if(now == RIGHT){
+            Rotate(10);
+        }
+    }
+
+    protected void ParkAtCrater(){
+        //lower the sliders
+        MoveSlidersEncoder(200 , 0.5);
+
+        //extend the sliders
+        ExtendSlidingSystem();
+
+        //try to capture objects until the end
+        GetObjects();
+    }
+
+    protected void GoBackAndTurn(){
+        WalkEncoder(-10 , 0.5 , 0);
+        Rotate(90);
+    }
+
+    protected void WalkToWall(){
+        double DeadZoneRange = 3;
+        SetWheelsPower(0.3 , 0.3);
+        while (!(RangeL.getDistance(DistanceUnit.CM) > DeadZoneRange && RangeL.getDistance(DistanceUnit.CM) < 20) && !(RangeR.getDistance(DistanceUnit.CM) > DeadZoneRange && RangeR.getDistance(DistanceUnit.CM) < 20)){
+            idle();
+        }
+        StopMotors();
     }
 
 }

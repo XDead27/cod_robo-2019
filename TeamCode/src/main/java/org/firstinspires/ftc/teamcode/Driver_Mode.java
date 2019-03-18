@@ -17,8 +17,8 @@ public class Driver_Mode extends RobotHardwareClass {
     private final int EXTINDERE_MAX_GLISIERA_MIN = 3600;
     private final int EXTINDERE_DIFERENTA = EXTINDERE_MAX_GLISIERA_MAX - EXTINDERE_MAX_GLISIERA_MIN;
     private final int EXTINDERE_MIN = 0; //TODO: gaseste valori:
-    private static final double INIT_ACC_SPEED = 0.2;
-    private static final double MAX_ACC_SPEED = 0.8;
+    private static final double INIT_ACC_SPEED = 0.6;
+    private static final double MAX_ACC_SPEED = 0.9;
     private static final double ACCELERATION_INCREMENT = 0.3;
 
     //conditii
@@ -62,8 +62,8 @@ public class Driver_Mode extends RobotHardwareClass {
         else{
             if (abs(gamepad1.left_stick_x) > deadzone || abs(gamepad1.left_stick_y) > deadzone || abs(gamepad1.right_stick_x) > deadzone) {
                 AccelerationSpeed += (delay / 1000) * ACCELERATION_INCREMENT;
-                AccelerationSpeed = Range.clip(AccelerationSpeed, -MAX_ACC_SPEED, MAX_ACC_SPEED);
-                calculateWheelsPower(-gamepad1.left_stick_y * AccelerationSpeed, gamepad1.left_stick_x * AccelerationSpeed, gamepad1.right_stick_x * AccelerationSpeed, 0.8);
+                AccelerationSpeed = Range.clip(AccelerationSpeed, 0, MAX_ACC_SPEED);
+                calculateWheelsPower(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x, AccelerationSpeed);
             }
             else {
                 AccelerationSpeed = INIT_ACC_SPEED;
@@ -85,6 +85,11 @@ public class Driver_Mode extends RobotHardwareClass {
         }
 
         telemetry.addData("Acceleration mode : ", bAccelerationMode);
+        telemetry.addData("Acceleration speed : ", AccelerationSpeed);
+        telemetry.addData("FL" , MotorFL.getCurrentPosition());
+        telemetry.addData("FR" , MotorFR.getCurrentPosition());
+        telemetry.addData("BL" , MotorBL.getCurrentPosition());
+        telemetry.addData("BR" , MotorBR.getCurrentPosition());
     }
 
     protected void gamepad_2(){
@@ -183,18 +188,13 @@ public class Driver_Mode extends RobotHardwareClass {
         double SpeedFLBR = FLBRNormal * ScalingCoefficient;
         double SpeedFRBL = FRBLNormal * ScalingCoefficient;
 
-        //double FL = Range.clip(FLBRNormal + rotate , -0.7 , 0.7);
-        //double FR = Range.clip(FRBLNormal - rotate , -0.7 , 0.7);
-        //double BL = Range.clip(FRBLNormal + rotate , -0.7 , 0.7);
-        //double BR = Range.clip(FLBRNormal - rotate , -0.7 , 0.7);
-
-        /*telemetry.addData("FLBR Normal : ", FLBRNormal);
+        telemetry.addData("FLBR Normal : ", FLBRNormal);
         telemetry.addData("FLBR Normal : ", FRBLNormal);
         telemetry.addData("FLBR Speed : ", SpeedFLBR);
         telemetry.addData("FLBR Speed : ", SpeedFRBL);
         telemetry.addData("FLBR Final : ", SpeedFLBR + rotate);
         telemetry.addData("FLBR Final : ", SpeedFRBL + rotate);
-        telemetry.addData("Scaling Coefficient : ", ScalingCoefficient);*/
+        telemetry.addData("Scaling Coefficient : ", ScalingCoefficient);
 
         MotorFL.setPower(Range.clip(SpeedFLBR + rotate, -maxspeed, maxspeed));
         MotorFR.setPower(Range.clip(SpeedFRBL - rotate, -maxspeed, maxspeed));

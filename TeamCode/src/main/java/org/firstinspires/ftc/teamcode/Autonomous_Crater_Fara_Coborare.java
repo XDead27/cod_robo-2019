@@ -11,50 +11,42 @@ import static org.firstinspires.ftc.teamcode.MineralPosition.RIGHT;
 public final class Autonomous_Crater_Fara_Coborare extends Autonomous_Mode {
 
     @Override
-    protected void initialise(boolean bIsDriver){
+    protected void initialise(boolean bIsDriver) {
         super.initialise(bIsDriver);
+
+        //calibrate gyro
+        CalibrateGyro();
+
+        telemetry.addData("waiting for start " , "");
+        telemetry.update();
     }
 
     @Override
     protected void runOperations() {
 
-        //calibrate gyro
-        CalibrateGyro();
-
-        MoveSlidersEncoder(1000 , 0.5);
+        LiftSlidersUpABit();
 
         //move left
-        WalkEncoder(9 , 0.5 , 90);
+        MoveToUnlatch();
 
         //see where the cube is
         LiftPhoneUp();
         MineralPosition now = Position(2);
         LiftPhoneDown();
 
-        if (now == LEFT){
-            WalkEncoder(20 , 0.5 , 0);
-            WalkEncoder(40 , 0.5 , 45);
-            WalkEncoder(30 , 0.5 , 0);
-        }
-        else if (now == MIDDLE){
-            WalkEncoder(30 , 0.5 , 0);
-            WalkEncoder(45 , 0.5 , -45);
-            WalkEncoder(30 , 0.5 , 0);
-        }
-        else if (now == RIGHT){
-            WalkEncoder(55 , 0.5 , -45);
-            WalkEncoder(40 , 0.5 , -90);
-            WalkEncoder(30 , 0.5 , 0);
-        }
+        //choose cube
+        ChooseCube(now);
 
-        //lower the sliders
-        MoveSlidersEncoder(200 , 0.5);
+        GoBackAndTurn();
 
-        //extend the sliders
-        ExtendSlidingSystem();
+        WalkToWall();
 
-        //try to capture objects until the end
-        GetObjects();
+        AlignWithWall();
+
+        //ContinuareCrater(now);
+
+        //park
+        //ParkAtCrater();
     }
 
     @Override
