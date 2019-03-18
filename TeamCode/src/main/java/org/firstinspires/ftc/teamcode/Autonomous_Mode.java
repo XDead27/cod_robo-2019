@@ -775,11 +775,11 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
     }
 
     protected void LiftPhoneUp() {
-        PhoneServo.setPosition(0.115);
+        ServoPhone.setPosition(0.115);
     }
 
     protected void LiftPhoneDown() {
-        PhoneServo.setPosition(0.5);
+        ServoPhone.setPosition(0.5);
     }
 
     protected void ExtendSlidingSystem() {
@@ -794,15 +794,15 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
 
     protected void GetObjects() {
         while (opModeIsActive()){
-            ContinuousServo.setPower(-1);
+            MotorRotirePerii.setPower(-0.7);
         }
     }
 
     protected void PlantTeamMarker() {
         while (opModeIsActive()){
-            TeamMarkerServo.setPosition(1);
+            ServoTeamMarker.setPosition(1);
             sleep(1000);
-            TeamMarkerServo.setPosition(0.5);
+            ServoTeamMarker.setPosition(0.5);
             sleep(1000);
         }
     }

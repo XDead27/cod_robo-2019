@@ -32,18 +32,6 @@ public class Driver_Mode extends RobotHardwareClass {
     //variables
     private static double AccelerationSpeed = INIT_ACC_SPEED;
 
-    //motor rotit perii - tetrix
-    //4 servo :
-    //-> 2 blocaj
-    //-> 2 sortat
-
-    //4 cazuri gamepad2 pt sortare :
-    //-> sus - cub cub
-    //-> jos - bila bila
-    //-> stanga - cub bila
-    //-> dreaota - bila cub
-
-
     @Override
     public void runOpMode()
     {
@@ -144,27 +132,39 @@ public class Driver_Mode extends RobotHardwareClass {
         }
 
 
-        //Rotate the wheel
+        //Rotate the brushes
         if (gamepad2.a) {
-            ContinuousServo.setPower(1);
-            //telemetry.addData("a" , 1);
+            MotorRotirePerii.setPower(0.7);
         }
         else if (gamepad2.b) {
-            ContinuousServo.setPower(-1);
-            //telemetry.addData("b" , -1);
+            MotorRotirePerii.setPower(-0.7);
         }
         else {
-            ContinuousServo.setPower(0);
+            MotorRotirePerii.setPower(0);
         }
 
+        //TODO : setat servouri din servo controller si dat valori mai jos
+        //4 cazuri gamepad2 pt sortare :
+        //-> sus - cub cub
+        //-> jos - bila bila
+        //-> stanga - cub bila
+        //-> dreaota - bila cub
 
-        //Set blocker position
-        if (gamepad2.x) {
-            FixedServo.setPosition(0);
-            //telemetry.addData("x" , 0);
-        } else if (gamepad2.y) {
-            FixedServo.setPosition(0.6);
-            //telemetry.addData("y" , 0.6);
+        if (gamepad2.dpad_up){
+            ServoSortareL.setPosition(0);
+            ServoSortareR.setPosition(0);
+        }
+        else if (gamepad2.dpad_left) {
+            ServoSortareL.setPosition(0);
+            ServoSortareR.setPosition(0);
+        }
+        else if (gamepad2.dpad_right){
+            ServoSortareL.setPosition(0);
+            ServoSortareR.setPosition(0);
+        }
+        else if (gamepad2.dpad_down){
+            ServoSortareL.setPosition(0);
+            ServoSortareR.setPosition(0);
         }
 
         telemetry.addData("Encoder Mosor : " , MotorExtindere.getCurrentPosition() + " din mososr max : " + MosorMax);

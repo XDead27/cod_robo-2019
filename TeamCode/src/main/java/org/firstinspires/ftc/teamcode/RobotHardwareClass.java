@@ -46,6 +46,8 @@ public abstract class RobotHardwareClass extends LinearOpMode {
     //senzori
     protected ModernRoboticsI2cRangeSensor RangeL = null;
     protected ModernRoboticsI2cRangeSensor RangeR = null;
+
+    //gyro
     BNO055IMU imuGyro;
 
     //vuforia stuff
