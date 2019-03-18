@@ -32,6 +32,17 @@ public class Driver_Mode extends RobotHardwareClass {
     //variables
     private static double AccelerationSpeed = INIT_ACC_SPEED;
 
+    //motor rotit perii - tetrix
+    //4 servo :
+    //-> 2 blocaj
+    //-> 2 sortat
+
+    //4 cazuri gamepad2 pt sortare :
+    //-> sus - cub cub
+    //-> jos - bila bila
+    //-> stanga - cub bila
+    //-> dreaota - bila cub
+
 
     @Override
     public void runOpMode()
