@@ -78,17 +78,18 @@ public class Driver_Mode extends RobotHardwareClass {
 
         if(gamepad1.right_bumper){
             bAccelerationMode = true;
+
         }
         else if(gamepad1.left_bumper){
             bAccelerationMode = false;
         }
 
-        telemetry.addData("Acceleration mode : ", bAccelerationMode);
-        telemetry.addData("Acceleration speed : ", AccelerationSpeed);
-        telemetry.addData("FL" , MotorFL.getCurrentPosition());
-        telemetry.addData("FR" , MotorFR.getCurrentPosition());
-        telemetry.addData("BL" , MotorBL.getCurrentPosition());
-        telemetry.addData("BR" , MotorBR.getCurrentPosition());
+//        telemetry.addData("Acceleration mode : ", bAccelerationMode);
+//        telemetry.addData("Acceleration speed : ", AccelerationSpeed);
+//        telemetry.addData("FL" , MotorFL.getCurrentPosition());
+//        telemetry.addData("FR" , MotorFR.getCurrentPosition());
+//        telemetry.addData("BL" , MotorBL.getCurrentPosition());
+//        telemetry.addData("BR" , MotorBR.getCurrentPosition());
     }
 
     protected void gamepad_2(){
@@ -125,6 +126,7 @@ public class Driver_Mode extends RobotHardwareClass {
         }
         else if(gamepad2.left_trigger > deadzone){
             PowerMotoareGlisiera(bNoConstraintsMode ? -gamepad2.left_trigger : MotorGlisieraR.getCurrentPosition() > GLISIERA_MIN? -gamepad2.left_trigger : 0);
+            OpenCloseBoxes(false);
         }
         else{
             PowerMotoareGlisiera(0);
@@ -153,18 +155,22 @@ public class Driver_Mode extends RobotHardwareClass {
         if (gamepad2.dpad_up){
             ServoSortareL.setPosition(0);
             ServoSortareR.setPosition(0);
+            OpenCloseBoxes(true);
         }
         else if (gamepad2.dpad_left) {
             ServoSortareL.setPosition(0);
             ServoSortareR.setPosition(0);
+            OpenCloseBoxes(true);
         }
         else if (gamepad2.dpad_right){
             ServoSortareL.setPosition(0);
             ServoSortareR.setPosition(0);
+            OpenCloseBoxes(true);
         }
         else if (gamepad2.dpad_down){
             ServoSortareL.setPosition(0);
             ServoSortareR.setPosition(0);
+            OpenCloseBoxes(true);
         }
 
         telemetry.addData("Encoder Mosor : " , MotorExtindere.getCurrentPosition() + " din mososr max : " + MosorMax);
@@ -204,13 +210,13 @@ public class Driver_Mode extends RobotHardwareClass {
         //double BL = Range.clip(FRBLNormal + rotate , -0.7 , 0.7);
         //double BR = Range.clip(FLBRNormal - rotate , -0.7 , 0.7);
 
-        telemetry.addData("FLBR Normal : ", FLBRNormal);
-        telemetry.addData("FLBR Normal : ", FRBLNormal);
-        telemetry.addData("FLBR Speed : ", SpeedFLBR);
-        telemetry.addData("FLBR Speed : ", SpeedFRBL);
-        telemetry.addData("FLBR Final : ", SpeedFLBR + rotate);
-        telemetry.addData("FLBR Final : ", SpeedFRBL + rotate);
-        telemetry.addData("Scaling Coefficient : ", ScalingCoefficient);
+//        telemetry.addData("FLBR Normal : ", FLBRNormal);
+//        telemetry.addData("FLBR Normal : ", FRBLNormal);
+//        telemetry.addData("FLBR Speed : ", SpeedFLBR);
+//        telemetry.addData("FLBR Speed : ", SpeedFRBL);
+//        telemetry.addData("FLBR Final : ", SpeedFLBR + rotate);
+//        telemetry.addData("FLBR Final : ", SpeedFRBL + rotate);
+//        telemetry.addData("Scaling Coefficient : ", ScalingCoefficient);
 
         MotorFL.setPower(Range.clip(SpeedFLBR + rotate, -maxspeed, maxspeed));
         MotorFR.setPower(Range.clip(SpeedFRBL - rotate, -maxspeed, maxspeed));
@@ -230,5 +236,17 @@ public class Driver_Mode extends RobotHardwareClass {
     private boolean GatherAndExtendMACRO(byte dir){
         PowerMotoareGlisiera(dir * 0.7);
         return false;
+    }
+
+    private void OpenCloseBoxes(boolean open){
+        if(open){
+            //TODO: gaseste valori
+            ServoBlocareL.setPosition(0);
+            ServoBlocareR.setPosition(0);
+        }
+        else{
+            ServoBlocareL.setPosition(0.5);
+            ServoBlocareR.setPosition(0.5);
+        }
     }
 }

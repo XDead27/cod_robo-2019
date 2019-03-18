@@ -40,7 +40,7 @@ public final class Autonomous_Test extends Autonomous_Mode {
                 //
                 //AlignWithWall();
 
-                WalkObstacleAndRangeNORMAL(10, false);
+                WalkObstacleAndRangeNORMAL(10, false, 0.6);
 
             }
             else if (gamepad1.x) {
