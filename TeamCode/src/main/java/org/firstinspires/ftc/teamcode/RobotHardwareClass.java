@@ -29,13 +29,19 @@ public abstract class RobotHardwareClass extends LinearOpMode {
     //motoare mecanisme
     protected DcMotor MotorGlisieraL = null;
     protected DcMotor MotorGlisieraR = null;
+
     protected DcMotor MotorExtindere = null;
+    protected DcMotor MotorRotirePerii = null;
 
     //servo
-    protected CRServo ContinuousServo = null;
-    protected Servo FixedServo = null;
-    protected Servo PhoneServo = null;
-    protected Servo TeamMarkerServo = null;
+    protected Servo ServoSortareL = null;
+    protected Servo ServoSortareR = null;
+
+    protected Servo ServoBlocareL = null;
+    protected Servo ServoBlocareR = null;
+
+    protected Servo ServoPhone = null;
+    protected Servo ServoTeamMarker = null;
 
     //senzori
     protected ModernRoboticsI2cRangeSensor RangeL = null;
@@ -57,91 +63,131 @@ public abstract class RobotHardwareClass extends LinearOpMode {
     //************
 
     protected void initialise(boolean bIsDriver){
-        //hardware mapping
+        //TODO : HARDWARE MAPPING
+
+        //motoare roti
         MotorFL = hardwareMap.dcMotor.get("MotorFL");
         MotorFR = hardwareMap.dcMotor.get("MotorFR");
         MotorBL = hardwareMap.dcMotor.get("MotorBL");
         MotorBR = hardwareMap.dcMotor.get("MotorBR");
 
+        //motoare mecanisme
         MotorGlisieraL = hardwareMap.dcMotor.get("MotorGlisieraL");
         MotorGlisieraR = hardwareMap.dcMotor.get("MotorGlisieraR");
+
         MotorExtindere = hardwareMap.dcMotor.get("MotorExtindere");
+        MotorRotirePerii = hardwareMap.dcMotor.get("MotorRotirePerii");
 
-        ContinuousServo = hardwareMap.crservo.get("ContinuousServo");
+        //servo
+        ServoSortareL = hardwareMap.servo.get("ServoSortareL");
+        ServoSortareR = hardwareMap.servo.get("ServoSortareR");
 
-        FixedServo = hardwareMap.servo.get("FixedServo");
-        PhoneServo = hardwareMap.servo.get("PhoneServo");
-        TeamMarkerServo = hardwareMap.servo.get("TeamMarkerServo");
+        ServoBlocareL = hardwareMap.servo.get("ServoBlocareL");
+        ServoBlocareR = hardwareMap.servo.get("ServoBlocareR");
 
+        ServoPhone = hardwareMap.servo.get("ServoPhone");
+        ServoTeamMarker = hardwareMap.servo.get("ServoTeamMarker");
+
+        //senzori
         RangeL = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "RangeL");
         RangeR = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "RangeR");
 
         //RangeL.setI2cAddress(RangeR.getI2cAddress());
 
-        //initializare putere
+        //TODO : INITIALIZARE PUTERE
+
+        //motoare roti
         MotorFL.setPower(0);
         MotorFR.setPower(0);
         MotorBL.setPower(0);
         MotorBR.setPower(0);
 
+        //motoare mecanisme
         MotorGlisieraL.setPower(0);
         MotorGlisieraR.setPower(0);
+
         MotorExtindere.setPower(0);
+        MotorRotirePerii.setPower(0);
 
-        ContinuousServo.setPower(0);
+        //INITIALIZARE POZITIE SERVO
+        ServoSortareL.setPosition(0.5);
+        ServoSortareR.setPosition(0.5);
 
-        //initializare pozitie
-        FixedServo.setPosition(0);
-        PhoneServo.setPosition(0.5);
-        TeamMarkerServo.setPosition(0.5);
+        ServoBlocareL.setPosition(0.5);
+        ServoBlocareR.setPosition(0.5);
 
-        //setare directii
+        ServoPhone.setPosition(0.5);
+        ServoTeamMarker.setPosition(0.5);
+
+        //TODO : SETARE DIRECTII
+
+        //motoare roti
         MotorFL.setDirection(DcMotorSimple.Direction.REVERSE);
         MotorFR.setDirection(DcMotorSimple.Direction.FORWARD);
         MotorBL.setDirection(DcMotorSimple.Direction.REVERSE);
         MotorBR.setDirection(DcMotorSimple.Direction.FORWARD);
 
+        //motoare mecanisme
         MotorGlisieraL.setDirection(DcMotorSimple.Direction.FORWARD);
         MotorGlisieraR.setDirection(DcMotorSimple.Direction.REVERSE);
+
         MotorExtindere.setDirection(DcMotorSimple.Direction.FORWARD);
+        MotorRotirePerii.setDirection(DcMotorSimple.Direction.FORWARD);
 
-        ContinuousServo.setDirection(CRServo.Direction.FORWARD);
-        FixedServo.setDirection(Servo.Direction.FORWARD);
-        PhoneServo.setDirection(Servo.Direction.FORWARD);
-        TeamMarkerServo.setDirection(Servo.Direction.FORWARD);
+        //servo
+        ServoSortareL.setDirection(Servo.Direction.FORWARD);
+        ServoSortareR.setDirection(Servo.Direction.FORWARD);
 
+        ServoBlocareL.setDirection(Servo.Direction.FORWARD);
+        ServoBlocareR.setDirection(Servo.Direction.FORWARD);
 
-        //reset encoder
+        ServoPhone.setDirection(Servo.Direction.FORWARD);
+        ServoTeamMarker.setDirection(Servo.Direction.FORWARD);
+
+        //TODO : RESET ENCODER
+
+        //motoare roti
         MotorFL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         MotorFR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         MotorBL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         MotorBR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
+        //motoare mecanisme
         MotorGlisieraL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         MotorGlisieraR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
         MotorExtindere.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        //setare encoder
+        //TODO : SETARE ENCODER
+
+        //motoare roti
         MotorFL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         MotorFR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         MotorBL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         MotorBR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
+        //motoare mecanisme
         MotorGlisieraL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         MotorGlisieraR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
         MotorExtindere.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        //setare cand power == 0
+        //TODO : SETARE BREAK
+
+        //motoare roti
         MotorFL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         MotorFR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         MotorBL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         MotorBR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
+        //motoare mecanisme
         MotorGlisieraL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         MotorGlisieraR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
         MotorExtindere.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        //vuforia
+        //TODO : VUFORIA
+
         if(!bIsDriver) {
             VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
             parameters.vuforiaLicenseKey = VUFORIA_KEY;
@@ -158,9 +204,7 @@ public abstract class RobotHardwareClass extends LinearOpMode {
         }
 
 
-        //GYRO
-        //
-        //
+        //TODO : GYRO
 
         imuGyro = hardwareMap.get(BNO055IMU.class, "imu");
     }
