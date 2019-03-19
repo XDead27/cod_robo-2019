@@ -85,7 +85,7 @@ public class Driver_Mode extends RobotHardwareClass {
             bAccelerationMode = false;
         }
 
-//        telemetry.addData("Acceleration mode : ", bAccelerationMode);
+        telemetry.addData("Acceleration mode : ", bAccelerationMode);
 //        telemetry.addData("Acceleration speed : ", AccelerationSpeed);
 //        telemetry.addData("FL" , MotorFL.getCurrentPosition());
 //        telemetry.addData("FR" , MotorFR.getCurrentPosition());
@@ -137,10 +137,10 @@ public class Driver_Mode extends RobotHardwareClass {
 
         //Rotate the brushes
         if (gamepad2.a) {
-            MotorRotirePerii.setPower(0.3);
+            MotorRotirePerii.setPower(0.6);
         }
         else if (gamepad2.b) {
-            MotorRotirePerii.setPower(-0.3);
+            MotorRotirePerii.setPower(-0.6);
         }
         else {
             //if(Math.abs(MotorRotirePerii.getCurrentPosition() - ENCODER_AX_POS_IDEALA) < 5) {
