@@ -20,6 +20,7 @@ public class Driver_Mode extends RobotHardwareClass {
     private static final double INIT_ACC_SPEED = 0.6;
     private static final double MAX_ACC_SPEED = 0.9;
     private static final double ACCELERATION_INCREMENT = 0.3;
+    private static final double ENCODER_AX_POS_IDEALA = 0;
 
     //conditii
     private boolean bNoConstraintsMode = false;
@@ -136,13 +137,15 @@ public class Driver_Mode extends RobotHardwareClass {
 
         //Rotate the brushes
         if (gamepad2.a) {
-            MotorRotirePerii.setPower(0.7);
+            MotorRotirePerii.setPower(0.3);
         }
         else if (gamepad2.b) {
-            MotorRotirePerii.setPower(-0.7);
+            MotorRotirePerii.setPower(-0.3);
         }
         else {
-            MotorRotirePerii.setPower(0);
+            //if(Math.abs(MotorRotirePerii.getCurrentPosition() - ENCODER_AX_POS_IDEALA) < 5) {
+                MotorRotirePerii.setPower(0);
+            //}
         }
 
         //TODO : setat servouri din servo controller si dat valori mai jos
@@ -175,6 +178,7 @@ public class Driver_Mode extends RobotHardwareClass {
 
         telemetry.addData("Encoder Mosor : " , MotorExtindere.getCurrentPosition() + " din mososr max : " + MosorMax);
         telemetry.addData("Encoder Glisiera Stanga : ", MotorGlisieraL.getCurrentPosition());
+        telemetry.addData("Encoder Ax : ", MotorRotirePerii.getCurrentPosition());
         telemetry.addData("No Constraints Mode : ", bNoConstraintsMode);
     }
 

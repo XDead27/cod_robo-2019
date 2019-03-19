@@ -84,8 +84,8 @@ public abstract class RobotHardwareClass extends LinearOpMode {
         ServoSortareL = hardwareMap.servo.get("ServoSortareL");
         ServoSortareR = hardwareMap.servo.get("ServoSortareR");
 
-        ServoBlocareL = hardwareMap.servo.get("ServoBlocareL");
-        ServoBlocareR = hardwareMap.servo.get("ServoBlocareR");
+        //ServoBlocareL = hardwareMap.servo.get("ServoBlocareL");
+        //ServoBlocareR = hardwareMap.servo.get("ServoBlocareR");
 
         ServoPhone = hardwareMap.servo.get("ServoPhone");
         ServoTeamMarker = hardwareMap.servo.get("ServoTeamMarker");
@@ -115,8 +115,8 @@ public abstract class RobotHardwareClass extends LinearOpMode {
         ServoSortareL.setPosition(0.5);
         ServoSortareR.setPosition(0.5);
 
-        ServoBlocareL.setPosition(0.5);
-        ServoBlocareR.setPosition(0.5);
+        //ServoBlocareL.setPosition(0.5);
+        //ServoBlocareR.setPosition(0.5);
 
         ServoPhone.setPosition(0.5);
         ServoTeamMarker.setPosition(0.5);
@@ -140,8 +140,8 @@ public abstract class RobotHardwareClass extends LinearOpMode {
         ServoSortareL.setDirection(Servo.Direction.FORWARD);
         ServoSortareR.setDirection(Servo.Direction.FORWARD);
 
-        ServoBlocareL.setDirection(Servo.Direction.FORWARD);
-        ServoBlocareR.setDirection(Servo.Direction.FORWARD);
+        //ServoBlocareL.setDirection(Servo.Direction.FORWARD);
+        //ServoBlocareR.setDirection(Servo.Direction.FORWARD);
 
         ServoPhone.setDirection(Servo.Direction.FORWARD);
         ServoTeamMarker.setDirection(Servo.Direction.FORWARD);
