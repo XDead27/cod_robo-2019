@@ -44,8 +44,7 @@ public final class Autonomous_Test extends Autonomous_Mode {
 
             }
             else if (gamepad1.x) {
-                //TestWalkEncoder(argument , 0.5 , 45);
-                //PlantTeamMarker();
+                LiftDown();
             }
             else if (gamepad1.y) {
                 //TestWalkEncoder(argument , 0.5 , -45);

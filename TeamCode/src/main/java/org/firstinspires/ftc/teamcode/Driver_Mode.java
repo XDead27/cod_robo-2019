@@ -17,9 +17,9 @@ public class Driver_Mode extends RobotHardwareClass {
     private final int EXTINDERE_MAX_GLISIERA_MIN = 3600;
     private final int EXTINDERE_DIFERENTA = EXTINDERE_MAX_GLISIERA_MAX - EXTINDERE_MAX_GLISIERA_MIN;
     private final int EXTINDERE_MIN = 0; //TODO: gaseste valori:
-    private static final double INIT_ACC_SPEED = 0.6;
+    private static final double INIT_ACC_SPEED = 0.2;
     private static final double MAX_ACC_SPEED = 0.9;
-    private static final double ACCELERATION_INCREMENT = 0.3;
+    private static final double ACCELERATION_INCREMENT = 0.2;
     private static final double ENCODER_AX_POS_IDEALA = 0;
 
     //conditii
@@ -86,7 +86,7 @@ public class Driver_Mode extends RobotHardwareClass {
         }
 
         telemetry.addData("Acceleration mode : ", bAccelerationMode);
-//        telemetry.addData("Acceleration speed : ", AccelerationSpeed);
+        telemetry.addData("Acceleration speed : ", AccelerationSpeed);
 //        telemetry.addData("FL" , MotorFL.getCurrentPosition());
 //        telemetry.addData("FR" , MotorFR.getCurrentPosition());
 //        telemetry.addData("BL" , MotorBL.getCurrentPosition());
@@ -155,31 +155,39 @@ public class Driver_Mode extends RobotHardwareClass {
         //-> stanga - cub bila
         //-> dreaota - bila cub
 
+        //TODO: rezolva cu comentarea
+
+        // L MAX : 0.3 L MIN: 0
+        // R MAX : 1 R MIN : 0.3
+
         if (gamepad2.dpad_up){
             ServoSortareL.setPosition(0);
-            ServoSortareR.setPosition(0);
+            ServoSortareR.setPosition(0.3);
             OpenCloseBoxes(true);
         }
         else if (gamepad2.dpad_left) {
-            ServoSortareL.setPosition(0);
-            ServoSortareR.setPosition(0);
+            ServoSortareL.setPosition(0.3);
+            ServoSortareR.setPosition(0.3);
             OpenCloseBoxes(true);
         }
         else if (gamepad2.dpad_right){
             ServoSortareL.setPosition(0);
-            ServoSortareR.setPosition(0);
+            ServoSortareR.setPosition(1);
             OpenCloseBoxes(true);
         }
         else if (gamepad2.dpad_down){
-            ServoSortareL.setPosition(0);
-            ServoSortareR.setPosition(0);
+            ServoSortareL.setPosition(0.3);
+            ServoSortareR.setPosition(1);
             OpenCloseBoxes(true);
         }
 
-        telemetry.addData("Encoder Mosor : " , MotorExtindere.getCurrentPosition() + " din mososr max : " + MosorMax);
-        telemetry.addData("Encoder Glisiera Stanga : ", MotorGlisieraL.getCurrentPosition());
-        telemetry.addData("Encoder Ax : ", MotorRotirePerii.getCurrentPosition());
-        telemetry.addData("No Constraints Mode : ", bNoConstraintsMode);
+//        telemetry.addData("Encoder Mosor : " , MotorExtindere.getCurrentPosition() + " din mososr max : " + MosorMax);
+//        telemetry.addData("Encoder Glisiera Stanga : ", MotorGlisieraL.getCurrentPosition());
+//        telemetry.addData("Encoder Ax : ", MotorRotirePerii.getCurrentPosition());
+//        telemetry.addData("No Constraints Mode : ", bNoConstraintsMode);
+        telemetry.addData("Servo Blocare port", ServoBlocareL.getPortNumber());
+        telemetry.addData("Servo Blocare connection", ServoBlocareL.getConnectionInfo() );
+        telemetry.addData("Servo Blocare pos", ServoBlocareL.getPosition());
     }
 
     //FUNCTIONS
@@ -191,8 +199,7 @@ public class Driver_Mode extends RobotHardwareClass {
         MotorBR.setPower(0);
     }
 
-    protected void calculateWheelsPower ( double drive, double strafe, double rotate, double maxspeed)
-    {
+    protected void calculateWheelsPower ( double drive, double strafe, double rotate, double maxspeed) {
         double FLBRNormal = Math.signum(drive)*Math.pow(drive,2) + Math.signum(strafe)*Math.pow(strafe,2);
         double FRBLNormal = Math.signum(drive)*Math.pow(drive,2) - Math.signum(strafe)*Math.pow(strafe,2);
 
@@ -245,12 +252,12 @@ public class Driver_Mode extends RobotHardwareClass {
     private void OpenCloseBoxes(boolean open){
         if(open){
             //TODO: gaseste valori
-            ServoBlocareL.setPosition(0);
-            ServoBlocareR.setPosition(0);
+            ServoBlocareL.setPosition(1);
+            ServoBlocareR.setPosition(0.1);
         }
         else{
-            ServoBlocareL.setPosition(0.5);
-            ServoBlocareR.setPosition(0.5);
+            ServoBlocareL.setPosition(0);
+            ServoBlocareR.setPosition(0.9);
         }
     }
 }
