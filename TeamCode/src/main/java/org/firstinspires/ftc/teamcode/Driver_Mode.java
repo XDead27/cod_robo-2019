@@ -142,7 +142,7 @@ public class Driver_Mode extends RobotHardwareClass {
         }
         else if(gamepad2.left_trigger > deadzone){
             PowerMotoareGlisiera(bNoConstraintsMode ? -gamepad2.left_trigger : MotorGlisieraR.getCurrentPosition() > GLISIERA_MIN? -gamepad2.left_trigger : 0);
-            OpenCloseBoxes(false);
+            //OpenCloseBoxes(false);
         }
         else{
             PowerMotoareGlisiera(0);
