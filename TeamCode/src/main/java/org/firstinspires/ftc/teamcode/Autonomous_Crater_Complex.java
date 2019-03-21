@@ -6,17 +6,13 @@ import static org.firstinspires.ftc.teamcode.MineralPosition.LEFT;
 import static org.firstinspires.ftc.teamcode.MineralPosition.MIDDLE;
 import static org.firstinspires.ftc.teamcode.MineralPosition.RIGHT;
 
-@Autonomous(name = "Autonomous_Crater_Fara_Coborare", group = "Autonomous")
+@Autonomous(name = "Autonomous_Crater_Complex", group = "Autonomous")
 
-public final class Autonomous_Crater_Fara_Coborare extends Autonomous_Mode {
+public final class Autonomous_Crater_Complex extends Autonomous_Mode {
 
     @Override
     protected void initialise(boolean bIsDriver) {
         super.initialise(bIsDriver);
-
-        //calibrate gyro
-        CalibrateGyro();
-
         telemetry.addData("waiting for start " , "");
         telemetry.update();
     }
@@ -24,7 +20,11 @@ public final class Autonomous_Crater_Fara_Coborare extends Autonomous_Mode {
     @Override
     protected void runOperations() {
 
-        LiftSlidersUpABit();
+        //let the robot down
+        LiftDown();
+
+        //calibrate gyro
+        CalibrateGyro();
 
         //move left
         MoveToUnlatch();
@@ -43,8 +43,6 @@ public final class Autonomous_Crater_Fara_Coborare extends Autonomous_Mode {
 
         //WalkToWall();
         WalkObstacleAndRangeNORMAL(15 , false , 0.4);
-
-        AlignWithWall();
 
         Rotate(90);
 

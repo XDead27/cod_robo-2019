@@ -817,6 +817,16 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
         MotorExtindere.setPower(0);
     }
 
+    protected void RetractSlidingSystem() {
+        MotorExtindere.setPower(-0.3);
+        while (Math.abs(MotorExtindere.getCurrentPosition()) > 100 && opModeIsActive()){
+            telemetry.addData("extindere" , MotorExtindere.getCurrentPosition());
+            telemetry.update();
+            idle();
+        }
+        MotorExtindere.setPower(0);
+    }
+
     protected void GetObjects() {
         while (opModeIsActive()){
             MotorRotirePerii.setPower(-0.7);
@@ -824,12 +834,9 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
     }
 
     protected void PlantTeamMarker() {
-        while (opModeIsActive()){
-            ServoTeamMarker.setPosition(1);
-            sleep(1000);
-            ServoTeamMarker.setPosition(0.5);
-            sleep(1000);
-        }
+        MotorRotirePerii.setPower(0.7);
+        sleep(2000);
+        MotorRotirePerii.setPower(0);
     }
 
     protected void StopGlisiere(){
@@ -902,13 +909,18 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
         GetObjects();
     }
 
-    protected void GoBackAndTurn(){
+    protected void GoBackAndTurn(boolean bIsCrater){
         WalkEncoder(-10 , 0.5 , 0);
-        Rotate(90);
+        if (bIsCrater){
+            Rotate(90);
+        }
+        else{
+            Rotate(-90);
+        }
     }
 
     protected void WalkToWall(){
-        double DeadZoneRange = 3;
+        double DeadZoneRange = 2;
         SetWheelsPower(0.3 , 0.3);
         while (!(RangeL.getDistance(DistanceUnit.CM) > DeadZoneRange && RangeL.getDistance(DistanceUnit.CM) < 20) && !(RangeR.getDistance(DistanceUnit.CM) > DeadZoneRange && RangeR.getDistance(DistanceUnit.CM) < 20)){
             idle();

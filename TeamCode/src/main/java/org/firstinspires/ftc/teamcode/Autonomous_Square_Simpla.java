@@ -7,13 +7,15 @@ import static org.firstinspires.ftc.teamcode.MineralPosition.LEFT;
 import static org.firstinspires.ftc.teamcode.MineralPosition.MIDDLE;
 import static org.firstinspires.ftc.teamcode.MineralPosition.RIGHT;
 
-@Autonomous(name = "Autonomous_Square", group = "Autonomous")
+@Autonomous(name = "Autonomous_Square_Simpla", group = "Autonomous")
 
-public final class Autonomous_Square extends Autonomous_Mode {
+public final class Autonomous_Square_Simpla extends Autonomous_Mode {
 
     @Override
     protected void initialise(boolean bIsDriver){
         super.initialise(bIsDriver);
+        telemetry.addData("waiting for start " , "");
+        telemetry.update();
     }
 
     @Override
@@ -38,6 +40,11 @@ public final class Autonomous_Square extends Autonomous_Mode {
 
         //let team marker
         LetTeamMarker(now);
+
+        //AICI IS PUSE DOAR CA SA APARA IN JURNAL PT CA TREBUIA SCOS INAINTE SA LE PUTEM FACE :^))))))))))))))))))
+        Rotate(-90);
+
+        WalkObstacleAndRangeNORMAL(20, true, 0.8);
 
     }
 

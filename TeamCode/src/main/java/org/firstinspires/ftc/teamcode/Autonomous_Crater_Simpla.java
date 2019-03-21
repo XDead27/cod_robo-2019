@@ -13,6 +13,8 @@ public final class Autonomous_Crater_Simpla extends Autonomous_Mode {
     @Override
     protected void initialise(boolean bIsDriver) {
         super.initialise(bIsDriver);
+        telemetry.addData("waiting for start " , "");
+        telemetry.update();
     }
 
     @Override

@@ -41,7 +41,6 @@ public abstract class RobotHardwareClass extends LinearOpMode {
     protected Servo ServoBlocareR = null;
 
     protected Servo ServoPhone = null;
-    protected Servo ServoTeamMarker = null;
 
     //senzori
     protected ModernRoboticsI2cRangeSensor RangeL = null;
@@ -88,7 +87,6 @@ public abstract class RobotHardwareClass extends LinearOpMode {
         ServoBlocareR = hardwareMap.servo.get("ServoBlocareR");
 
         ServoPhone = hardwareMap.servo.get("ServoPhone");
-        ServoTeamMarker = hardwareMap.servo.get("ServoTeamMarker");
 
         //senzori
         RangeL = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "RangeL");
@@ -111,15 +109,15 @@ public abstract class RobotHardwareClass extends LinearOpMode {
         MotorExtindere.setPower(0);
         MotorRotirePerii.setPower(0);
 
+        //TODO : DE DECOMENTAT POZITIA INITIALA A LUI SORTARER
         //INITIALIZARE POZITIE SERVO
         ServoSortareL.setPosition(0.5);
-        ServoSortareR.setPosition(0.5);
+        ServoSortareR.setPosition(1);
 
         ServoBlocareL.setPosition(0.5);
-        ServoBlocareR.setPosition(0.5);
+        ServoBlocareR.setPosition(0.9);
 
         ServoPhone.setPosition(0.5);
-        ServoTeamMarker.setPosition(0.5);
 
         //TODO : SETARE DIRECTII
 
@@ -144,7 +142,6 @@ public abstract class RobotHardwareClass extends LinearOpMode {
         ServoBlocareR.setDirection(Servo.Direction.FORWARD);
 
         ServoPhone.setDirection(Servo.Direction.FORWARD);
-        ServoTeamMarker.setDirection(Servo.Direction.FORWARD);
 
         //TODO : RESET ENCODER
 
@@ -171,7 +168,6 @@ public abstract class RobotHardwareClass extends LinearOpMode {
         //motoare mecanisme
         MotorGlisieraL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         MotorGlisieraR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
         MotorExtindere.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         //TODO : SETARE BREAK
@@ -204,7 +200,6 @@ public abstract class RobotHardwareClass extends LinearOpMode {
             tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
             tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_GOLD_MINERAL, LABEL_SILVER_MINERAL);
         }
-
 
         //TODO : GYRO
 

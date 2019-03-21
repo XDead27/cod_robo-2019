@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.Range;
 
 import static java.lang.Math.abs;
@@ -17,9 +18,10 @@ public class Driver_Mode extends RobotHardwareClass {
     private final int EXTINDERE_MAX_GLISIERA_MIN = 3600;
     private final int EXTINDERE_DIFERENTA = EXTINDERE_MAX_GLISIERA_MAX - EXTINDERE_MAX_GLISIERA_MIN;
     private final int EXTINDERE_MIN = 0; //TODO: gaseste valori:
-    private static final double INIT_ACC_SPEED = 0.6;
+    private static final double INIT_ACC_SPEED = 0.2;
     private static final double MAX_ACC_SPEED = 0.9;
-    private static final double ACCELERATION_INCREMENT = 0.3;
+    private static final double ACCELERATION_INCREMENT = 0.2;
+    private static final double ENCODER_AX_POS_IDEALA = 0;
 
     //conditii
     private boolean bNoConstraintsMode = false;
@@ -51,6 +53,16 @@ public class Driver_Mode extends RobotHardwareClass {
 
     protected void gamepad_1(){
 
+        //Pressing the right bumper of the gamepad enables acceleration mode. Pressing the left bumper disables it.
+        if(gamepad1.right_bumper){
+            bAccelerationMode = true;
+
+        }
+        else if(gamepad1.left_bumper){
+            bAccelerationMode = false;
+        }
+
+        //If the acceleration mode is disabled, the wheels will move in their usual way. If it is enabled, the power given to the motors will increase over time.
         if(!bAccelerationMode) {
             if (abs(gamepad1.left_stick_x) > deadzone || abs(gamepad1.left_stick_y) > deadzone || abs(gamepad1.right_stick_x) > deadzone) {
                 calculateWheelsPower(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x, 0.7);
@@ -72,20 +84,26 @@ public class Driver_Mode extends RobotHardwareClass {
 
         if (gamepad1.dpad_up){
             while (opModeIsActive() && !gamepad1.dpad_down){
-                PowerMotoareGlisiera(-0.4);
+                PowerMotoareGlisiera(-0.7);
             }
         }
 
-        if(gamepad1.right_bumper){
-            bAccelerationMode = true;
-
+        //Pressing the X button moves the left blocking servo to the blocking position, whereas pressing Y moves it to the opening one
+        if (gamepad1.x) {
+            ServoBlocareL.setPosition(1);
+        } else if (gamepad1.y) {
+            ServoBlocareL.setPosition(0.5);
         }
-        else if(gamepad1.left_bumper){
-            bAccelerationMode = false;
+
+        //Pressing the A button moves the right blocking servo to its blocking position, whereas pressing B moves it to the opening one
+        if (gamepad1.a) {
+            ServoBlocareR.setPosition(0.1);
+        } else if (gamepad1.b) {
+            ServoBlocareR.setPosition(0.9);
         }
 
-//        telemetry.addData("Acceleration mode : ", bAccelerationMode);
-//        telemetry.addData("Acceleration speed : ", AccelerationSpeed);
+        telemetry.addData("Acceleration mode : ", bAccelerationMode);
+        telemetry.addData("Acceleration speed : ", AccelerationSpeed);
 //        telemetry.addData("FL" , MotorFL.getCurrentPosition());
 //        telemetry.addData("FR" , MotorFR.getCurrentPosition());
 //        telemetry.addData("BL" , MotorBL.getCurrentPosition());
@@ -98,7 +116,7 @@ public class Driver_Mode extends RobotHardwareClass {
         double MosorMax = (EXTINDERE_DIFERENTA * MosorCoefficient) + EXTINDERE_MAX_GLISIERA_MIN;
         //telemetry.addData("Mosor max : ", MosorMax);
 
-        //Pressing the two bumpers will activate constraints.
+        //Pressing the two bumpers will activate constraints. Activating constraints means that the motors will not move past a limit that we have declared. This is done in order to prevent cases where the driver would keep extending or retracting the sliders without noticing that it is actually harmful to the mechanism itself.
         if(gamepad2.left_bumper && gamepad2.right_bumper){
             bHasPressedBumpers = true;
         }
@@ -107,8 +125,7 @@ public class Driver_Mode extends RobotHardwareClass {
             bHasPressedBumpers = false;
         }
 
-
-        //Extend the sliders
+        //Extend the sliders. If the 'no constraints' mode is enabled, the sliders will extend and retract whenever input is registered on the gamepad. If not enabled, the sliders will not move if the encoders have moved up until the limit chosen by us.
         if (gamepad2.right_bumper){
             MotorExtindere.setPower(bNoConstraintsMode ? -0.9 : MotorExtindere.getCurrentPosition() > EXTINDERE_MIN? -0.9 : 0);
         }
@@ -126,7 +143,7 @@ public class Driver_Mode extends RobotHardwareClass {
         }
         else if(gamepad2.left_trigger > deadzone){
             PowerMotoareGlisiera(bNoConstraintsMode ? -gamepad2.left_trigger : MotorGlisieraR.getCurrentPosition() > GLISIERA_MIN? -gamepad2.left_trigger : 0);
-            OpenCloseBoxes(false);
+            //OpenCloseBoxes(false);
         }
         else{
             PowerMotoareGlisiera(0);
@@ -136,46 +153,58 @@ public class Driver_Mode extends RobotHardwareClass {
 
         //Rotate the brushes
         if (gamepad2.a) {
-            MotorRotirePerii.setPower(0.7);
+            MotorRotirePerii.setPower(0.6);
         }
         else if (gamepad2.b) {
-            MotorRotirePerii.setPower(-0.7);
+            MotorRotirePerii.setPower(-0.6);
         }
         else {
-            MotorRotirePerii.setPower(0);
+            //if(Math.abs(MotorRotirePerii.getCurrentPosition() - ENCODER_AX_POS_IDEALA) < 5) {
+                MotorRotirePerii.setPower(0);
+            //}
         }
 
-        //TODO : setat servouri din servo controller si dat valori mai jos
         //4 cazuri gamepad2 pt sortare :
         //-> sus - cub cub
         //-> jos - bila bila
         //-> stanga - cub bila
-        //-> dreaota - bila cub
+        //-> dreapta - bila cub
 
+        //TODO: de verificat daca e ok SortareR dupa ce e pus iar cum era inainte
         if (gamepad2.dpad_up){
-            ServoSortareL.setPosition(0);
-            ServoSortareR.setPosition(0);
-            OpenCloseBoxes(true);
+            ServoSortareL.setPosition(0.5);
+            ServoSortareR.setPosition(1);
+            //OpenCloseBoxes(true);
+
         }
         else if (gamepad2.dpad_left) {
-            ServoSortareL.setPosition(0);
-            ServoSortareR.setPosition(0);
-            OpenCloseBoxes(true);
+            ServoSortareL.setPosition(0.8);
+            ServoSortareR.setPosition(1);
+            //OpenCloseBoxes(true);
         }
         else if (gamepad2.dpad_right){
-            ServoSortareL.setPosition(0);
-            ServoSortareR.setPosition(0);
-            OpenCloseBoxes(true);
+            ServoSortareL.setPosition(0.5);
+            ServoSortareR.setPosition(0.7);
+            //OpenCloseBoxes(true);
         }
         else if (gamepad2.dpad_down){
-            ServoSortareL.setPosition(0);
-            ServoSortareR.setPosition(0);
-            OpenCloseBoxes(true);
+            ServoSortareL.setPosition(0.8);
+            ServoSortareR.setPosition(0.7);
+            //OpenCloseBoxes(true);
         }
+
+        if(gamepad2.x){
+            //GatherToExtendMACRO(1);
+        }
+
 
         telemetry.addData("Encoder Mosor : " , MotorExtindere.getCurrentPosition() + " din mososr max : " + MosorMax);
         telemetry.addData("Encoder Glisiera Stanga : ", MotorGlisieraL.getCurrentPosition());
+        telemetry.addData("Encoder Ax : ", MotorRotirePerii.getCurrentPosition());
         telemetry.addData("No Constraints Mode : ", bNoConstraintsMode);
+//        telemetry.addData("Servo Blocare port", ServoBlocareL.getPortNumber());
+//        telemetry.addData("Servo Blocare connection", ServoBlocareL.getConnectionInfo() );
+//        telemetry.addData("Servo Blocare pos", ServoBlocareL.getPosition());
     }
 
     //FUNCTIONS
@@ -187,8 +216,7 @@ public class Driver_Mode extends RobotHardwareClass {
         MotorBR.setPower(0);
     }
 
-    protected void calculateWheelsPower ( double drive, double strafe, double rotate, double maxspeed)
-    {
+    protected void calculateWheelsPower ( double drive, double strafe, double rotate, double maxspeed) {
         double FLBRNormal = Math.signum(drive)*Math.pow(drive,2) + Math.signum(strafe)*Math.pow(strafe,2);
         double FRBLNormal = Math.signum(drive)*Math.pow(drive,2) - Math.signum(strafe)*Math.pow(strafe,2);
 
@@ -205,18 +233,6 @@ public class Driver_Mode extends RobotHardwareClass {
         double SpeedFLBR = FLBRNormal * ScalingCoefficient;
         double SpeedFRBL = FRBLNormal * ScalingCoefficient;
 
-        telemetry.addData("FLBR Normal : ", FLBRNormal);
-        telemetry.addData("FLBR Normal : ", FRBLNormal);
-        telemetry.addData("FLBR Speed : ", SpeedFLBR);
-        telemetry.addData("FLBR Speed : ", SpeedFRBL);
-        telemetry.addData("FLBR Final : ", SpeedFLBR + rotate);
-        telemetry.addData("FLBR Final : ", SpeedFRBL + rotate);
-        telemetry.addData("Scaling Coefficient : ", ScalingCoefficient);
-        //double FL = Range.clip(FLBRNormal + rotate , -0.7 , 0.7);
-        //double FR = Range.clip(FRBLNormal - rotate , -0.7 , 0.7);
-        //double BL = Range.clip(FRBLNormal + rotate , -0.7 , 0.7);
-        //double BR = Range.clip(FLBRNormal - rotate , -0.7 , 0.7);
-
 //        telemetry.addData("FLBR Normal : ", FLBRNormal);
 //        telemetry.addData("FLBR Normal : ", FRBLNormal);
 //        telemetry.addData("FLBR Speed : ", SpeedFLBR);
@@ -231,6 +247,7 @@ public class Driver_Mode extends RobotHardwareClass {
         MotorBR.setPower(Range.clip(SpeedFLBR - rotate, -maxspeed, maxspeed));
     }
 
+    //This function allows both sliders to move in the same direction.
     private void PowerMotoareGlisiera(double speed){
         speed = Range.clip(speed, -0.9, 0.9);
 
@@ -239,21 +256,44 @@ public class Driver_Mode extends RobotHardwareClass {
     }
 
     //MACROS
+    private boolean GatherToExtendMACRO(int reverse){
+        MotorExtindere.setTargetPosition(EXTINDERE_MIN);
+        MotorExtindere.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        MotorExtindere.setPower(0.7);
 
-    private boolean GatherAndExtendMACRO(byte dir){
-        PowerMotoareGlisiera(dir * 0.7);
+        while(MotorExtindere.isBusy() || !gamepad2.y){
+            idle();
+        }
+
+        MotorExtindere.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        PowerMotoareGlisiera(reverse * 0.7);
+        while(MotorGlisieraL.getCurrentPosition()*reverse < (reverse > 0? GLISIERA_MAX :-GLISIERA_MIN) || !gamepad2.y){
+            idle();
+        }
+        PowerMotoareGlisiera(0);
+
+        MotorExtindere.setTargetPosition(reverse > 0? EXTINDERE_MAX_GLISIERA_MAX : EXTINDERE_MAX_GLISIERA_MIN);
+        MotorExtindere.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        MotorExtindere.setPower(0.7);
+
+        while(MotorExtindere.isBusy() || !gamepad2.y){
+            idle();
+        }
+
+        MotorExtindere.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
         return false;
     }
 
     private void OpenCloseBoxes(boolean open){
         if(open){
-            //TODO: gaseste valori
-            ServoBlocareL.setPosition(0);
-            ServoBlocareR.setPosition(0);
+            ServoBlocareL.setPosition(1);
+            ServoBlocareR.setPosition(0.1);
         }
         else{
-            ServoBlocareL.setPosition(0.5);
-            ServoBlocareR.setPosition(0.5);
+            ServoBlocareL.setPosition(0);
+            ServoBlocareR.setPosition(0.9);
         }
     }
 }
