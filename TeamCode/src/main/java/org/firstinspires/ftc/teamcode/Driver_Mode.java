@@ -169,10 +169,6 @@ public class Driver_Mode extends RobotHardwareClass {
         //-> stanga - cub bila
         //-> dreapta - bila cub
 
-        //MAX e pt bila
-        //MIN e pt cub
-        //L MAX : 0.3 L MIN: 0
-        //R MAX : 1 R MIN : 0.3
         //TODO: de verificat daca e ok SortareR dupa ce e pus iar cum era inainte
         if (gamepad2.dpad_up){
             ServoSortareL.setPosition(0.5);

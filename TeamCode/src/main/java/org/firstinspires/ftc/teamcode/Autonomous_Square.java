@@ -39,6 +39,11 @@ public final class Autonomous_Square extends Autonomous_Mode {
         //let team marker
         LetTeamMarker(now);
 
+        //AICI IS PUSE DOAR CA SA APARA IN JURNAL PT CA TREBUIA SCOS INAINTE SA LE PUTEM FACE :^))))))))))))))))))
+        Rotate(-90);
+
+        WalkObstacleAndRangeNORMAL(20, true, 0.8);
+
     }
 
     @Override
