@@ -44,8 +44,6 @@ public final class Autonomous_Crater_Complex extends Autonomous_Mode {
         //WalkToWall();
         WalkObstacleAndRangeNORMAL(15 , false , 0.4);
 
-        AlignWithWall();
-
         Rotate(90);
 
         //WalkToWall();

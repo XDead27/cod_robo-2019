@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.Range;
 
 import static java.lang.Math.abs;
@@ -83,22 +84,22 @@ public class Driver_Mode extends RobotHardwareClass {
 
         if (gamepad1.dpad_up){
             while (opModeIsActive() && !gamepad1.dpad_down){
-                PowerMotoareGlisiera(-0.4);
+                PowerMotoareGlisiera(-0.7);
             }
         }
 
         //Pressing the X button moves the left blocking servo to the blocking position, whereas pressing Y moves it to the opening one
         if (gamepad1.x) {
-            ServoBlocareL.setPosition(0.5);
-        } else if (gamepad1.y) {
             ServoBlocareL.setPosition(1);
+        } else if (gamepad1.y) {
+            ServoBlocareL.setPosition(0.5);
         }
 
         //Pressing the A button moves the right blocking servo to its blocking position, whereas pressing B moves it to the opening one
         if (gamepad1.a) {
-            ServoBlocareR.setPosition(0.9);
-        } else if (gamepad1.b) {
             ServoBlocareR.setPosition(0.1);
+        } else if (gamepad1.b) {
+            ServoBlocareR.setPosition(0.9);
         }
 
         telemetry.addData("Acceleration mode : ", bAccelerationMode);
@@ -192,13 +193,18 @@ public class Driver_Mode extends RobotHardwareClass {
             //OpenCloseBoxes(true);
         }
 
-//        telemetry.addData("Encoder Mosor : " , MotorExtindere.getCurrentPosition() + " din mososr max : " + MosorMax);
-//        telemetry.addData("Encoder Glisiera Stanga : ", MotorGlisieraL.getCurrentPosition());
-//        telemetry.addData("Encoder Ax : ", MotorRotirePerii.getCurrentPosition());
-//        telemetry.addData("No Constraints Mode : ", bNoConstraintsMode);
-        telemetry.addData("Servo Blocare port", ServoBlocareL.getPortNumber());
-        telemetry.addData("Servo Blocare connection", ServoBlocareL.getConnectionInfo() );
-        telemetry.addData("Servo Blocare pos", ServoBlocareL.getPosition());
+        if(gamepad2.x){
+            //GatherToExtendMACRO(1);
+        }
+
+
+        telemetry.addData("Encoder Mosor : " , MotorExtindere.getCurrentPosition() + " din mososr max : " + MosorMax);
+        telemetry.addData("Encoder Glisiera Stanga : ", MotorGlisieraL.getCurrentPosition());
+        telemetry.addData("Encoder Ax : ", MotorRotirePerii.getCurrentPosition());
+        telemetry.addData("No Constraints Mode : ", bNoConstraintsMode);
+//        telemetry.addData("Servo Blocare port", ServoBlocareL.getPortNumber());
+//        telemetry.addData("Servo Blocare connection", ServoBlocareL.getConnectionInfo() );
+//        telemetry.addData("Servo Blocare pos", ServoBlocareL.getPosition());
     }
 
     //FUNCTIONS
@@ -250,8 +256,33 @@ public class Driver_Mode extends RobotHardwareClass {
     }
 
     //MACROS
-    private boolean GatherAndExtendMACRO(byte dir){
-        PowerMotoareGlisiera(dir * 0.7);
+    private boolean GatherToExtendMACRO(int reverse){
+        MotorExtindere.setTargetPosition(EXTINDERE_MIN);
+        MotorExtindere.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        MotorExtindere.setPower(0.7);
+
+        while(MotorExtindere.isBusy() || !gamepad2.y){
+            idle();
+        }
+
+        MotorExtindere.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        PowerMotoareGlisiera(reverse * 0.7);
+        while(MotorGlisieraL.getCurrentPosition()*reverse < (reverse > 0? GLISIERA_MAX :-GLISIERA_MIN) || !gamepad2.y){
+            idle();
+        }
+        PowerMotoareGlisiera(0);
+
+        MotorExtindere.setTargetPosition(reverse > 0? EXTINDERE_MAX_GLISIERA_MAX : EXTINDERE_MAX_GLISIERA_MIN);
+        MotorExtindere.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        MotorExtindere.setPower(0.7);
+
+        while(MotorExtindere.isBusy() || !gamepad2.y){
+            idle();
+        }
+
+        MotorExtindere.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
         return false;
     }
 
