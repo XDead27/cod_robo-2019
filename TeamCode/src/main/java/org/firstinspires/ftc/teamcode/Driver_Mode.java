@@ -175,26 +175,25 @@ public class Driver_Mode extends RobotHardwareClass {
         //R MAX : 1 R MIN : 0.3
         //TODO: de verificat daca e ok SortareR dupa ce e pus iar cum era inainte
         if (gamepad2.dpad_up){
-            ServoSortareL.setPosition(0);
-            ServoSortareR.setPosition(0.3);
+            ServoSortareL.setPosition(0.5);
+            ServoSortareR.setPosition(1);
             //OpenCloseBoxes(true);
 
         }
         else if (gamepad2.dpad_left) {
-            ServoSortareL.setPosition(0.3);
-            ServoSortareR.setPosition(0.3);
+            ServoSortareL.setPosition(0.8);
+            ServoSortareR.setPosition(1);
             //OpenCloseBoxes(true);
         }
         else if (gamepad2.dpad_right){
-            ServoSortareR.setPosition(1);
-            ServoSortareL.setPosition(0);
+            ServoSortareL.setPosition(0.5);
+            ServoSortareR.setPosition(0.7);
             //OpenCloseBoxes(true);
         }
         else if (gamepad2.dpad_down){
-            ServoSortareL.setPosition(0.3);
-            ServoSortareR.setPosition(1);
+            ServoSortareL.setPosition(0.8);
+            ServoSortareR.setPosition(0.7);
             //OpenCloseBoxes(true);
-
         }
 
 //        telemetry.addData("Encoder Mosor : " , MotorExtindere.getCurrentPosition() + " din mososr max : " + MosorMax);

@@ -111,8 +111,8 @@ public abstract class RobotHardwareClass extends LinearOpMode {
 
         //TODO : DE DECOMENTAT POZITIA INITIALA A LUI SORTARER
         //INITIALIZARE POZITIE SERVO
-        ServoSortareL.setPosition(0.3);
-        //ServoSortareR.setPosition(1);
+        ServoSortareL.setPosition(0.5);
+        ServoSortareR.setPosition(1);
 
         ServoBlocareL.setPosition(0.5);
         ServoBlocareR.setPosition(0.9);
@@ -168,7 +168,6 @@ public abstract class RobotHardwareClass extends LinearOpMode {
         //motoare mecanisme
         MotorGlisieraL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         MotorGlisieraR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
         MotorExtindere.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         //TODO : SETARE BREAK
@@ -201,7 +200,6 @@ public abstract class RobotHardwareClass extends LinearOpMode {
             tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
             tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_GOLD_MINERAL, LABEL_SILVER_MINERAL);
         }
-
 
         //TODO : GYRO
 
