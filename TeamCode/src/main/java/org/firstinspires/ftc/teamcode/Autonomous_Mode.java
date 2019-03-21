@@ -292,7 +292,7 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
 
     //Complex moving function which avoids incoming obstacles and aligns with the wall at the end. It
     //uses a double PID system with two range sensors, each one of them for a side of the robot
-    protected void WalkObstacleAndRangeNORMAL(double distanceFromWall, boolean bStartAlignedWithWall) {
+    protected void WalkObstacleAndRangeNORMAL(double distanceFromWall, boolean bStartAlignedWithWall, double PowerMax) {
         //IN-DEPTH EXPLANATION
         //
         //  This is a function that makes the robot move forward until there is a target distance
@@ -329,7 +329,7 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
         ResetAngle();
         double currentHeading;
 
-        double pGain = 1 / (target - 5); //daca zidul sau alt robot se apropie mai mult decat trebuie atunci sa mearga la viteza maxima in spate
+        double pGain = PowerMax / (target - 5); //daca zidul sau alt robot se apropie mai mult decat trebuie atunci sa mearga la viteza maxima in spate
         double dGain = 0.0;
 
         double errorRight = target - RangeL.getDistance(DistanceUnit.CM);
@@ -338,11 +338,16 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
         double proportionalSpeedLeft = 0;
         double proportionalSpeedRight = 0;
 
-        double finalSpeedLeft = 0, finalSpeedRight = 0;
+        double finalSpeedLeft = 0, finalSpeedRight = 0, lastSpeedLeft = finalSpeedLeft, lastSpeedRight = finalSpeedRight;
 
         double initValueL = 0, initValueR = 0;
 
         float steadyTimer = 0;
+
+        //Implement acceleration so that the big changes in sensors input do not drastically affect
+        //the robot's speed
+        double Acceleration = 0.2;
+        final double INIT_ACCELERATION = 0.2, MAX_ACCELERATION = 1.0, ACCELERATION_INCREMENT = 0.3;
 
         while (opModeIsActive() && steadyTimer < delay) {
 
@@ -416,7 +421,17 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
                 }
             }
 
-            SetWheelsPower(finalSpeedLeft, finalSpeedRight, finalSpeedLeft, finalSpeedRight);
+            //Acceleration rules
+            //If the sensors tell the robot to move in the oposite direction or if the final speed is zero then reset the acceleration
+            if(Math.signum(lastSpeedLeft) == Math.signum(finalSpeedLeft) && Math.signum(lastSpeedRight) == Math.signum(finalSpeedRight) && finalSpeedLeft != 0 && finalSpeedLeft != 0){
+                Acceleration += (period / 1000) * ACCELERATION_INCREMENT;
+                Acceleration = Range.clip(Acceleration, INIT_ACCELERATION, MAX_ACCELERATION);
+            }
+            else{
+                Acceleration = INIT_ACCELERATION;
+            }
+
+            SetWheelsPower(finalSpeedLeft * Acceleration, finalSpeedRight * Acceleration, finalSpeedLeft * Acceleration, finalSpeedRight * Acceleration);
 
             telemetry.addData("using encoder ", bIsUsingEncoder);
             telemetry.addData("speed left", finalSpeedLeft);
@@ -425,6 +440,9 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
             telemetry.addData("error right ", errorRight);
             telemetry.addData("steady timer ", steadyTimer);
             telemetry.update();
+
+            lastSpeedLeft = finalSpeedLeft;
+            lastSpeedRight = finalSpeedRight;
 
             sleep(period);
         }
@@ -729,6 +747,11 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
         MotorGlisieraL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         MotorGlisieraR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
+        MotorGlisieraL.setPower(-0.3);
+        MotorGlisieraL.setPower(-0.3);
+
+        sleep(500);
+
         MotorGlisieraL.setPower(0.3);
         MotorGlisieraR.setPower(0.3);
         SetWheelsPower(0 , 0 , -0.3 , -0.3);
@@ -746,6 +769,8 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
         sleep(100);
 
         StopGlisiere();
+
+        CalibrateGyro();
     }
 
     protected void MoveSlidersEncoder(int dist , double speed) {
@@ -775,11 +800,11 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
     }
 
     protected void LiftPhoneUp() {
-        PhoneServo.setPosition(0.115);
+        ServoPhone.setPosition(0.115);
     }
 
     protected void LiftPhoneDown() {
-        PhoneServo.setPosition(0.5);
+        ServoPhone.setPosition(0.5);
     }
 
     protected void ExtendSlidingSystem() {
@@ -794,15 +819,15 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
 
     protected void GetObjects() {
         while (opModeIsActive()){
-            ContinuousServo.setPower(-1);
+            MotorRotirePerii.setPower(-0.7);
         }
     }
 
     protected void PlantTeamMarker() {
         while (opModeIsActive()){
-            TeamMarkerServo.setPosition(1);
+            ServoTeamMarker.setPosition(1);
             sleep(1000);
-            TeamMarkerServo.setPosition(0.5);
+            ServoTeamMarker.setPosition(0.5);
             sleep(1000);
         }
     }

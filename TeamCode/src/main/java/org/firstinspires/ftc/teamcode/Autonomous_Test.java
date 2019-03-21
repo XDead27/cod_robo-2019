@@ -26,19 +26,21 @@ public final class Autonomous_Test extends Autonomous_Mode {
         while(opModeIsActive()) {
             if (gamepad1.a){
                 while (opModeIsActive() && !gamepad1.b){
-                    telemetry.addData("RangeL" , RangeL.getI2cAddress());
-                    telemetry.addData("RangeR" , RangeR.getI2cAddress());
-                    telemetry.addData("RangeL" , RangeL.getDistance(DistanceUnit.CM));
-                    telemetry.addData("RangeR" , RangeR.getDistance(DistanceUnit.CM));
+                    telemetry.addData("RangeL address" , RangeL.getI2cAddress());
+                    telemetry.addData("RangeR address" , RangeR.getI2cAddress());
+                    telemetry.addData("RangeL distance" , RangeL.getDistance(DistanceUnit.CM));
+                    telemetry.addData("RangeR distance" , RangeR.getDistance(DistanceUnit.CM));
                     telemetry.update();
                 }
                 //TestWalkEncoder(argument , 0.5 , 90+45);
             }
             else if(gamepad1.b){
-                WalkToWall();
+                //In loc de astea doua putem sa folosim cealalta functie
+                //WalkToWall();
+                //
+                //AlignWithWall();
 
-                AlignWithWall();
-                //TestWalkEncoder(argument , 0.5 , 180+45);
+                WalkObstacleAndRangeNORMAL(10, false, 0.6);
 
             }
             else if (gamepad1.x) {
@@ -83,6 +85,10 @@ public final class Autonomous_Test extends Autonomous_Mode {
                 acceleration = 1;
             }
 
+            telemetry.addData("RangeL address" , RangeL.getI2cAddress());
+            telemetry.addData("RangeR address" , RangeR.getI2cAddress());
+            telemetry.addData("RangeL distance" , RangeL.getDistance(DistanceUnit.CM));
+            telemetry.addData("RangeR distance" , RangeR.getDistance(DistanceUnit.CM));
             telemetry.addData("Argument :", argument);
             telemetry.update();
 
