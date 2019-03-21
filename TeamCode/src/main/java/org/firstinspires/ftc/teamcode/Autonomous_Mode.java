@@ -905,7 +905,7 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
     }
 
     protected void WalkToWall(){
-        double DeadZoneRange = 3;
+        double DeadZoneRange = 2;
         SetWheelsPower(0.3 , 0.3);
         while (!(RangeL.getDistance(DistanceUnit.CM) > DeadZoneRange && RangeL.getDistance(DistanceUnit.CM) < 20) && !(RangeR.getDistance(DistanceUnit.CM) > DeadZoneRange && RangeR.getDistance(DistanceUnit.CM) < 20)){
             idle();

@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
 @TeleOp (name = "Driver_Mode_Servos", group = "Driver")
+@Disabled
 
 public class Driver_Mode_Servos extends LinearOpMode {
 

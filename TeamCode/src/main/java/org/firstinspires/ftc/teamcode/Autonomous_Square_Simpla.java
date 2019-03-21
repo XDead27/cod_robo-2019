@@ -7,13 +7,15 @@ import static org.firstinspires.ftc.teamcode.MineralPosition.LEFT;
 import static org.firstinspires.ftc.teamcode.MineralPosition.MIDDLE;
 import static org.firstinspires.ftc.teamcode.MineralPosition.RIGHT;
 
-@Autonomous(name = "Autonomous_Square", group = "Autonomous")
+@Autonomous(name = "Autonomous_Square_Simpla", group = "Autonomous")
 
-public final class Autonomous_Square extends Autonomous_Mode {
+public final class Autonomous_Square_Simpla extends Autonomous_Mode {
 
     @Override
     protected void initialise(boolean bIsDriver){
         super.initialise(bIsDriver);
+        telemetry.addData("waiting for start " , "");
+        telemetry.update();
     }
 
     @Override
