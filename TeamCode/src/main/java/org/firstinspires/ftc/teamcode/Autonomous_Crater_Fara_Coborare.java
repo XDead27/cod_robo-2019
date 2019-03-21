@@ -37,9 +37,9 @@ public final class Autonomous_Crater_Fara_Coborare extends Autonomous_Mode {
         //choose cube
         ChooseCube(now);
 
-        GoBackAndTurn();
-
         //TODO: TESTAT DE AICI IN JOS
+
+        GoBackAndTurn(true);
 
         //WalkToWall();
         WalkObstacleAndRangeNORMAL(15 , false , 0.4);
