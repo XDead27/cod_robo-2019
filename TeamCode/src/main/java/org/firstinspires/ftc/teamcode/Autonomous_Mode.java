@@ -824,12 +824,9 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
     }
 
     protected void PlantTeamMarker() {
-        while (opModeIsActive()){
-            ServoTeamMarker.setPosition(1);
-            sleep(1000);
-            ServoTeamMarker.setPosition(0.5);
-            sleep(1000);
-        }
+        MotorRotirePerii.setPower(0.7);
+        sleep(2000);
+        MotorRotirePerii.setPower(0);
     }
 
     protected void StopGlisiere(){

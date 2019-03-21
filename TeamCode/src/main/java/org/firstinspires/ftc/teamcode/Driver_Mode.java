@@ -52,6 +52,16 @@ public class Driver_Mode extends RobotHardwareClass {
 
     protected void gamepad_1(){
 
+        //Pressing the right bumper of the gamepad enables acceleration mode. Pressing the left bumper disables it.
+        if(gamepad1.right_bumper){
+            bAccelerationMode = true;
+
+        }
+        else if(gamepad1.left_bumper){
+            bAccelerationMode = false;
+        }
+
+        //If the acceleration mode is disabled, the wheels will move in their usual way. If it is enabled, the power given to the motors will increase over time.
         if(!bAccelerationMode) {
             if (abs(gamepad1.left_stick_x) > deadzone || abs(gamepad1.left_stick_y) > deadzone || abs(gamepad1.right_stick_x) > deadzone) {
                 calculateWheelsPower(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x, 0.7);
@@ -77,12 +87,18 @@ public class Driver_Mode extends RobotHardwareClass {
             }
         }
 
-        if(gamepad1.right_bumper){
-            bAccelerationMode = true;
-
+        //Pressing the X button moves the left blocking servo to the blocking position, whereas pressing Y moves it to the opening one
+        if (gamepad1.x) {
+            ServoBlocareL.setPosition(0.5);
+        } else if (gamepad1.y) {
+            ServoBlocareL.setPosition(1);
         }
-        else if(gamepad1.left_bumper){
-            bAccelerationMode = false;
+
+        //Pressing the A button moves the right blocking servo to its blocking position, whereas pressing B moves it to the opening one
+        if (gamepad1.a) {
+            ServoBlocareR.setPosition(0.9);
+        } else if (gamepad1.b) {
+            ServoBlocareR.setPosition(0.1);
         }
 
         telemetry.addData("Acceleration mode : ", bAccelerationMode);
@@ -99,7 +115,7 @@ public class Driver_Mode extends RobotHardwareClass {
         double MosorMax = (EXTINDERE_DIFERENTA * MosorCoefficient) + EXTINDERE_MAX_GLISIERA_MIN;
         //telemetry.addData("Mosor max : ", MosorMax);
 
-        //Pressing the two bumpers will activate constraints.
+        //Pressing the two bumpers will activate constraints. Activating constraints means that the motors will not move past a limit that we have declared. This is done in order to prevent cases where the driver would keep extending or retracting the sliders without noticing that it is actually harmful to the mechanism itself.
         if(gamepad2.left_bumper && gamepad2.right_bumper){
             bHasPressedBumpers = true;
         }
@@ -108,8 +124,7 @@ public class Driver_Mode extends RobotHardwareClass {
             bHasPressedBumpers = false;
         }
 
-
-        //Extend the sliders
+        //Extend the sliders. If the 'no constraints' mode is enabled, the sliders will extend and retract whenever input is registered on the gamepad. If not enabled, the sliders will not move if the encoders have moved up until the limit chosen by us.
         if (gamepad2.right_bumper){
             MotorExtindere.setPower(bNoConstraintsMode ? -0.9 : MotorExtindere.getCurrentPosition() > EXTINDERE_MIN? -0.9 : 0);
         }
@@ -148,37 +163,38 @@ public class Driver_Mode extends RobotHardwareClass {
             //}
         }
 
-        //TODO : setat servouri din servo controller si dat valori mai jos
         //4 cazuri gamepad2 pt sortare :
         //-> sus - cub cub
         //-> jos - bila bila
         //-> stanga - cub bila
-        //-> dreaota - bila cub
+        //-> dreapta - bila cub
 
-        //TODO: rezolva cu comentarea
-
-        // L MAX : 0.3 L MIN: 0
-        // R MAX : 1 R MIN : 0.3
-
+        //MAX e pt bila
+        //MIN e pt cub
+        //L MAX : 0.3 L MIN: 0
+        //R MAX : 1 R MIN : 0.3
+        //TODO: de verificat daca e ok SortareR dupa ce e pus iar cum era inainte
         if (gamepad2.dpad_up){
             ServoSortareL.setPosition(0);
             ServoSortareR.setPosition(0.3);
-            OpenCloseBoxes(true);
+            //OpenCloseBoxes(true);
+
         }
         else if (gamepad2.dpad_left) {
             ServoSortareL.setPosition(0.3);
             ServoSortareR.setPosition(0.3);
-            OpenCloseBoxes(true);
+            //OpenCloseBoxes(true);
         }
         else if (gamepad2.dpad_right){
-            ServoSortareL.setPosition(0);
             ServoSortareR.setPosition(1);
-            OpenCloseBoxes(true);
+            ServoSortareL.setPosition(0);
+            //OpenCloseBoxes(true);
         }
         else if (gamepad2.dpad_down){
             ServoSortareL.setPosition(0.3);
             ServoSortareR.setPosition(1);
-            OpenCloseBoxes(true);
+            //OpenCloseBoxes(true);
+
         }
 
 //        telemetry.addData("Encoder Mosor : " , MotorExtindere.getCurrentPosition() + " din mososr max : " + MosorMax);
@@ -216,11 +232,6 @@ public class Driver_Mode extends RobotHardwareClass {
         double SpeedFLBR = FLBRNormal * ScalingCoefficient;
         double SpeedFRBL = FRBLNormal * ScalingCoefficient;
 
-        //double FL = Range.clip(FLBRNormal + rotate , -0.7 , 0.7);
-        //double FR = Range.clip(FRBLNormal - rotate , -0.7 , 0.7);
-        //double BL = Range.clip(FRBLNormal + rotate , -0.7 , 0.7);
-        //double BR = Range.clip(FLBRNormal - rotate , -0.7 , 0.7);
-
 //        telemetry.addData("FLBR Normal : ", FLBRNormal);
 //        telemetry.addData("FLBR Normal : ", FRBLNormal);
 //        telemetry.addData("FLBR Speed : ", SpeedFLBR);
@@ -235,6 +246,7 @@ public class Driver_Mode extends RobotHardwareClass {
         MotorBR.setPower(Range.clip(SpeedFLBR - rotate, -maxspeed, maxspeed));
     }
 
+    //This function allows both sliders to move in the same direction.
     private void PowerMotoareGlisiera(double speed){
         speed = Range.clip(speed, -0.9, 0.9);
 
@@ -243,7 +255,6 @@ public class Driver_Mode extends RobotHardwareClass {
     }
 
     //MACROS
-
     private boolean GatherAndExtendMACRO(byte dir){
         PowerMotoareGlisiera(dir * 0.7);
         return false;
@@ -251,7 +262,6 @@ public class Driver_Mode extends RobotHardwareClass {
 
     private void OpenCloseBoxes(boolean open){
         if(open){
-            //TODO: gaseste valori
             ServoBlocareL.setPosition(1);
             ServoBlocareR.setPosition(0.1);
         }
