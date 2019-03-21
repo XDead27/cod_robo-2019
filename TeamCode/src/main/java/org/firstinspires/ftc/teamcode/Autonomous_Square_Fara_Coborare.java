@@ -38,8 +38,25 @@ public final class Autonomous_Square_Fara_Coborare extends Autonomous_Mode {
         //choose cube
         ChooseCube(now);
 
+        //TODO : TESTAT DE AICI IN JOS
+
         //let team marker
-        LetTeamMarker(now);
+        MoveSlidersEncoder(200 , 0.5);
+        ExtendSlidingSystem();
+        PlantTeamMarker();
+        RetractSlidingSystem();
+
+        GoBackAndTurn(false);
+
+        WalkObstacleAndRangeNORMAL(15 , false , 0.4);
+
+        AlignWithWall();
+
+        Rotate(-90);
+
+        WalkObstacleAndRangeNORMAL(150 , true , 0.4);
+
+        ParkAtCrater();
 
     }
 

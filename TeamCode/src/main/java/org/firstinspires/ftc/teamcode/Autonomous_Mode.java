@@ -817,6 +817,16 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
         MotorExtindere.setPower(0);
     }
 
+    protected void RetractSlidingSystem() {
+        MotorExtindere.setPower(-0.3);
+        while (Math.abs(MotorExtindere.getCurrentPosition()) > 100 && opModeIsActive()){
+            telemetry.addData("extindere" , MotorExtindere.getCurrentPosition());
+            telemetry.update();
+            idle();
+        }
+        MotorExtindere.setPower(0);
+    }
+
     protected void GetObjects() {
         while (opModeIsActive()){
             MotorRotirePerii.setPower(-0.7);
@@ -899,9 +909,14 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
         GetObjects();
     }
 
-    protected void GoBackAndTurn(){
+    protected void GoBackAndTurn(boolean bIsCrater){
         WalkEncoder(-10 , 0.5 , 0);
-        Rotate(90);
+        if (bIsCrater){
+            Rotate(90);
+        }
+        else{
+            Rotate(-90);
+        }
     }
 
     protected void WalkToWall(){
