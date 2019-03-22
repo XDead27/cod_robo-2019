@@ -25,7 +25,7 @@ public final class Autonomous_Square_Fara_Coborare extends Autonomous_Mode {
     @Override
     protected void runOperations() {
 
-        LiftSlidersUpABit();
+        //LiftSlidersUpABit();
 
         //move left
         MoveToUnlatch();
@@ -38,7 +38,7 @@ public final class Autonomous_Square_Fara_Coborare extends Autonomous_Mode {
         //choose cube
         ChooseCube(now);
 
-        LetTeamMarker(now);
+        //LetTeamMarker(now);
 
         //TODO : vazut ce dracu fac de jos
         //let team marker

@@ -41,8 +41,8 @@ public final class Autonomous_Test extends Autonomous_Mode {
                 //WalkObstacleAndRangeNORMAL(10, false, 0.6);
             }
             else if (gamepad1.x) {
-                WalkToWall(25);
-                AlignWithWall(-1);
+                MoveToUnlatch();
+                ChooseCube(MineralPosition.RIGHT);
             }
             else if (gamepad1.y) {
                 //TestWalkEncoder(argument , 0.5 , -45);

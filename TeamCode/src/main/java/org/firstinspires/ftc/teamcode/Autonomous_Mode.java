@@ -860,7 +860,7 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
         if (now == LEFT){
             WalkEncoder(20 , 0.5 , 0);
             WalkEncoder(30 , 0.5 , 45);
-            WalkEncoder(10 , 0.5 , 0);
+            WalkEncoder(15 , 0.5 , 0);
         }
         else if (now == MIDDLE){
             WalkEncoder(15 , 0.5 , 0);
@@ -869,7 +869,7 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
         }
         else if (now == RIGHT){
             WalkEncoder(20 , 0.5 , -45);
-            WalkEncoder(30 , 0.5 , -90);
+            WalkEncoder(35 , 0.5 , -90);
             WalkEncoder(20 , 0.5 , 0);
         }
     }
