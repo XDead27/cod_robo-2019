@@ -7,7 +7,7 @@ import static org.firstinspires.ftc.teamcode.MineralPosition.LEFT;
 import static org.firstinspires.ftc.teamcode.MineralPosition.MIDDLE;
 import static org.firstinspires.ftc.teamcode.MineralPosition.RIGHT;
 
-@Autonomous(name = "Autonomous_Square_Fara_Coborare", group = "Autonomous")
+@Autonomous(name = "Autonomous_Square_Simpla_Fara_Coborare", group = "Autonomous")
 
 public final class Autonomous_Square_Fara_Coborare extends Autonomous_Mode {
 
@@ -38,10 +38,11 @@ public final class Autonomous_Square_Fara_Coborare extends Autonomous_Mode {
         //choose cube
         ChooseCube(now);
 
-        //TODO : TESTAT DE AICI IN JOS
+        LetTeamMarker(now);
 
+        //TODO : vazut ce dracu fac de jos
         //let team marker
-        MoveSlidersEncoder(200 , 0.5);
+       /* MoveSlidersEncoder(200 , 0.5);
         ExtendSlidingSystem();
         PlantTeamMarker();
         RetractSlidingSystem();
@@ -56,7 +57,7 @@ public final class Autonomous_Square_Fara_Coborare extends Autonomous_Mode {
 
         WalkObstacleAndRangeNORMAL(150 , true , 0.4);
 
-        ParkAtCrater();
+        ParkAtCrater();*/
 
     }
 

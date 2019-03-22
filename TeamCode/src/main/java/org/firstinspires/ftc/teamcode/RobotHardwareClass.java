@@ -170,7 +170,7 @@ public abstract class RobotHardwareClass extends LinearOpMode {
         MotorGlisieraR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         MotorExtindere.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        //TODO : SETARE BREAK
+        //TODO : SETARE BRAKE
 
         //motoare roti
         MotorFL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);

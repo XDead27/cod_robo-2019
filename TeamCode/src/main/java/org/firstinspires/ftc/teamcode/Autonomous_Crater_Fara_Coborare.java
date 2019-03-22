@@ -6,7 +6,7 @@ import static org.firstinspires.ftc.teamcode.MineralPosition.LEFT;
 import static org.firstinspires.ftc.teamcode.MineralPosition.MIDDLE;
 import static org.firstinspires.ftc.teamcode.MineralPosition.RIGHT;
 
-@Autonomous(name = "Autonomous_Crater_Fara_Coborare", group = "Autonomous")
+@Autonomous(name = "Autonomous_Crater_Simpla_Fara_Coborare", group = "Autonomous")
 
 public final class Autonomous_Crater_Fara_Coborare extends Autonomous_Mode {
 
@@ -37,27 +37,9 @@ public final class Autonomous_Crater_Fara_Coborare extends Autonomous_Mode {
         //choose cube
         ChooseCube(now);
 
-        //TODO: TESTAT DE AICI IN JOS
+        ContinuareCrater(now);
 
-        GoBackAndTurn(true);
-
-        //WalkToWall();
-        WalkObstacleAndRangeNORMAL(15 , false , 0.4);
-
-        AlignWithWall();
-
-        Rotate(90);
-
-        //WalkToWall();
-        WalkObstacleAndRangeNORMAL(15 , true , 0.4);
-
-        PlantTeamMarker();
-
-        Rotate(180);
-
-        WalkObstacleAndRangeNORMAL(150 , true , 0.4);
-
-        ParkAtCrater();
+        ParkAtCrater(); //TODO: asta are o modificare bulanita
     }
 
     @Override

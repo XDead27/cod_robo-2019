@@ -24,12 +24,15 @@ import static org.firstinspires.ftc.teamcode.MineralPosition.RIGHT;
 public abstract class Autonomous_Mode extends RobotHardwareClass {
 
     protected static int TICKS_PER_CM = 15; //TODO: chiar trebuie sa il aflam
+
     protected static int DIST_GLISIERE = 2500;
     protected static int EXTINDERE_MAX = 3500;
+
     protected static double TOLERANCE = 0.0001;
     protected static double DIAGONAL_CONSTANT = 2.0;
     protected static double VERTICAL_CONSTANT = 1.0;
     protected static double HORIZONTAL_CONSTANT = 1.5;
+
     //Integrated gyro variables
     Orientation lastAngles = new Orientation();
     double globalAngle;
@@ -606,23 +609,15 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
     }
 
     //align with wall
-    protected void AlignWithWall() {
-        if (RangeL.getDistance(DistanceUnit.CM) > RangeR.getDistance(DistanceUnit.CM)){
+    protected void AlignWithWall(int sign) {
 
-            SetWheelsPower(0.3, -0.3, 0.3, -0.3);
-
-            while (opModeIsActive() && RangeL.getDistance(DistanceUnit.CM) - RangeR.getDistance(DistanceUnit.CM) > 0) {
-                idle();
-            }
-        }
-        else{
-            SetWheelsPower(-0.3, 0.3, -0.3, 0.3);
-
-            while (opModeIsActive() && RangeR.getDistance(DistanceUnit.CM) - RangeL.getDistance(DistanceUnit.CM) > 0) {
-                idle();
-            }
+        if( Math.abs(RangeL.getDistance(DistanceUnit.CM)-RangeR.getDistance(DistanceUnit.CM)) > 0 ) {
+            SetWheelsPower(sign*0.3, sign*0.3, sign*0.3, sign*0.3);
         }
 
+        while ( Math.abs(RangeL.getDistance(DistanceUnit.CM)-RangeR.getDistance(DistanceUnit.CM)) > 0 ) {
+            idle();
+        }
 
         StopMotors();
     }
@@ -747,10 +742,11 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
         MotorGlisieraL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         MotorGlisieraR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        MotorGlisieraL.setPower(-0.3);
-        MotorGlisieraL.setPower(-0.3);
+        MotorGlisieraL.setPower(-0.5);
+        MotorGlisieraL.setPower(-0.5);
 
-        sleep(500);
+        //sleep(500); TODO: AM SCHIMBAT PT CA E O PROBLEMA LA RIDICAREA GLISIERELOR
+        sleep(4000);
 
         MotorGlisieraL.setPower(0.3);
         MotorGlisieraR.setPower(0.3);
@@ -808,12 +804,20 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
     }
 
     protected void ExtendSlidingSystem() {
-        MotorExtindere.setPower(0.7);
+
+        //TODO: am schimbat pt ca encoderul nu merge
+        /*MotorExtindere.setPower(0.7);
         while (Math.abs(MotorExtindere.getCurrentPosition()) < EXTINDERE_MAX && opModeIsActive()){
             telemetry.addData("extindere" , MotorExtindere.getCurrentPosition());
             telemetry.update();
             idle();
-        }
+        }*/
+
+        //Varianta bulanita :^(
+        MotorExtindere.setPower(0.5);
+        sleep(3000);
+        MotorExtindere.setPower(0);
+
         MotorExtindere.setPower(0);
     }
 
@@ -829,12 +833,12 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
 
     protected void GetObjects() {
         while (opModeIsActive()){
-            MotorRotirePerii.setPower(-0.7);
+            MotorRotirePerii.setPower(0.8);
         }
     }
 
     protected void PlantTeamMarker() {
-        MotorRotirePerii.setPower(0.7);
+        MotorRotirePerii.setPower(-0.7);
         sleep(2000);
         MotorRotirePerii.setPower(0);
     }
@@ -845,7 +849,7 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
     }
 
     protected void LiftSlidersUpABit(){
-        MoveSlidersEncoder(500 , 0.5);
+        MoveSlidersEncoder(1000 , 0.7);
     }
 
     protected void MoveToUnlatch(){
@@ -859,14 +863,14 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
             WalkEncoder(10 , 0.5 , 0);
         }
         else if (now == MIDDLE){
-            WalkEncoder(20 , 0.5 , 0);
-            WalkEncoder(30 , 0.5 , -45);
+            WalkEncoder(15 , 0.5 , 0);
+            WalkEncoder(35 , 0.5 , -45);
             WalkEncoder(10 , 0.5 , 0);
         }
         else if (now == RIGHT){
-            WalkEncoder(35 , 0.5 , -45);
-            WalkEncoder(20 , 0.5 , -90);
-            WalkEncoder(10 , 0.5 , 0);
+            WalkEncoder(20 , 0.5 , -45);
+            WalkEncoder(30 , 0.5 , -90);
+            WalkEncoder(20 , 0.5 , 0);
         }
     }
 
@@ -903,29 +907,43 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
         MoveSlidersEncoder(200 , 0.5);
 
         //extend the sliders
-        ExtendSlidingSystem();
+        ExtendSlidingSystem(); //TODO: asta e bulanita
 
         //try to capture objects until the end
         GetObjects();
     }
 
-    protected void GoBackAndTurn(boolean bIsCrater){
-        WalkEncoder(-10 , 0.5 , 0);
-        if (bIsCrater){
-            Rotate(90);
+    protected void GoBackAndTurn(boolean bIsCrater, MineralPosition now){
+        int sign = 1;
+        if ( !bIsCrater ) {
+            sign *= -1;
         }
-        else{
-            Rotate(-90);
+
+        if ( now == LEFT) {
+            WalkEncoder(-10 , 0.5 , 0);
+            Rotate(sign*30);
+        } else if ( now == MIDDLE ) {
+            WalkEncoder(-20 , 0.5 , 0);
+            Rotate(sign*90);
+        } else if ( now == RIGHT ) {
+            WalkEncoder(-5 , 0.5 , 0);
+            Rotate(sign*60);
         }
     }
 
-    protected void WalkToWall(){
+    protected void WalkToWall(double distance){
         double DeadZoneRange = 2;
         SetWheelsPower(0.3 , 0.3);
-        while (!(RangeL.getDistance(DistanceUnit.CM) > DeadZoneRange && RangeL.getDistance(DistanceUnit.CM) < 20) && !(RangeR.getDistance(DistanceUnit.CM) > DeadZoneRange && RangeR.getDistance(DistanceUnit.CM) < 20)){
+
+        while ( RangeL.getDistance(DistanceUnit.CM) > distance && RangeR.getDistance(DistanceUnit.CM) > distance ) {
             idle();
         }
+
+        telemetry.addData("RangeLeft cm: ", RangeL.getDistance(DistanceUnit.CM));
+        telemetry.addData("RangeRight cm: ", RangeR.getDistance(DistanceUnit.CM));
+        telemetry.update();
         StopMotors();
     }
+
 
 }

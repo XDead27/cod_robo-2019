@@ -36,15 +36,13 @@ public final class Autonomous_Test extends Autonomous_Mode {
             }
             else if(gamepad1.b){
                 //In loc de astea doua putem sa folosim cealalta functie
-                //WalkToWall();
-                //
-                //AlignWithWall();
-
-                WalkObstacleAndRangeNORMAL(10, false, 0.6);
-
+                WalkToWall(25);
+                AlignWithWall(1);
+                //WalkObstacleAndRangeNORMAL(10, false, 0.6);
             }
             else if (gamepad1.x) {
-                LiftDown();
+                WalkToWall(25);
+                AlignWithWall(-1);
             }
             else if (gamepad1.y) {
                 //TestWalkEncoder(argument , 0.5 , -45);

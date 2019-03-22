@@ -12,12 +12,17 @@ public class Driver_Mode extends RobotHardwareClass {
     //constante
     protected final int tics_per_cm = 67;
     protected final double deadzone = 0.1;
-    protected final int GLISIERA_MAX = 3200;
+
+    protected final int GLISIERA_MAX = 2500;
     protected final int GLISIERA_MIN = 0;
+
+    //TODO: Gasit valori pt EXTINDERE_MAX_GLISIERA_MAX si EXTINDERE_MAX_GLISIERA_MIN
     private final int EXTINDERE_MAX_GLISIERA_MAX = 5150;
     private final int EXTINDERE_MAX_GLISIERA_MIN = 3600;
     private final int EXTINDERE_DIFERENTA = EXTINDERE_MAX_GLISIERA_MAX - EXTINDERE_MAX_GLISIERA_MIN;
-    private final int EXTINDERE_MIN = 0; //TODO: gaseste valori:
+
+    private final int EXTINDERE_MIN = 0;
+
     private static final double INIT_ACC_SPEED = 0.2;
     private static final double MAX_ACC_SPEED = 0.9;
     private static final double ACCELERATION_INCREMENT = 0.2;
@@ -84,18 +89,18 @@ public class Driver_Mode extends RobotHardwareClass {
 
         if (gamepad1.dpad_up){
             while (opModeIsActive() && !gamepad1.dpad_down){
-                PowerMotoareGlisiera(-0.7);
+                PowerMotoareGlisiera(-0.4);
             }
         }
 
-        //Pressing the X button moves the left blocking servo to the blocking position, whereas pressing Y moves it to the opening one
+        //Pressing the Y button moves the left blocking servo to the blocking position, whereas pressing X moves it to the opening one
         if (gamepad1.x) {
             ServoBlocareL.setPosition(1);
         } else if (gamepad1.y) {
             ServoBlocareL.setPosition(0.5);
         }
 
-        //Pressing the A button moves the right blocking servo to its blocking position, whereas pressing B moves it to the opening one
+        //Pressing the B button moves the right blocking servo to its blocking position, whereas pressing A moves it to the opening one
         if (gamepad1.a) {
             ServoBlocareR.setPosition(0.1);
         } else if (gamepad1.b) {
@@ -104,16 +109,18 @@ public class Driver_Mode extends RobotHardwareClass {
 
         telemetry.addData("Acceleration mode : ", bAccelerationMode);
         telemetry.addData("Acceleration speed : ", AccelerationSpeed);
-//        telemetry.addData("FL" , MotorFL.getCurrentPosition());
-//        telemetry.addData("FR" , MotorFR.getCurrentPosition());
-//        telemetry.addData("BL" , MotorBL.getCurrentPosition());
-//        telemetry.addData("BR" , MotorBR.getCurrentPosition());
+
+        telemetry.addData("FL" , MotorFL.getCurrentPosition());
+        telemetry.addData("FR" , MotorFR.getCurrentPosition());
+        telemetry.addData("BL" , MotorBL.getCurrentPosition());
+        telemetry.addData("BR" , MotorBR.getCurrentPosition());
     }
 
     protected void gamepad_2(){
 
         double MosorCoefficient = (double)MotorGlisieraR.getCurrentPosition() / (double)GLISIERA_MAX;
         double MosorMax = (EXTINDERE_DIFERENTA * MosorCoefficient) + EXTINDERE_MAX_GLISIERA_MIN;
+
         //telemetry.addData("Mosor max : ", MosorMax);
 
         //Pressing the two bumpers will activate constraints. Activating constraints means that the motors will not move past a limit that we have declared. This is done in order to prevent cases where the driver would keep extending or retracting the sliders without noticing that it is actually harmful to the mechanism itself.
@@ -139,11 +146,10 @@ public class Driver_Mode extends RobotHardwareClass {
 
         //By pressing one of the triggers, the sliding mechanism will move upwards or downwards.
         if(gamepad2.right_trigger > deadzone) {
-            PowerMotoareGlisiera(bNoConstraintsMode ? gamepad2.right_trigger : MotorGlisieraR.getCurrentPosition() < GLISIERA_MAX? gamepad2.right_trigger : 0);
+            PowerMotoareGlisiera(bNoConstraintsMode ? gamepad2.right_trigger : MotorGlisieraL.getCurrentPosition() < GLISIERA_MAX? gamepad2.right_trigger : 0);
         }
         else if(gamepad2.left_trigger > deadzone){
-            PowerMotoareGlisiera(bNoConstraintsMode ? -gamepad2.left_trigger : MotorGlisieraR.getCurrentPosition() > GLISIERA_MIN? -gamepad2.left_trigger : 0);
-            //OpenCloseBoxes(false);
+            PowerMotoareGlisiera(bNoConstraintsMode ? -gamepad2.left_trigger : MotorGlisieraL.getCurrentPosition() > GLISIERA_MIN? -gamepad2.left_trigger : 0);
         }
         else{
             PowerMotoareGlisiera(0);
@@ -153,15 +159,13 @@ public class Driver_Mode extends RobotHardwareClass {
 
         //Rotate the brushes
         if (gamepad2.a) {
-            MotorRotirePerii.setPower(0.6);
+            MotorRotirePerii.setPower(0.8);
         }
         else if (gamepad2.b) {
-            MotorRotirePerii.setPower(-0.6);
+            MotorRotirePerii.setPower(-0.8);
         }
         else {
-            //if(Math.abs(MotorRotirePerii.getCurrentPosition() - ENCODER_AX_POS_IDEALA) < 5) {
-                MotorRotirePerii.setPower(0);
-            //}
+            MotorRotirePerii.setPower(0);
         }
 
         //4 cazuri gamepad2 pt sortare :
@@ -170,41 +174,32 @@ public class Driver_Mode extends RobotHardwareClass {
         //-> stanga - cub bila
         //-> dreapta - bila cub
 
-        //TODO: de verificat daca e ok SortareR dupa ce e pus iar cum era inainte
         if (gamepad2.dpad_up){
             ServoSortareL.setPosition(0.5);
             ServoSortareR.setPosition(1);
-            //OpenCloseBoxes(true);
-
         }
         else if (gamepad2.dpad_left) {
             ServoSortareL.setPosition(0.8);
             ServoSortareR.setPosition(1);
-            //OpenCloseBoxes(true);
         }
         else if (gamepad2.dpad_right){
             ServoSortareL.setPosition(0.5);
             ServoSortareR.setPosition(0.7);
-            //OpenCloseBoxes(true);
         }
         else if (gamepad2.dpad_down){
             ServoSortareL.setPosition(0.8);
             ServoSortareR.setPosition(0.7);
-            //OpenCloseBoxes(true);
         }
+
 
         if(gamepad2.x){
             //GatherToExtendMACRO(1);
         }
 
-
         telemetry.addData("Encoder Mosor : " , MotorExtindere.getCurrentPosition() + " din mososr max : " + MosorMax);
-        telemetry.addData("Encoder Glisiera Stanga : ", MotorGlisieraL.getCurrentPosition());
+        telemetry.addData("Encoder Ridicare Glisiera Stanga : ", MotorGlisieraL.getCurrentPosition());
         telemetry.addData("Encoder Ax : ", MotorRotirePerii.getCurrentPosition());
         telemetry.addData("No Constraints Mode : ", bNoConstraintsMode);
-//        telemetry.addData("Servo Blocare port", ServoBlocareL.getPortNumber());
-//        telemetry.addData("Servo Blocare connection", ServoBlocareL.getConnectionInfo() );
-//        telemetry.addData("Servo Blocare pos", ServoBlocareL.getPosition());
     }
 
     //FUNCTIONS
@@ -255,6 +250,23 @@ public class Driver_Mode extends RobotHardwareClass {
         MotorGlisieraL.setPower(speed);
     }
 
+    private void OpenCloseBoxes(boolean open){
+        if(open){
+            ServoBlocareL.setPosition(1);
+            ServoBlocareR.setPosition(0.1);
+        }
+        else{
+            ServoBlocareL.setPosition(0);
+            ServoBlocareR.setPosition(0.9);
+        }
+    }
+
+    //TODO: De gasit valorile si de pus in functiune
+    private void PowerMotoareGlisieraMosor(double speed){
+        PowerMotoareGlisiera(speed);
+        MotorExtindere.setPower(((double)(EXTINDERE_MAX_GLISIERA_MAX - EXTINDERE_MAX_GLISIERA_MIN) / (double)(GLISIERA_MAX - GLISIERA_MIN)) * speed);
+    }
+
     //MACROS
     private boolean GatherToExtendMACRO(int reverse){
         MotorExtindere.setTargetPosition(EXTINDERE_MIN);
@@ -286,14 +298,4 @@ public class Driver_Mode extends RobotHardwareClass {
         return false;
     }
 
-    private void OpenCloseBoxes(boolean open){
-        if(open){
-            ServoBlocareL.setPosition(1);
-            ServoBlocareR.setPosition(0.1);
-        }
-        else{
-            ServoBlocareL.setPosition(0);
-            ServoBlocareR.setPosition(0.9);
-        }
-    }
 }

@@ -40,13 +40,13 @@ public final class Autonomous_Square_Complex extends Autonomous_Mode {
 
         //TODO : TESTAT DE AICI IN JOS
 
-        //let team marker
+        /*//let team marker
         MoveSlidersEncoder(200 , 0.5);
         ExtendSlidingSystem();
         PlantTeamMarker();
         RetractSlidingSystem();
 
-        GoBackAndTurn(false);
+        GoBackAndTurn(false, now);
 
         WalkObstacleAndRangeNORMAL(15 , false , 0.4);
 
@@ -56,7 +56,7 @@ public final class Autonomous_Square_Complex extends Autonomous_Mode {
 
         WalkObstacleAndRangeNORMAL(150 , true , 0.4);
 
-        ParkAtCrater();
+        ParkAtCrater();*/
 
     }
 
