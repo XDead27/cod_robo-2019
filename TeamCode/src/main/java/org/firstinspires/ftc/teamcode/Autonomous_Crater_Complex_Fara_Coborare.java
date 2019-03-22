@@ -12,9 +12,6 @@ public final class Autonomous_Crater_Complex_Fara_Coborare extends Autonomous_Mo
 
         //calibrate gyro
         CalibrateGyro();
-
-        telemetry.addData("waiting for start " , "");
-        telemetry.update();
     }
 
     @Override

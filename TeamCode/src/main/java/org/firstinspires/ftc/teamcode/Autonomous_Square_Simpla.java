@@ -30,6 +30,9 @@ public final class Autonomous_Square_Simpla extends Autonomous_Mode {
         //move left
         MoveToUnlatch();
 
+        MoveSlidersEncoder(1000 , 0.5);
+
+
         //see where the cube is
         LiftPhoneUp();
         MineralPosition now = Position(2);
@@ -37,6 +40,14 @@ public final class Autonomous_Square_Simpla extends Autonomous_Mode {
 
         //choose cube
         ChooseCube(now);
+
+        //let team marker
+        MoveSlidersEncoder(200 , 0.5);
+        ExtendSlidingSystem();
+        PlantTeamMarker();
+        RetractSlidingSystem();
+
+        GoBackAndTurn(false, now);
 
         //let team marker
         //LetTeamMarker(now);

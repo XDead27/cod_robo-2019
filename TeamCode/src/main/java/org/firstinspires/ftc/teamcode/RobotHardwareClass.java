@@ -111,8 +111,8 @@ public abstract class RobotHardwareClass extends LinearOpMode {
 
         //TODO : DE DECOMENTAT POZITIA INITIALA A LUI SORTARER
         //INITIALIZARE POZITIE SERVO
-        ServoSortareL.setPosition(0.5);
-        ServoSortareR.setPosition(1);
+        ServoSortareL.setPosition(0.8);
+        ServoSortareR.setPosition(0.7);
 
         ServoBlocareL.setPosition(0.5);
         ServoBlocareR.setPosition(0.9);

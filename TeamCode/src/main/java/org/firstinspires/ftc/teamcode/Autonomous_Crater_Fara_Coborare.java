@@ -39,7 +39,7 @@ public final class Autonomous_Crater_Fara_Coborare extends Autonomous_Mode {
 
         ContinuareCrater(now);
 
-        ParkAtCrater(); //TODO: asta are o modificare bulanita
+        ParkAtCrater();
     }
 
     @Override

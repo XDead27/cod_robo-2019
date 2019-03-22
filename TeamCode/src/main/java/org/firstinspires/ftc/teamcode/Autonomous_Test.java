@@ -19,13 +19,20 @@ public final class Autonomous_Test extends Autonomous_Mode {
     double delay = 10.0;
 
     @Override
+    protected void initialise(boolean bIsDriver) {
+        super.initialise(bIsDriver);
+
+        CalibrateGyro();
+    }
+
+    @Override
     protected void runOperations(){
 
         tfod.shutdown();
 
         while(opModeIsActive()) {
             if (gamepad1.a){
-                while (opModeIsActive() && !gamepad1.b){
+                while (opModeIsActive() && !gamepad1.back){
                     telemetry.addData("RangeL address" , RangeL.getI2cAddress());
                     telemetry.addData("RangeR address" , RangeR.getI2cAddress());
                     telemetry.addData("RangeL distance" , RangeL.getDistance(DistanceUnit.CM));
@@ -35,10 +42,7 @@ public final class Autonomous_Test extends Autonomous_Mode {
                 //TestWalkEncoder(argument , 0.5 , 90+45);
             }
             else if(gamepad1.b){
-                //In loc de astea doua putem sa folosim cealalta functie
-                WalkToWall(25);
-                AlignWithWall(1);
-                //WalkObstacleAndRangeNORMAL(10, false, 0.6);
+                WalkObstacleAndRangeNORMAL(10, false, 0.9);
             }
             else if (gamepad1.x) {
                 MoveToUnlatch();
@@ -71,6 +75,9 @@ public final class Autonomous_Test extends Autonomous_Mode {
             else if(gamepad1.right_trigger > 0.1){
 
             }
+            else if((gamepad1.left_stick_x > 0.1 || gamepad1.left_stick_y > 0.1) && gamepad1.right_stick_button){
+                TestWalkEncoder(argument, 0.5, Math.atan(gamepad1.left_stick_y / gamepad1.left_stick_x) + 90);
+            }
             else{
                 idle();
             }
@@ -82,10 +89,6 @@ public final class Autonomous_Test extends Autonomous_Mode {
                 acceleration = 1;
             }
 
-            telemetry.addData("RangeL address" , RangeL.getI2cAddress());
-            telemetry.addData("RangeR address" , RangeR.getI2cAddress());
-            telemetry.addData("RangeL distance" , RangeL.getDistance(DistanceUnit.CM));
-            telemetry.addData("RangeR distance" , RangeR.getDistance(DistanceUnit.CM));
             telemetry.addData("Argument :", argument);
             telemetry.update();
 
@@ -135,23 +138,5 @@ public final class Autonomous_Test extends Autonomous_Mode {
         //sleep(1000);
     }
 
-    /*private void TestPath(){
-        try {
-
-            Activity a = new Activity();
-            File file;
-
-            file = new File(a.getAssets().list("")[0]);
-
-            //catch (NullPointerException e){
-            //    telemetry.addData("Nu e nimic in folder", " ");
-            //    telemetry.update();
-            //}
-
-            RunWithPath(file, 0.5);
-        } catch(Exception e){
-            throw new RuntimeException(e);
-        }
-    }*/
 
 }

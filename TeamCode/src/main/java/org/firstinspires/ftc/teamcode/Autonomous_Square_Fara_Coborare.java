@@ -25,7 +25,7 @@ public final class Autonomous_Square_Fara_Coborare extends Autonomous_Mode {
     @Override
     protected void runOperations() {
 
-        //LiftSlidersUpABit();
+        LiftSlidersUpABit();
 
         //move left
         MoveToUnlatch();
@@ -42,22 +42,22 @@ public final class Autonomous_Square_Fara_Coborare extends Autonomous_Mode {
 
         //TODO : vazut ce dracu fac de jos
         //let team marker
-       /* MoveSlidersEncoder(200 , 0.5);
+        MoveSlidersEncoder(200 , 0.5);
         ExtendSlidingSystem();
         PlantTeamMarker();
         RetractSlidingSystem();
 
-        GoBackAndTurn(false);
+        GoBackAndTurn(false, now);
 
-        WalkObstacleAndRangeNORMAL(15 , false , 0.4);
+//        WalkObstacleAndRangeNORMAL(15 , false , 0.4);
 
-        AlignWithWall();
-
-        Rotate(-90);
-
-        WalkObstacleAndRangeNORMAL(150 , true , 0.4);
-
-        ParkAtCrater();*/
+//        AlignWithWall();
+//
+//        Rotate(-90);
+//
+//        WalkObstacleAndRangeNORMAL(150 , true , 0.4);
+//
+//        ParkAtCrater();
 
     }
 

@@ -25,8 +25,9 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
 
     protected static int TICKS_PER_CM = 15; //TODO: chiar trebuie sa il aflam
 
-    protected static int DIST_GLISIERE = 2500;
-    protected static int EXTINDERE_MAX = 3500;
+    protected static int DIST_GLISIERE = 2000;
+    private final int EXTINDERE_MAX_GLISIERA_MAX = 5800;
+    private final int EXTINDERE_MAX_GLISIERA_MIN = 4790;
 
     protected static double TOLERANCE = 0.0001;
     protected static double DIAGONAL_CONSTANT = 2.0;
@@ -45,6 +46,8 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
     @Override
     public void runOpMode() throws  InterruptedException{
         initialise(false);
+        telemetry.addData("Status", "Waiting for start");
+        telemetry.update();
 
         waitForStart();
 
@@ -65,8 +68,8 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
 
     protected MineralPosition Position(int elem) {
 
-        //TODO : sa inteleg ce este top, bottom, left, right (daca sunt fata de mardinile ecranului sau altceva), dam telemetry sa aflam
-        //TODO : atunci cand sunt la crater sa incerc sa nu iau din greseala elem din spate
+        //sa inteleg ce este top, bottom, left, right (daca sunt fata de mardinile ecranului sau altceva), dam telemetry sa aflam
+        //atunci cand sunt la crater sa incerc sa nu iau din greseala elem din spate
 
         MineralPosition ret = RIGHT;
         tfod.activate();
@@ -213,8 +216,6 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
     //Pan-move a desired distance, being given the speed and the angle as well
     protected void WalkEncoder(double dist, double speed, double angle) {
 
-        //TODO : merge mult mai mult ca dist (ii dadeam 10 cm, el mergea un metru, s-ar putea sa fie o greseala de la calcule sau encodere, dam telemetry sa aflam
-
         ResetAllEncoders();
 
         RunWithAllEncoders();
@@ -299,7 +300,7 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
         //IN-DEPTH EXPLANATION
         //
         //  This is a function that makes the robot move forward until there is a target distance
-        //between it and the wall in front of him (distanceFromWall) for a certain amount of time.
+        //between it and the obstacle in front of him (distanceFromWall) for a certain amount of time.
         //  It has the option to align the robot with the wall in front of him before starting to move
         //(bStartAlignedWithWall).
         //  There is a timer loop that acts like a timer, constantly checking the sensors & checking if
@@ -324,7 +325,7 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
         //initialising of the timer loop
         final double target = distanceFromWall;
         final double delay = 2000;
-        final long period = 10L; //while ce opereaza la frecventa de 10 ms
+        final long period = 1L; //while ce opereaza la frecventa de 10 ms
 
         boolean bIsUsingEncoder = false;
 
@@ -345,7 +346,7 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
 
         double initValueL = 0, initValueR = 0;
 
-        float steadyTimer = 0;
+        float steadyTimer = 0, RTimer = 0;
 
         //Implement acceleration so that the big changes in sensors input do not drastically affect
         //the robot's speed
@@ -354,100 +355,99 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
 
         while (opModeIsActive() && steadyTimer < delay) {
 
-            //*****************************
-            //timer condition
-            if (Math.abs(errorLeft) < 2 || Math.abs(errorRight) < 2) {
-                steadyTimer += period;
-            } else {
-                steadyTimer = 0;
-            }
+//            //*****************************
+//            //timer condition
+//            if (Math.abs(errorLeft) < 2 || Math.abs(errorRight) < 2) {
+//                steadyTimer += period;
+//            } else {
+//                steadyTimer = 0;
+//            }
+//
+            RTimer += period;
+//
+//            //****************************
+//            //PID
+//            errorRight = target - RangeR.getDistance(DistanceUnit.CM);
+//            errorLeft = target - RangeL.getDistance(DistanceUnit.CM);
+//
+//            //the outcome will be negative (because of the distance subtraction) so we invert it
+//            //we restrict the outcome to the minimum and maximum for the motor
+//            finalSpeedLeft = Range.clip(-(errorLeft * pGain), -0.9, 0.6);
+//            finalSpeedRight = Range.clip(-(errorRight * pGain), -0.9, 0.6);
+//
+//            //****************************
+//            //exceptions (if the output is a really small number)
+//            if (Math.abs(finalSpeedLeft) < TOLERANCE) {
+//                finalSpeedLeft = 0;
+//            }
+//            if (Math.abs(finalSpeedRight) < TOLERANCE) {
+//                finalSpeedRight = 0;
+//            }
+//
+//            //if the robot has to avoid an obstacle
+//            if (finalSpeedLeft > 0 && finalSpeedRight < 0) {
+//                finalSpeedLeft = 0;
+//            }
+//            if (finalSpeedRight > 0 && finalSpeedLeft < 0) {
+//                finalSpeedRight = 0;
+//            }
+//
+//            //****************************
+//            //gyro
+//            currentHeading = GetAngle();
+//            if (currentHeading > 180) {
+//                currentHeading = currentHeading - 360;
+//            }
+//            if (Math.abs(currentHeading) > 2 && !bIsUsingEncoder) {
+//                bIsUsingEncoder = true;
+//                initValueL = MotorFL.getCurrentPosition();
+//                initValueR = MotorFR.getCurrentPosition();
+//            }
+//
+//            //****************************
+//            //get back on previous track (once the obstacle has passed)
+//            if (bIsUsingEncoder) {
+//                if (initValueL <= MotorFL.getCurrentPosition()) {
+//                    finalSpeedLeft = 0;
+//                }
+//                if (initValueR <= MotorFR.getCurrentPosition()) {
+//                    finalSpeedRight = 0;
+//                }
+//
+//                if (initValueL < MotorFL.getCurrentPosition() && initValueR < MotorFR.getCurrentPosition()) {
+//                    bIsUsingEncoder = false;
+//                    ResetAngle();
+//                }
+//            }
+//
+//            //Acceleration rules
+//            //If the sensors tell the robot to move in the oposite direction or if the final speed is zero then reset the acceleration
+//            if(Math.signum(lastSpeedLeft) == Math.signum(finalSpeedLeft) && Math.signum(lastSpeedRight) == Math.signum(finalSpeedRight) && finalSpeedLeft != 0 && finalSpeedLeft != 0){
+//                Acceleration += (period * 500 /*BULANEALA*/ / 1000.0) * ACCELERATION_INCREMENT;
+//                Acceleration = Range.clip(Acceleration, INIT_ACCELERATION, MAX_ACCELERATION);
+//            }
+//            else{
+//                Acceleration = INIT_ACCELERATION;
+//            }
+//
+//            SetWheelsPower(finalSpeedLeft * Acceleration, finalSpeedRight * Acceleration, finalSpeedLeft * Acceleration, finalSpeedRight * Acceleration);
 
-
-            //****************************
-            //PID
-            errorRight = target - RangeL.getDistance(DistanceUnit.CM);
-            errorLeft = target - RangeL.getDistance(DistanceUnit.CM);
-
-            proportionalSpeedRight = (errorRight * pGain);
-            proportionalSpeedLeft = (errorLeft * pGain);
-
-            //the outcome will be negative (because of the distance subtraction) so we invert it
-            finalSpeedLeft = -proportionalSpeedLeft;
-            finalSpeedRight = -proportionalSpeedRight;
-
-            //we restrict the outcome to the minimum and maximum for the motor
-            finalSpeedLeft = Range.clip(finalSpeedLeft, -0.9, 0.7);
-            finalSpeedRight = Range.clip(finalSpeedRight, -0.9, 0.7);
-
-            //****************************
-            //exceptions (if the output is a really small number)
-            if (Math.abs(finalSpeedLeft) < TOLERANCE) {
-                finalSpeedLeft = 0;
-            }
-            if (Math.abs(finalSpeedRight) < TOLERANCE) {
-                finalSpeedRight = 0;
-            }
-
-            //if the robot has to avoid an obstacle
-            if (finalSpeedLeft > 0 && finalSpeedRight < 0) {
-                finalSpeedLeft = 0;
-            }
-            if (finalSpeedRight > 0 && finalSpeedLeft < 0) {
-                finalSpeedRight = 0;
-            }
-
-            //****************************
-            //gyro
-            currentHeading = GetAngle();
-            if (currentHeading > 180) {
-                currentHeading = currentHeading - 360;
-            }
-            if (Math.abs(currentHeading) > 2 && !bIsUsingEncoder) {
-                bIsUsingEncoder = true;
-                initValueL = MotorFL.getCurrentPosition();
-                initValueR = MotorFR.getCurrentPosition();
-            }
-
-            //****************************
-            //get back on previous track (once the obstacle has passed)
-            if (bIsUsingEncoder) {
-                if (initValueL <= MotorFL.getCurrentPosition()) {
-                    finalSpeedLeft = 0;
-                }
-                if (initValueR <= MotorFR.getCurrentPosition()) {
-                    finalSpeedRight = 0;
-                }
-
-                if (initValueL < MotorFL.getCurrentPosition() && initValueR < MotorFR.getCurrentPosition()) {
-                    bIsUsingEncoder = false;
-                    ResetAngle();
-                }
-            }
-
-            //Acceleration rules
-            //If the sensors tell the robot to move in the oposite direction or if the final speed is zero then reset the acceleration
-            if(Math.signum(lastSpeedLeft) == Math.signum(finalSpeedLeft) && Math.signum(lastSpeedRight) == Math.signum(finalSpeedRight) && finalSpeedLeft != 0 && finalSpeedLeft != 0){
-                Acceleration += (period / 1000) * ACCELERATION_INCREMENT;
-                Acceleration = Range.clip(Acceleration, INIT_ACCELERATION, MAX_ACCELERATION);
-            }
-            else{
-                Acceleration = INIT_ACCELERATION;
-            }
-
-            SetWheelsPower(finalSpeedLeft * Acceleration, finalSpeedRight * Acceleration, finalSpeedLeft * Acceleration, finalSpeedRight * Acceleration);
-
+            telemetry.addData("RangeL", RangeL.getDistance(DistanceUnit.CM));
+            telemetry.addData("RangeR", RangeR.getDistance(DistanceUnit.CM));
+            telemetry.addData("acceleration", Acceleration);
             telemetry.addData("using encoder ", bIsUsingEncoder);
-            telemetry.addData("speed left", finalSpeedLeft);
-            telemetry.addData("speed right", finalSpeedRight);
-            telemetry.addData("error left ", errorLeft);
-            telemetry.addData("error right ", errorRight);
+//            telemetry.addData("speed left", finalSpeedLeft);
+//            telemetry.addData("speed right", finalSpeedRight);
+//            telemetry.addData("error left ", errorLeft);
+//            telemetry.addData("error right ", errorRight);
             telemetry.addData("steady timer ", steadyTimer);
+            telemetry.addData("time timer ", RTimer);
             telemetry.update();
 
-            lastSpeedLeft = finalSpeedLeft;
-            lastSpeedRight = finalSpeedRight;
-
-            sleep(period);
+//            lastSpeedLeft = finalSpeedLeft;
+//            lastSpeedRight = finalSpeedRight;
+//
+//            sleep(period);
         }
         StopMotors();
     }
@@ -597,7 +597,6 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
 
         SetWheelsPower(FLPower/2, FRPower/2, BLPower/2, BRPower/2);
 
-
         while (opModeIsActive() && Math.abs(FinalAngle - GetAngle()) > 5) {
             telemetry.addData("sunt in modul incet", " ");
             telemetry.addData("m-am rotit pana la ", GetAngle());
@@ -742,8 +741,8 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
         MotorGlisieraL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         MotorGlisieraR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        MotorGlisieraL.setPower(-0.5);
-        MotorGlisieraL.setPower(-0.5);
+        MotorGlisieraL.setPower(-0.6);
+        MotorGlisieraR.setPower(-0.6);
 
         //sleep(500); TODO: AM SCHIMBAT PT CA E O PROBLEMA LA RIDICAREA GLISIERELOR
         sleep(4000);
@@ -806,19 +805,19 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
     protected void ExtendSlidingSystem() {
 
         //TODO: am schimbat pt ca encoderul nu merge
-        /*MotorExtindere.setPower(0.7);
-        while (Math.abs(MotorExtindere.getCurrentPosition()) < EXTINDERE_MAX && opModeIsActive()){
+        MotorExtindere.setPower(0.7);
+        while (Math.abs(MotorExtindere.getCurrentPosition()) < EXTINDERE_MAX_GLISIERA_MIN - 2000 && opModeIsActive()){
             telemetry.addData("extindere" , MotorExtindere.getCurrentPosition());
             telemetry.update();
             idle();
-        }*/
+        }
 
-        //Varianta bulanita :^(
-        MotorExtindere.setPower(0.5);
-        sleep(3000);
-        MotorExtindere.setPower(0);
-
-        MotorExtindere.setPower(0);
+//        //Varianta bulanita :^(
+//        MotorExtindere.setPower(0.5);
+//        sleep(3000);
+//        MotorExtindere.setPower(0);
+//
+//        MotorExtindere.setPower(0);
     }
 
     protected void RetractSlidingSystem() {
@@ -907,27 +906,30 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
         MoveSlidersEncoder(200 , 0.5);
 
         //extend the sliders
-        ExtendSlidingSystem(); //TODO: asta e bulanita
+        ExtendSlidingSystem();
 
         //try to capture objects until the end
         GetObjects();
     }
 
     protected void GoBackAndTurn(boolean bIsCrater, MineralPosition now){
-        int sign = 1;
+        int sign = -1;
         if ( !bIsCrater ) {
             sign *= -1;
         }
 
+        //TODO: sa se scrie comentarii (am schibat sign ul)
         if ( now == LEFT) {
             WalkEncoder(-10 , 0.5 , 0);
-            Rotate(sign*30);
+            WalkEncoder(-20 , 0.5 , 90);
+            Rotate(30);
         } else if ( now == MIDDLE ) {
             WalkEncoder(-20 , 0.5 , 0);
-            Rotate(sign*90);
+            Rotate(90);
         } else if ( now == RIGHT ) {
             WalkEncoder(-5 , 0.5 , 0);
-            Rotate(sign*60);
+            WalkEncoder(-20 , 0.5 , -90);
+            Rotate(60);
         }
     }
 
@@ -936,12 +938,11 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
         SetWheelsPower(0.3 , 0.3);
 
         while ( RangeL.getDistance(DistanceUnit.CM) > distance && RangeR.getDistance(DistanceUnit.CM) > distance ) {
+            telemetry.addData("RangeLeft cm: ", RangeL.getDistance(DistanceUnit.CM));
+            telemetry.addData("RangeRight cm: ", RangeR.getDistance(DistanceUnit.CM));
+            telemetry.update();
             idle();
         }
-
-        telemetry.addData("RangeLeft cm: ", RangeL.getDistance(DistanceUnit.CM));
-        telemetry.addData("RangeRight cm: ", RangeR.getDistance(DistanceUnit.CM));
-        telemetry.update();
         StopMotors();
     }
 
