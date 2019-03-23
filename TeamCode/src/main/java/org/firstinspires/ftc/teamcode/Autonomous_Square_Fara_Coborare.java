@@ -38,16 +38,30 @@ public final class Autonomous_Square_Fara_Coborare extends Autonomous_Mode {
         //choose cube
         ChooseCube(now);
 
-        //LetTeamMarker(now);
+        //moves slightly further from the other minerals then turns towards the crater/square
+        switch(now){
+            case LEFT:
+                WalkEncoder(20, 0.5, 90);
+                Rotate(-35);
+                break;
 
-        //TODO : vazut ce dracu fac de jos
+            case MIDDLE:
+                WalkEncoder(10, 0.5, 0);
+                break;
+
+            case RIGHT:
+                WalkEncoder(20, 0.5, -90);
+                Rotate(35);
+                break;
+        }
+
         //let team marker
-        MoveSlidersEncoder(200 , 0.5);
+        MoveSlidersEncoder(500 , 0.5);
         ExtendSlidingSystem();
         PlantTeamMarker();
         RetractSlidingSystem();
 
-        GoBackAndTurn(false, now);
+//        GoBackAndTurn(false, now);
 
 //        WalkObstacleAndRangeNORMAL(15 , false , 0.4);
 

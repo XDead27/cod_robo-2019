@@ -36,6 +36,8 @@ public class Driver_Mode extends RobotHardwareClass {
 
     private static final double delay = 10;
 
+    private int LastGlisiera = 0;
+
     //variables
     private static double AccelerationSpeed = INIT_ACC_SPEED;
 
@@ -146,13 +148,21 @@ public class Driver_Mode extends RobotHardwareClass {
 
         //By pressing one of the triggers, the sliding mechanism will move upwards or downwards.
         if(gamepad2.right_trigger > deadzone) {
+            MotorGlisieraL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            MotorGlisieraR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             PowerMotoareGlisiera(bNoConstraintsMode ? gamepad2.right_trigger : MotorGlisieraL.getCurrentPosition() < GLISIERA_MAX? gamepad2.right_trigger : 0);
+            LastGlisiera = MotorGlisieraL.getCurrentPosition();
+
         }
         else if(gamepad2.left_trigger > deadzone){
+            MotorGlisieraL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            MotorGlisieraR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             PowerMotoareGlisiera(bNoConstraintsMode ? -gamepad2.left_trigger : MotorGlisieraL.getCurrentPosition() > GLISIERA_MIN? -gamepad2.left_trigger : 0);
+            LastGlisiera = MotorGlisieraL.getCurrentPosition();
         }
         else{
-            PowerMotoareGlisiera(0);
+            //PowerMotoareGlisiera(0);
+            RestGlisiere(LastGlisiera);
             //telemetry.addData("Ar trebui sa se opreasca", " ");
         }
 
@@ -193,7 +203,7 @@ public class Driver_Mode extends RobotHardwareClass {
 
 
         if(gamepad2.x){
-            //GatherToExtendMACRO(1);
+            GatherToExtendMACRO(1);
         }
 
         telemetry.addData("Encoder Mosor : " , MotorExtindere.getCurrentPosition() + " din mososr max : " + MosorMax);
@@ -298,4 +308,12 @@ public class Driver_Mode extends RobotHardwareClass {
         return false;
     }
 
+    private void RestGlisiere(int LastPosition){
+        MotorGlisieraL.setTargetPosition(LastPosition);
+        MotorGlisieraR.setTargetPosition(LastPosition);
+        MotorGlisieraL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        MotorGlisieraR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        MotorGlisieraL.setPower(0.1);
+        MotorGlisieraR.setPower(0.1);
+    }
 }

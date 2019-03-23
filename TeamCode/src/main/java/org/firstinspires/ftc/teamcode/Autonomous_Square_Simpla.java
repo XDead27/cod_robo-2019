@@ -32,7 +32,6 @@ public final class Autonomous_Square_Simpla extends Autonomous_Mode {
 
         MoveSlidersEncoder(1000 , 0.5);
 
-
         //see where the cube is
         LiftPhoneUp();
         MineralPosition now = Position(2);
@@ -41,21 +40,38 @@ public final class Autonomous_Square_Simpla extends Autonomous_Mode {
         //choose cube
         ChooseCube(now);
 
+        //moves slightly further from the other minerals then turns towards the crater/square
+        switch(now){
+            case LEFT:
+                WalkEncoder(20, 0.5, 90);
+                Rotate(-35);
+                break;
+
+            case MIDDLE:
+                WalkEncoder(10, 0.5, 0);
+                break;
+
+            case RIGHT:
+                WalkEncoder(20, 0.5, -90);
+                Rotate(35);
+                break;
+        }
+
         //let team marker
-        MoveSlidersEncoder(200 , 0.5);
+        MoveSlidersEncoder(500 , 0.5);
         ExtendSlidingSystem();
         PlantTeamMarker();
         RetractSlidingSystem();
-
-        GoBackAndTurn(false, now);
-
-        //let team marker
-        //LetTeamMarker(now);
-
-        //TODO: vazut ce dracu fac in jos
-        /*Rotate(-90);
-
-        WalkObstacleAndRangeNORMAL(20, true, 0.8);*/
+//
+//        GoBackAndTurn(false, now);
+//
+//        //let team marker
+//        LetTeamMarker(now);
+//
+//        //TODO: vazut ce dracu fac in jos
+//        Rotate(-90);
+//
+//        WalkObstacleAndRangeNORMAL(20, true, 0.8);
 
     }
 

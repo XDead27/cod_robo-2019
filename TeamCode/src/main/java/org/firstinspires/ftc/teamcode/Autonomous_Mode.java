@@ -25,7 +25,7 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
 
     protected static int TICKS_PER_CM = 15; //TODO: chiar trebuie sa il aflam
 
-    protected static int DIST_GLISIERE = 2000;
+    protected static int DIST_GLISIERE = 1800;
     private final int EXTINDERE_MAX_GLISIERA_MAX = 5800;
     private final int EXTINDERE_MAX_GLISIERA_MIN = 4790;
 
@@ -766,6 +766,7 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
         StopGlisiere();
 
         CalibrateGyro();
+        ResetAngle();
     }
 
     protected void MoveSlidersEncoder(int dist , double speed) {
@@ -855,7 +856,7 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
         WalkEncoder(8 , 0.5 , 90);
     }
 
-    protected void ChooseCube(MineralPosition now){
+    protected void  ChooseCube(MineralPosition now){
         if (now == LEFT){
             WalkEncoder(20 , 0.5 , 0);
             WalkEncoder(30 , 0.5 , 45);

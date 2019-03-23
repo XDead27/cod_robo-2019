@@ -37,9 +37,7 @@ public final class Autonomous_Crater_Complex extends Autonomous_Mode {
         //choose cube
         ChooseCube(now);
 
-        //TODO: TESTAT DE AICI IN JOS
-
-        /*GoBackAndTurn(true, now);*
+        GoBackAndTurn(true, now);
 
         //WalkToWall();
         WalkObstacleAndRangeNORMAL(15 , false , 0.4);
@@ -55,7 +53,7 @@ public final class Autonomous_Crater_Complex extends Autonomous_Mode {
 
         WalkObstacleAndRangeNORMAL(150 , true , 0.4);
 
-        ParkAtCrater();*/
+        ParkAtCrater();
     }
 
     @Override

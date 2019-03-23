@@ -34,10 +34,30 @@ public final class Autonomous_Crater_Fara_Coborare extends Autonomous_Mode {
         MineralPosition now = Position(2);
         LiftPhoneDown();
 
+        telemetry.addData("now", now);
+        telemetry.update();
+
         //choose cube
         ChooseCube(now);
 
-        ContinuareCrater(now);
+        MoveSlidersEncoder(1000, 0.5);
+
+        //moves slightly further from the other minerals then turns towards the crater/square
+        switch(now){
+            case LEFT:
+                WalkEncoder(20, 0.5, 90);
+                Rotate(-15);
+                break;
+
+            case MIDDLE:
+                WalkEncoder(10, 0.5, 0);
+                break;
+
+            case RIGHT:
+                WalkEncoder(20, 0.5, -90);
+                Rotate(15);
+                break;
+        }
 
         ParkAtCrater();
     }
