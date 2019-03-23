@@ -11,6 +11,10 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 import java.io.File;
 
+import static org.firstinspires.ftc.teamcode.MineralPosition.LEFT;
+import static org.firstinspires.ftc.teamcode.MineralPosition.MIDDLE;
+import static org.firstinspires.ftc.teamcode.MineralPosition.RIGHT;
+
 @Autonomous(name = "Autonomous_Test", group = "Autonomous")
 @Disabled
 
@@ -49,22 +53,114 @@ public final class Autonomous_Test extends Autonomous_Mode {
             }
             else if (gamepad1.x) {
                 MoveToUnlatch();
-                ChooseCube(MineralPosition.RIGHT);
+                ChooseCube(RIGHT);
             }
             else if (gamepad1.y) {
-                //TestWalkEncoder(argument , 0.5 , -45);
+                //see where the cube is
+                LiftPhoneUp();
+                MineralPosition now = LEFT;
+                LiftPhoneDown();
+
+                MoveSlidersEncoder(1000, 0.5);
+
+                //choose cube
+                ChooseCube(now);
+
+                //moves slightly further from the other minerals then turns towards the crater/square
+                switch(now){
+                    case LEFT:
+                        WalkEncoder(20, 0.5, 90);
+                        Rotate(-15);
+                        break;
+
+                    case MIDDLE:
+                        WalkEncoder(5, 0.5, 0);
+                        break;
+
+                    case RIGHT:
+                        WalkEncoder(20, 0.5, -90);
+                        Rotate(15);
+                        break;
+                }
+
+                //park
+                ParkAtCrater();
             }
+
             else if (gamepad1.dpad_up) {
-                TestWalkEncoder(argument , 0.5 , 0);
+                //MIDDLE DANI, MIDDLE
+                LiftDown();
+
+                //move left
+                MoveToUnlatch();
+
+                //see where the cube is
+                LiftPhoneUp();
+                MineralPosition now = MIDDLE;
+                LiftPhoneDown();
+
+                MoveSlidersEncoder(1000, 0.5);
+
+                //choose cube
+                ChooseCube(now);
+
+                WalkEncoder(5, 0.5, 0);
+
+                //park
+                ParkAtCrater();
+
             }
             else if (gamepad1.dpad_down) {
-                TestWalkEncoder(argument , 0.5 , 180);
+
             }
             else if (gamepad1.dpad_left) {
-                TestWalkEncoder(argument , 0.5 , 90);
+                //LEFT AN POOLA MEA
+                LiftDown();
+
+                //move left
+                MoveToUnlatch();
+
+                //see where the cube is
+                LiftPhoneUp();
+                MineralPosition now = LEFT;
+                LiftPhoneDown();
+
+                MoveSlidersEncoder(1000, 0.5);
+
+                //choose cube
+                ChooseCube(now);
+
+                //moves slightly further from the other minerals then turns towards the crater/square
+
+                WalkEncoder(20, 0.5, 90);
+                Rotate(-15);
+
+                //park
+                ParkAtCrater();
             }
             else if (gamepad1.dpad_right) {
-                TestWalkEncoder(argument , 0.5 , -90);
+                //RIGHT
+                LiftDown();
+
+                //move left
+                MoveToUnlatch();
+
+                //see where the cube is
+                LiftPhoneUp();
+                MineralPosition now = RIGHT;
+                LiftPhoneDown();
+
+                MoveSlidersEncoder(1000, 0.5);
+
+                //choose cube
+                ChooseCube(now);
+
+                //moves slightly further from the other minerals then turns towards the crater/square
+                WalkEncoder(20, 0.5, -90);
+                Rotate(15);
+
+                //park
+                ParkAtCrater();
             }
             else if(gamepad1.left_bumper){
                 Rotate(argument);

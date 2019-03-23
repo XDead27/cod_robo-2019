@@ -8,8 +8,6 @@ import static org.firstinspires.ftc.teamcode.MineralPosition.MIDDLE;
 import static org.firstinspires.ftc.teamcode.MineralPosition.RIGHT;
 
 @Autonomous(name = "Autonomous_Crater_Complex", group = "Autonomous")
-@Disabled
-
 
 public final class Autonomous_Crater_Complex extends Autonomous_Mode {
 
@@ -26,11 +24,9 @@ public final class Autonomous_Crater_Complex extends Autonomous_Mode {
         //let the robot down
         LiftDown();
 
-        //calibrate gyro
-        CalibrateGyro();
-
         //move left
         MoveToUnlatch();
+        MoveSlidersEncoder(1200, 0.7);
 
         //see where the cube is
         LiftPhoneUp();
@@ -40,23 +36,9 @@ public final class Autonomous_Crater_Complex extends Autonomous_Mode {
         //choose cube
         ChooseCube(now);
 
-        GoBackAndTurn(true, now);
+        GoBackToCenter(now);
 
-        //WalkToWall();
-        WalkObstacleAndRangeNORMAL(15 , false , 0.4);
-
-        Rotate(90);
-
-        //WalkToWall();
-        WalkObstacleAndRangeNORMAL(15 , true , 0.4);
-
-        PlantTeamMarker();
-
-        Rotate(180);
-
-        WalkObstacleAndRangeNORMAL(150 , true , 0.4);
-
-        ParkAtCrater();
+        ComplexCommute(true, now);
     }
 
     @Override

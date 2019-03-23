@@ -6,3 +6,5 @@ public enum MineralPosition {
     MIDDLE,
     RIGHT
 }
+
+

@@ -2,10 +2,6 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-import static org.firstinspires.ftc.teamcode.MineralPosition.LEFT;
-import static org.firstinspires.ftc.teamcode.MineralPosition.MIDDLE;
-import static org.firstinspires.ftc.teamcode.MineralPosition.RIGHT;
-
 @Autonomous(name = "Autonomous Crater Simpla", group = "Autonomous")
 
 public final class Autonomous_Crater_Simpla extends Autonomous_Mode {
@@ -30,23 +26,8 @@ public final class Autonomous_Crater_Simpla extends Autonomous_Mode {
         ChooseCube(now);
 
         //moves slightly further from the other minerals then turns towards the crater/square
-        switch(now){
-            case LEFT:
-                WalkEncoder(20, 0.5, 90);
-                Rotate(-15);
-                break;
+        AfterChooseMoveSequence(true, now, Direction.NORMAL);
 
-            case MIDDLE:
-                WalkEncoder(5, 0.5, 0);
-                break;
-
-            case RIGHT:
-                WalkEncoder(20, 0.5, -90);
-                Rotate(15);
-                break;
-        }
-
-        //park
         ParkAtCrater();
     }
 

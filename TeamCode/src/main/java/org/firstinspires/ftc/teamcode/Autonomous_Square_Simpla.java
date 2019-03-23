@@ -14,7 +14,6 @@ public final class Autonomous_Square_Simpla extends Autonomous_Mode {
     @Override
     protected void runOperations() {
 
-        //let the robot down
         LiftDown();
 
         //move left
@@ -32,29 +31,10 @@ public final class Autonomous_Square_Simpla extends Autonomous_Mode {
         ChooseCube(now);
 
         //moves slightly further from the other minerals then turns towards the crater/square
-        switch(now){
-            case LEFT:
-                Rotate(-45);
-                WalkEncoder(20, 0.5, 90);
-                WalkEncoder(20, 0.5, 0);
-                break;
+        AfterChooseMoveSequence(false, now, Direction.NORMAL);
+        AfterChooseMoveSequence(false, now, Direction.REVERSE);
 
-            case MIDDLE:
-                WalkEncoder(10, 0.5, 0);
-                break;
-
-            case RIGHT:
-                WalkEncoder(20, 0.5, -90);
-                Rotate(35);
-                WalkEncoder(20, 0.5, 0);
-                break;
-        }
-
-        //let team marker
-        MoveSlidersEncoder(500 , 0.5);
-        ExtendSlidingSystem();
-        PlantTeamMarker();
-        RetractSlidingSystem();
+        GoBackToCenter(now);
     }
 
     @Override

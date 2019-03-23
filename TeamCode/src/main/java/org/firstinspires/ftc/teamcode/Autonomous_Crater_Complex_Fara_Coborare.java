@@ -32,9 +32,9 @@ public final class Autonomous_Crater_Complex_Fara_Coborare extends Autonomous_Mo
 
         //TODO: de continuat de aici
 
-        GoBackAndTurn(true, now);
+        //GoBackAndTurn(true, now);
 
-        WalkToWall(5);
+        //WalkToWall(5);
         //WalkObstacleAndRangeNORMAL(10 , false , 0.4);
 
         AlignWithWall(-1);
@@ -45,7 +45,7 @@ public final class Autonomous_Crater_Complex_Fara_Coborare extends Autonomous_Mo
 
         AlignWithWall(1);
 
-        WalkToWall(50);
+        //WalkToWall(50);
 
         /*//WalkToWall();
         WalkObstacleAndRangeNORMAL(15 , true , 0.4);

@@ -23,9 +23,9 @@ import static org.firstinspires.ftc.teamcode.MineralPosition.RIGHT;
 
 public abstract class Autonomous_Mode extends RobotHardwareClass {
 
-    protected static int TICKS_PER_CM = 15; //TODO: chiar trebuie sa il aflam
+    protected static int TICKS_PER_CM = 15;
 
-    protected static int DIST_GLISIERE = 1550;
+    protected static int DIST_GLISIERE = 1300;
     private final int EXTINDERE_MAX_GLISIERA_MAX = 5800;
     private final int EXTINDERE_MAX_GLISIERA_MIN = 4790;
 
@@ -594,7 +594,7 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
 
         while (opModeIsActive() && Math.abs(FinalAngle - GetAngle()) > 15) {
             telemetry.addData("sunt in modul normal", FinalAngle);
-            telemetry.addData(" m-am rotit pana la ", GetAngle());
+            telemetry.addData("m-am rotit pana la ", GetAngle());
             telemetry.update();
             idle();
         }
@@ -745,11 +745,10 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
         MotorGlisieraL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         MotorGlisieraR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        MotorGlisieraL.setPower(-0.6);
-        MotorGlisieraR.setPower(-0.6);
+        MotorGlisieraL.setPower(-0.7);
+        MotorGlisieraR.setPower(-0.7);
 
-        //sleep(500); TODO: AM SCHIMBAT PT CA E O PROBLEMA LA RIDICAREA GLISIERELOR
-        sleep(4000);
+        sleep(1000);
 
         MotorGlisieraL.setPower(0.3);
         MotorGlisieraR.setPower(0.3);
@@ -807,15 +806,24 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
         ServoPhone.setPosition(0.5);
     }
 
-    protected void ExtendSlidingSystem() {
+    protected void ExtendSlidingSystem( boolean bIsCrater) {
 
-        //TODO: am schimbat pt ca encoderul nu merge
+        if ( bIsCrater ) {
         MotorExtindere.setPower(0.7);
-        while (Math.abs(MotorExtindere.getCurrentPosition()) < EXTINDERE_MAX_GLISIERA_MIN - 2000 && opModeIsActive()){
-            telemetry.addData("extindere" , MotorExtindere.getCurrentPosition());
-            telemetry.update();
-            idle();
+            while (Math.abs(MotorExtindere.getCurrentPosition()) < EXTINDERE_MAX_GLISIERA_MIN - 2000 && opModeIsActive()){
+                telemetry.addData("extindere" , MotorExtindere.getCurrentPosition());
+                telemetry.update();
+                idle();
+            }
+        } else {
+            MotorExtindere.setPower(0.7);
+            while (Math.abs(MotorExtindere.getCurrentPosition()) < EXTINDERE_MAX_GLISIERA_MIN - 2500 && opModeIsActive()) {
+                telemetry.addData("extindere", MotorExtindere.getCurrentPosition());
+                telemetry.update();
+                idle();
+            }
         }
+
 
 //        //Varianta bulanita :^(
 //        MotorExtindere.setPower(0.5);
@@ -826,8 +834,8 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
     }
 
     protected void RetractSlidingSystem() {
-        MotorExtindere.setPower(-0.3);
-        while (Math.abs(MotorExtindere.getCurrentPosition()) > 100 && opModeIsActive()){
+        MotorExtindere.setPower(-0.6);
+        while (Math.abs(MotorExtindere.getCurrentPosition()) > 1300 && opModeIsActive()){
             telemetry.addData("extindere" , MotorExtindere.getCurrentPosition());
             telemetry.update();
             idle();
@@ -843,7 +851,7 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
 
     protected void PlantTeamMarker() {
         MotorRotirePerii.setPower(-0.7);
-        sleep(2000);
+        sleep(500);
         MotorRotirePerii.setPower(0);
     }
 
@@ -857,104 +865,216 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
     }
 
     protected void MoveToUnlatch(){
-        //Todo: de testat
-        WalkEncoder(7 , 0.5 , 90);
-        WalkEncoder(4 , 0.5 , 0);
-        WalkEncoder(6 , 0.5 , 90);
+        WalkEncoder(5 , 0.7 , 90);
+        WalkEncoder(4 , 0.7 , 0);
+        WalkEncoder(5 , 0.7 , 90);
         Rotate(-GetAngle());
-        WalkEncoder(5, 0.3, 180);
+        WalkEncoder(5, 0.7, 180);
     }
 
-    protected void  ChooseCube(MineralPosition now){
+    protected void ChooseCube(MineralPosition now){
         if (now == LEFT){
-            WalkEncoder(12 , 0.5 , 0);
-            WalkEncoder(30 , 0.5 , 45);
-            WalkEncoder(23 , 0.5 , 0);
+            WalkEncoder(12 , 0.8 , 0);
+            WalkEncoder(35 , 0.7 , 45);
+            WalkEncoder(23 , 0.8 , 0);
         }
         else if (now == MIDDLE){
-            WalkEncoder(13 , 0.5 , 0);
-            WalkEncoder(45 , 0.5 , -45);
-            WalkEncoder(10 , 0.5 , 0);
+            WalkEncoder(13 , 0.8 , 0);
+            WalkEncoder(35 , 0.7 , -45);
+            WalkEncoder(10 , 0.8 , 0);
         }
         else if (now == RIGHT){
-            WalkEncoder(20 , 0.5 , -45);
-            WalkEncoder(45 , 0.5 , -90);
-            WalkEncoder(20 , 0.5 , 0);
+            WalkEncoder(20 , 0.8 , -45);
+            WalkEncoder(45 , 0.8 , -90);
+            WalkEncoder(20 , 0.8 , 0);
         }
     }
 
-    protected void LetTeamMarker(MineralPosition now){
-        if (now == LEFT){
-            WalkEncoder(30 , 0.5 , 0);
-            Rotate(-135);
-            WalkEncoder(70 , 0.5 , 90);
-        }
-        else if (now == MIDDLE){
-            WalkEncoder(55 , 0.5 , 0);
-            Rotate(-100);
-        }
-        else if (now == RIGHT){
-            WalkEncoder(45 , 0.5 , 0);
-            Rotate(-70);
-            WalkEncoder( 30, 0.5, 90);
-        }
-
-        PlantTeamMarker();
-    }
-
-    protected void ContinuareCrater(MineralPosition now){
-        if(now == LEFT){
-            Rotate(-20);
-        }
-        else if(now == RIGHT){
-            Rotate(10);
-        }
-    }
+//    protected void LetTeamMarker(MineralPosition now){
+//        if (now == LEFT){
+//            WalkEncoder(30 , 0.5 , 0);
+//            Rotate(-135);
+//            WalkEncoder(70 , 0.5 , 90);
+//        }
+//        else if (now == MIDDLE){
+//            WalkEncoder(55 , 0.5 , 0);
+//            Rotate(-100);
+//        }
+//        else if (now == RIGHT){
+//            WalkEncoder(45 , 0.5 , 0);
+//            Rotate(-70);
+//            WalkEncoder( 30, 0.5, 90);
+//        }
+//
+//        PlantTeamMarker();
+//    }
+//
+//    protected void ContinuareCrater(MineralPosition now){
+//        if(now == LEFT){
+//            Rotate(-20);
+//        }
+//        else if(now == RIGHT){
+//            Rotate(10);
+//        }
+//    }
 
     protected void ParkAtCrater(){
         //lower the sliders
-        MoveSlidersEncoder(200 , 0.5);
+        MoveSlidersEncoder(200 , 0.7);
 
         //extend the sliders
-        ExtendSlidingSystem();
+        ExtendSlidingSystem(true);
 
         //try to capture objects until the end
         GetObjects();
     }
 
-    protected void GoBackAndTurn(boolean bIsCrater, MineralPosition now){
-        int sign = -1;
-        if ( !bIsCrater ) {
-            sign *= -1;
-        }
+    protected void GoBackToCenter(MineralPosition now){
+        Rotate(-GetAngle());
 
-        //TODO: sa se scrie comentarii (am schibat sign ul)
         if ( now == LEFT) {
-            WalkEncoder(-10 , 0.5 , 0);
-            WalkEncoder(-20 , 0.5 , 90);
-            Rotate(30);
+            WalkEncoder(40 , 0.8 , -135);
         } else if ( now == MIDDLE ) {
-            WalkEncoder(-20 , 0.5 , 0);
-            Rotate(90);
+            WalkEncoder(15 , 0.8 , 180);
         } else if ( now == RIGHT ) {
-            WalkEncoder(-5 , 0.5 , 0);
-            WalkEncoder(-20 , 0.5 , -90);
-            Rotate(60);
+            WalkEncoder(30 , 0.8 , 135);
         }
+
+        Rotate(-GetAngle());
     }
 
-    protected void WalkToWall(double distance){
-        double DeadZoneRange = 2;
-        SetWheelsPower(0.3 , 0.3);
+//    protected void WalkToWall(double distance){
+//        double DeadZoneRange = 2;
+//        SetWheelsPower(0.3 , 0.3);
+//
+//        while ( RangeL.getDistance(DistanceUnit.CM) > distance && RangeR.getDistance(DistanceUnit.CM) > distance ) {
+//            telemetry.addData("RangeLeft cm: ", RangeL.getDistance(DistanceUnit.CM));
+//            telemetry.addData("RangeRight cm: ", RangeR.getDistance(DistanceUnit.CM));
+//            telemetry.update();
+//            idle();
+//        }
+//        StopMotors();
+//    }
 
-        while ( RangeL.getDistance(DistanceUnit.CM) > distance && RangeR.getDistance(DistanceUnit.CM) > distance ) {
-            telemetry.addData("RangeLeft cm: ", RangeL.getDistance(DistanceUnit.CM));
-            telemetry.addData("RangeRight cm: ", RangeR.getDistance(DistanceUnit.CM));
-            telemetry.update();
-            idle();
+    //The sequence of rotates and encoders done right after the cube is chosen
+    protected void AfterChooseMoveSequence(boolean bIsCrater, MineralPosition MinPos, Direction dir){
+        if(dir == Direction.NORMAL) {
+            if (bIsCrater) {
+                switch (MinPos) {
+                    case LEFT:
+                        WalkEncoder(20, 0.8, 90);
+                        Rotate(-15);
+                        break;
+
+                    case MIDDLE:
+                        WalkEncoder(5, 0.8, 0);
+                        break;
+
+                    case RIGHT:
+                        WalkEncoder(20, 0.8, -90);
+                        Rotate(15);
+                        break;
+                }
+            } else {
+                switch (MinPos) {
+                    case LEFT:
+                        Rotate(-45);
+                        WalkEncoder(20, 0.8, 90);
+                        WalkEncoder(20, 0.8, 0);
+                        break;
+
+                    case MIDDLE:
+                        WalkEncoder(10, 0.8, 0);
+                        break;
+
+                    case RIGHT:
+                        Rotate(45);
+                        WalkEncoder(30, 0.8, -90);
+                        WalkEncoder(40, 0.8, 0);
+                        Rotate(90);
+                        break;
+                }
+
+                if ( MinPos != RIGHT ) {
+                    LetTeamMarker(bIsCrater);
+                }
+            }
         }
-        StopMotors();
+        else{
+            MoveSlidersEncoder(1200, 0.7);
+            if (bIsCrater) {
+                switch (MinPos) {
+                    case LEFT:
+                        Rotate(15);
+                        WalkEncoder(20, 0.8, -90);
+                        break;
+
+                    case MIDDLE:
+                        WalkEncoder(5, 0.8, 180);
+                        break;
+
+                    case RIGHT:
+                        Rotate(-15);
+                        WalkEncoder(20, 0.8, 90);
+                        break;
+                }
+            } else {
+                switch (MinPos) {
+                    case LEFT:
+                        WalkEncoder(20, 0.8, 180);
+                        WalkEncoder(20, 0.8, -90);
+                        Rotate(45);
+                        break;
+
+                    case MIDDLE:
+                        WalkEncoder(10, 0.8, 180);
+                        break;
+
+                    case RIGHT:
+                        WalkEncoder(20, 0.8, 0);
+                        WalkEncoder(80, 0.8, 90);
+                        //Rotate(-45);
+                        break;
+                }
+            }
+        }
+
     }
 
+    protected void LetTeamMarker(boolean bIsCrater) {
+        MoveSlidersEncoder(300, 0.7);
+        ExtendSlidingSystem(bIsCrater);
+        PlantTeamMarker();
+        MoveSlidersEncoder(-300, 0.7);
+        RetractSlidingSystem();
+    }
+
+    protected void ComplexCommute(boolean bIsCrater, MineralPosition MinPos){
+     if (MinPos != RIGHT ) {
+         MoveSlidersEncoder(1200, 0.5);
+         WalkEncoder(80, 0.8, 90);
+
+         Rotate(135);
+
+         WalkEncoder(10, 0.5, -90);
+         WalkEncoder(70, 0.8, 0);
+     }
+        if(bIsCrater){
+            //Plant the team marker
+            MoveSlidersEncoder(500 , 0.7);
+            ExtendSlidingSystem(bIsCrater);
+            PlantTeamMarker();
+            RetractSlidingSystem();
+
+            //Go back to crater and park
+            MoveSlidersEncoder(1200, 0.7);
+            Rotate(180);
+            WalkEncoder(200, 0.8, 0);
+            ParkAtCrater();
+        }
+        else{
+            ParkAtCrater();
+        }
+    }
 
 }

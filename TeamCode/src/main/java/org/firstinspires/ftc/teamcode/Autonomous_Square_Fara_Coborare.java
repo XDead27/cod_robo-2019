@@ -57,7 +57,7 @@ public final class Autonomous_Square_Fara_Coborare extends Autonomous_Mode {
 
         //let team marker
         MoveSlidersEncoder(500 , 0.5);
-        ExtendSlidingSystem();
+        ExtendSlidingSystem(false);
         PlantTeamMarker();
         RetractSlidingSystem();
 
