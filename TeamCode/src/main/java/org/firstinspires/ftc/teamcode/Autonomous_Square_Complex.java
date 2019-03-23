@@ -8,16 +8,9 @@ import static org.firstinspires.ftc.teamcode.MineralPosition.MIDDLE;
 import static org.firstinspires.ftc.teamcode.MineralPosition.RIGHT;
 
 @Autonomous(name = "Autonomous_Square_Complex", group = "Autonomous")
-@Disabled
+//@Disabled
 
 public final class Autonomous_Square_Complex extends Autonomous_Mode {
-
-    @Override
-    protected void initialise(boolean bIsDriver){
-        super.initialise(bIsDriver);
-        telemetry.addData("waiting for start " , "");
-        telemetry.update();
-    }
 
     @Override
     protected void runOperations() {
@@ -25,11 +18,11 @@ public final class Autonomous_Square_Complex extends Autonomous_Mode {
         //let the robot down
         LiftDown();
 
-        //calibrate gyro
-        CalibrateGyro();
-
         //move left
         MoveToUnlatch();
+
+        //Lift the sliders down to make the robot steadier
+        MoveSlidersEncoder(1000 , 0.5);
 
         //see where the cube is
         LiftPhoneUp();
@@ -39,26 +32,70 @@ public final class Autonomous_Square_Complex extends Autonomous_Mode {
         //choose cube
         ChooseCube(now);
 
-        //TODO : TESTAT DE AICI IN JOS
+        //moves slightly further from the other minerals then turns towards the crater/square
+        switch(now){
+            case LEFT:
+                Rotate(-45);
+                WalkEncoder(20, 0.5, 90);
+                WalkEncoder(20, 0.5, 0);
+                break;
 
-        /*//let team marker
-        MoveSlidersEncoder(200 , 0.5);
+            case MIDDLE:
+                WalkEncoder(10, 0.5, 0);
+                break;
+
+            case RIGHT:
+                Rotate(45);
+                WalkEncoder(30, 0.5, -90);
+                WalkEncoder(20, 0.5, 0);
+                break;
+        }
+
+        //let team marker
+        MoveSlidersEncoder(300 , 0.5);
         ExtendSlidingSystem();
         PlantTeamMarker();
         RetractSlidingSystem();
 
-        GoBackAndTurn(false, now);
+        MoveSlidersEncoder(1500, 0.5);
 
-        WalkObstacleAndRangeNORMAL(15 , false , 0.4);
+        //Rotate(-GetAngle());
 
-        AlignWithWall();
+        switch(now){
+            case LEFT:
+//                WalkEncoder(10, 0.5, -90);
+//                Rotate(180);
+//                WalkEncoder(150, 0.7, 0);
 
-        Rotate(-90);
+                WalkEncoder(50, 0.5, 90);
+                WalkEncoder(40, 0.5, 45);
+                Rotate(-45);
+                WalkEncoder(60, 0.5, 90);
+                Rotate(135);
+                WalkEncoder(20, 0.5, -90);
+                WalkEncoder(40, 0.4, 0);
+                //WalkEncoder(-20, 0.5, 0);
+                Rotate(90);
+                break;
 
-        WalkObstacleAndRangeNORMAL(150 , true , 0.4);
+            case MIDDLE:
+                WalkEncoder(25, 0.5, 180);
+                WalkEncoder(60, 0.5, 90);
+                Rotate(135);
+                WalkEncoder(20, 0.5, -90);
+                WalkEncoder(40, 0.4, 0);
+                //WalkEncoder(-20, 0.5, 0);
+                Rotate(90);
+                break;
 
-        ParkAtCrater();*/
+            case RIGHT:
+                WalkEncoder(10, 0.5, 90);
+                Rotate(180);
+                WalkEncoder(150, 0.7, 0);
+                break;
+        }
 
+        ParkAtCrater();
     }
 
     @Override

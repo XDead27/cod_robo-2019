@@ -17,16 +17,11 @@ public final class Autonomous_Square_Simpla extends Autonomous_Mode {
         //let the robot down
         LiftDown();
 
-        //calibrate gyro
-        CalibrateGyro();
-
         //move left
         MoveToUnlatch();
 
         //Lift the sliders down to make the robot steadier
         MoveSlidersEncoder(1000 , 0.5);
-
-        Rotate(-GetAngle());
 
         //see where the cube is
         LiftPhoneUp();
@@ -39,8 +34,9 @@ public final class Autonomous_Square_Simpla extends Autonomous_Mode {
         //moves slightly further from the other minerals then turns towards the crater/square
         switch(now){
             case LEFT:
+                Rotate(-45);
                 WalkEncoder(20, 0.5, 90);
-                Rotate(-35);
+                WalkEncoder(20, 0.5, 0);
                 break;
 
             case MIDDLE:
@@ -50,6 +46,7 @@ public final class Autonomous_Square_Simpla extends Autonomous_Mode {
             case RIGHT:
                 WalkEncoder(20, 0.5, -90);
                 Rotate(35);
+                WalkEncoder(20, 0.5, 0);
                 break;
         }
 

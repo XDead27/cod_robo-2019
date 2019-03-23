@@ -16,14 +16,8 @@ public final class Autonomous_Crater_Simpla extends Autonomous_Mode {
         //let the robot down
         LiftDown();
 
-        //calibrate gyro
-        CalibrateGyro();
-
         //move left
         MoveToUnlatch();
-
-        //Rotates to position 0
-        Rotate(-GetAngle());
 
         //see where the cube is
         LiftPhoneUp();

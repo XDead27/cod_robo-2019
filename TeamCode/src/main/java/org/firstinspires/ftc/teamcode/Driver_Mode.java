@@ -25,7 +25,7 @@ public class Driver_Mode extends RobotHardwareClass {
 
     private static final double INIT_ACC_SPEED = 0.2;
     private static final double MAX_ACC_SPEED = 0.9;
-    private static final double ACCELERATION_INCREMENT = 0.5;
+    private static final double ACCELERATION_INCREMENT = 0.4;
     private static final double ENCODER_AX_POS_IDEALA = 0;
 
     //conditii
@@ -292,24 +292,34 @@ public class Driver_Mode extends RobotHardwareClass {
         MotorExtindere.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         MotorExtindere.setPower(0.7);
 
-        while(MotorExtindere.isBusy() || !gamepad2.y){
+        while(MotorExtindere.isBusy() && !gamepad2.y && opModeIsActive()){
             idle();
         }
+
+        telemetry.addData("aaa", "...");
 
         MotorExtindere.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
+        MotorGlisieraL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        MotorGlisieraR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         PowerMotoareGlisiera(reverse * 0.7);
-        while(MotorGlisieraL.getCurrentPosition()*reverse < (reverse > 0? GLISIERA_MAX :-GLISIERA_MIN) || !gamepad2.y){
+        while(MotorGlisieraL.getCurrentPosition()*reverse < (reverse > 0? GLISIERA_MAX :-GLISIERA_MIN) && !gamepad2.y && opModeIsActive()){
+            telemetry.addData("Glisiera r", MotorGlisieraR.getPower());
+            telemetry.update();
             idle();
         }
+
         PowerMotoareGlisiera(0);
 
         MotorExtindere.setTargetPosition(reverse > 0? EXTINDERE_MAX_GLISIERA_MAX : EXTINDERE_MAX_GLISIERA_MIN);
         MotorExtindere.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         MotorExtindere.setPower(0.7);
 
-        while(MotorExtindere.isBusy() || !gamepad2.y){
+        LastGlisiera = MotorGlisieraL.getCurrentPosition();
+
+        while(MotorExtindere.isBusy() && !gamepad2.y && opModeIsActive()){
             idle();
+            RestGlisiere(LastGlisiera, 0.1);
         }
 
         MotorExtindere.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
