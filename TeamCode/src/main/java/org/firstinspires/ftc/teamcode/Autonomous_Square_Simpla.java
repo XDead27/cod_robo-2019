@@ -7,16 +7,9 @@ import static org.firstinspires.ftc.teamcode.MineralPosition.LEFT;
 import static org.firstinspires.ftc.teamcode.MineralPosition.MIDDLE;
 import static org.firstinspires.ftc.teamcode.MineralPosition.RIGHT;
 
-@Autonomous(name = "Autonomous_Square_Simpla_Coborare", group = "Autonomous")
+@Autonomous(name = "Autonomous Square Simpla Cu Coborare", group = "Autonomous")
 
 public final class Autonomous_Square_Simpla extends Autonomous_Mode {
-
-    @Override
-    protected void initialise(boolean bIsDriver){
-        super.initialise(bIsDriver);
-        telemetry.addData("waiting for start " , "");
-        telemetry.update();
-    }
 
     @Override
     protected void runOperations() {
@@ -30,7 +23,10 @@ public final class Autonomous_Square_Simpla extends Autonomous_Mode {
         //move left
         MoveToUnlatch();
 
+        //Lift the sliders down to make the robot steadier
         MoveSlidersEncoder(1000 , 0.5);
+
+        Rotate(-GetAngle());
 
         //see where the cube is
         LiftPhoneUp();
@@ -62,17 +58,6 @@ public final class Autonomous_Square_Simpla extends Autonomous_Mode {
         ExtendSlidingSystem();
         PlantTeamMarker();
         RetractSlidingSystem();
-//
-//        GoBackAndTurn(false, now);
-//
-//        //let team marker
-//        LetTeamMarker(now);
-//
-//        //TODO: vazut ce dracu fac in jos
-//        Rotate(-90);
-//
-//        WalkObstacleAndRangeNORMAL(20, true, 0.8);
-
     }
 
     @Override

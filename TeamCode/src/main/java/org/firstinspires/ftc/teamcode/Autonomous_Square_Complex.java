@@ -8,6 +8,7 @@ import static org.firstinspires.ftc.teamcode.MineralPosition.MIDDLE;
 import static org.firstinspires.ftc.teamcode.MineralPosition.RIGHT;
 
 @Autonomous(name = "Autonomous_Square_Complex", group = "Autonomous")
+@Disabled
 
 public final class Autonomous_Square_Complex extends Autonomous_Mode {
 

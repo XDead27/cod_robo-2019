@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.res.AssetManager;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
@@ -11,6 +12,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import java.io.File;
 
 @Autonomous(name = "Autonomous_Test", group = "Autonomous")
+@Disabled
+
 
 public final class Autonomous_Test extends Autonomous_Mode {
 

@@ -1,12 +1,15 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 import static org.firstinspires.ftc.teamcode.MineralPosition.LEFT;
 import static org.firstinspires.ftc.teamcode.MineralPosition.MIDDLE;
 import static org.firstinspires.ftc.teamcode.MineralPosition.RIGHT;
 
 @Autonomous(name = "Autonomous_Crater_Complex", group = "Autonomous")
+@Disabled
+
 
 public final class Autonomous_Crater_Complex extends Autonomous_Mode {
 

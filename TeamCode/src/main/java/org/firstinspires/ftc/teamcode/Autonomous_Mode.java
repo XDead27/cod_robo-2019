@@ -25,7 +25,7 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
 
     protected static int TICKS_PER_CM = 15; //TODO: chiar trebuie sa il aflam
 
-    protected static int DIST_GLISIERE = 1800;
+    protected static int DIST_GLISIERE = 1700;
     private final int EXTINDERE_MAX_GLISIERA_MAX = 5800;
     private final int EXTINDERE_MAX_GLISIERA_MIN = 4790;
 
@@ -49,7 +49,11 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
         telemetry.addData("Status", "Waiting for start");
         telemetry.update();
 
-        waitForStart();
+        while(!opModeIsActive() && !isStopRequested() ){
+            telemetry.addData("waiting for command" , " ...");
+            telemetry.update();
+            idle();
+        }
 
         runOperations();
 
@@ -75,10 +79,10 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
         tfod.activate();
 
         if (elem == 2) {
-            int MaxTime = 4000;
+            //int MaxTime = 7000;
             int CurTime = 0;
             int period = 5;
-            while (opModeIsActive() && CurTime < MaxTime) {
+            while (opModeIsActive() /*&& CurTime < MaxTime*/) {
                 List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
                 if (updatedRecognitions != null && updatedRecognitions.size() >= 2) {
                     String label1 = "";
@@ -123,8 +127,8 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
                         break;
                     }
                 }
-                sleep(period);
-                CurTime+=period;
+                //sleep(period);
+                //CurTime+=period;
             }
         } else if (elem == 3) {
             while (opModeIsActive()) {
@@ -853,7 +857,10 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
     }
 
     protected void MoveToUnlatch(){
-        WalkEncoder(8 , 0.5 , 90);
+        //Todo: de testat
+        WalkEncoder(7 , 0.5 , 90);
+        WalkEncoder(3 , 0.5 , 0);
+        WalkEncoder(4 , 0.5 , 90);
     }
 
     protected void  ChooseCube(MineralPosition now){
@@ -863,7 +870,7 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
             WalkEncoder(15 , 0.5 , 0);
         }
         else if (now == MIDDLE){
-            WalkEncoder(15 , 0.5 , 0);
+            WalkEncoder(13 , 0.5 , 0);
             WalkEncoder(35 , 0.5 , -45);
             WalkEncoder(10 , 0.5 , 0);
         }

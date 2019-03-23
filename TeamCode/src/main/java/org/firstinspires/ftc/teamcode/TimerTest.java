@@ -1,25 +1,14 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 @Autonomous(name = "Timer Test", group = "Autonomous")
+@Disabled
+
+
 public final class TimerTest extends LinearOpMode {
-//    @Override
-//    protected void runOperations() {
-//        long RTimer = 0;
-//
-//        while(opModeIsActive()){
-//            RTimer += 1;
-//        }
-//    }
-//
-//    @Override
-//    protected void endOperations() {
-//
-//    }
-
-
     @Override
     public void runOpMode() {
         waitForStart();

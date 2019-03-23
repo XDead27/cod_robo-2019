@@ -91,7 +91,16 @@ public class Driver_Mode extends RobotHardwareClass {
 
         if (gamepad1.dpad_up){
             while (opModeIsActive() && !gamepad1.dpad_down){
-                PowerMotoareGlisiera(-0.4);
+                if(bNoConstraintsMode) {
+                    MotorGlisieraL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                    MotorGlisieraR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                    PowerMotoareGlisiera(-0.4);
+                }
+                else {
+                    RestGlisiere(GLISIERA_MIN, 0.4);
+                }
+                telemetry.addData("Glisiera stanga: ", MotorGlisieraL.getPower());
+                telemetry.update();
             }
         }
 
@@ -110,12 +119,12 @@ public class Driver_Mode extends RobotHardwareClass {
         }
 
         telemetry.addData("Acceleration mode : ", bAccelerationMode);
-        telemetry.addData("Acceleration speed : ", AccelerationSpeed);
-
-        telemetry.addData("FL" , MotorFL.getCurrentPosition());
-        telemetry.addData("FR" , MotorFR.getCurrentPosition());
-        telemetry.addData("BL" , MotorBL.getCurrentPosition());
-        telemetry.addData("BR" , MotorBR.getCurrentPosition());
+//        telemetry.addData("Acceleration speed : ", AccelerationSpeed);
+//
+//        telemetry.addData("FL" , MotorFL.getCurrentPosition());
+//        telemetry.addData("FR" , MotorFR.getCurrentPosition());
+//        telemetry.addData("BL" , MotorBL.getCurrentPosition());
+//        telemetry.addData("BR" , MotorBR.getCurrentPosition());
     }
 
     protected void gamepad_2(){
@@ -162,7 +171,7 @@ public class Driver_Mode extends RobotHardwareClass {
         }
         else{
             //PowerMotoareGlisiera(0);
-            RestGlisiere(LastGlisiera);
+            RestGlisiere(LastGlisiera, 0.1);
             //telemetry.addData("Ar trebui sa se opreasca", " ");
         }
 
@@ -206,9 +215,9 @@ public class Driver_Mode extends RobotHardwareClass {
             GatherToExtendMACRO(1);
         }
 
-        telemetry.addData("Encoder Mosor : " , MotorExtindere.getCurrentPosition() + " din mososr max : " + MosorMax);
-        telemetry.addData("Encoder Ridicare Glisiera Stanga : ", MotorGlisieraL.getCurrentPosition());
-        telemetry.addData("Encoder Ax : ", MotorRotirePerii.getCurrentPosition());
+//        telemetry.addData("Encoder Mosor : " , MotorExtindere.getCurrentPosition() + " din mososr max : " + MosorMax);
+//        telemetry.addData("Encoder Ridicare Glisiera Stanga : ", MotorGlisieraL.getCurrentPosition());
+//        telemetry.addData("Encoder Ax : ", MotorRotirePerii.getCurrentPosition());
         telemetry.addData("No Constraints Mode : ", bNoConstraintsMode);
     }
 
@@ -308,12 +317,12 @@ public class Driver_Mode extends RobotHardwareClass {
         return false;
     }
 
-    private void RestGlisiere(int LastPosition){
+    private void RestGlisiere(int LastPosition, double Power){
         MotorGlisieraL.setTargetPosition(LastPosition);
         MotorGlisieraR.setTargetPosition(LastPosition);
         MotorGlisieraL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         MotorGlisieraR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        MotorGlisieraL.setPower(0.1);
-        MotorGlisieraR.setPower(0.1);
+        MotorGlisieraL.setPower(Power);
+        MotorGlisieraR.setPower(Power);
     }
 }

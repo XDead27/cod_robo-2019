@@ -6,16 +6,9 @@ import static org.firstinspires.ftc.teamcode.MineralPosition.LEFT;
 import static org.firstinspires.ftc.teamcode.MineralPosition.MIDDLE;
 import static org.firstinspires.ftc.teamcode.MineralPosition.RIGHT;
 
-@Autonomous(name = "Autonomous_Crater_Simpla", group = "Autonomous")
+@Autonomous(name = "Autonomous Crater Simpla", group = "Autonomous")
 
 public final class Autonomous_Crater_Simpla extends Autonomous_Mode {
-
-    @Override
-    protected void initialise(boolean bIsDriver) {
-        super.initialise(bIsDriver);
-        telemetry.addData("waiting for start " , "");
-        telemetry.update();
-    }
 
     @Override
     protected void runOperations() {
@@ -29,6 +22,7 @@ public final class Autonomous_Crater_Simpla extends Autonomous_Mode {
         //move left
         MoveToUnlatch();
 
+        //Rotates to position 0
         Rotate(-GetAngle());
 
         //see where the cube is

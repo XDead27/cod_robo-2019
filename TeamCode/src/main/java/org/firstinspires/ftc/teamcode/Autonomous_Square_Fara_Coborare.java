@@ -7,7 +7,7 @@ import static org.firstinspires.ftc.teamcode.MineralPosition.LEFT;
 import static org.firstinspires.ftc.teamcode.MineralPosition.MIDDLE;
 import static org.firstinspires.ftc.teamcode.MineralPosition.RIGHT;
 
-@Autonomous(name = "Autonomous_Square_Simpla_Fara_Coborare", group = "Autonomous")
+@Autonomous(name = "Autonomous Square Simpla Fara Coborare", group = "Autonomous")
 
 public final class Autonomous_Square_Fara_Coborare extends Autonomous_Mode {
 
