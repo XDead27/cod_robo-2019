@@ -35,7 +35,7 @@ public final class Autonomous_Square_Complex extends Autonomous_Mode {
 
         if ( now == RIGHT ) {
             LetTeamMarker(false);
-            WalkEncoder(80, 0.8, 180);
+            WalkEncoder(100, 0.8, 180);
         }
         else {
             GoBackToCenter(now);

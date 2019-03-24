@@ -875,7 +875,7 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
     protected void ChooseCube(MineralPosition now){
         if (now == LEFT){
             WalkEncoder(12 , 0.8 , 0);
-            WalkEncoder(35 , 0.7 , 45);
+            WalkEncoder(35 , 0.8 , 45);
             WalkEncoder(23 , 0.8 , 0);
         }
         else if (now == MIDDLE){
@@ -884,8 +884,8 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
             WalkEncoder(10 , 0.8 , 0);
         }
         else if (now == RIGHT){
-            WalkEncoder(20 , 0.8 , -45);
-            WalkEncoder(45 , 0.8 , -90);
+            WalkEncoder(12 , 0.8 , -45);
+            WalkEncoder(50 , 0.8 , -90);
             WalkEncoder(20 , 0.8 , 0);
         }
     }
@@ -933,7 +933,7 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
         Rotate(-GetAngle());
 
         if ( now == LEFT) {
-            WalkEncoder(40 , 0.8 , -135);
+            WalkEncoder(50 , 0.8 , -135);
         } else if ( now == MIDDLE ) {
             WalkEncoder(15 , 0.8 , 180);
         } else if ( now == RIGHT ) {
@@ -959,6 +959,7 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
     //The sequence of rotates and encoders done right after the cube is chosen
     protected void AfterChooseMoveSequence(boolean bIsCrater, MineralPosition MinPos, Direction dir){
         if(dir == Direction.NORMAL) {
+            //NORMAL
             if (bIsCrater) {
                 switch (MinPos) {
                     case LEFT:
@@ -988,10 +989,11 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
                         break;
 
                     case RIGHT:
+                        Rotate(-GetAngle());
                         Rotate(45);
-                        WalkEncoder(30, 0.8, -90);
-                        WalkEncoder(40, 0.8, 0);
-                        Rotate(90);
+                        WalkEncoder(35, 0.8, -90);
+                        WalkEncoder(50, 0.8, 0);
+                        Rotate(-90);
                         break;
                 }
 
@@ -1001,6 +1003,7 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
             }
         }
         else{
+            //REVERSE
             MoveSlidersEncoder(1200, 0.7);
             if (bIsCrater) {
                 switch (MinPos) {
@@ -1031,8 +1034,8 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
                         break;
 
                     case RIGHT:
-                        WalkEncoder(20, 0.8, 0);
-                        WalkEncoder(80, 0.8, 90);
+                        WalkEncoder(20, 0.8, 180);
+                        WalkEncoder(60, 0.8, 90);
                         //Rotate(-45);
                         break;
                 }
@@ -1052,7 +1055,7 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
     protected void ComplexCommute(boolean bIsCrater, MineralPosition MinPos){
      if (MinPos != RIGHT ) {
          MoveSlidersEncoder(1200, 0.5);
-         WalkEncoder(80, 0.8, 90);
+         WalkEncoder(70, 0.8, 90);
 
          Rotate(135);
 
