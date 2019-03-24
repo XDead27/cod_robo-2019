@@ -25,7 +25,7 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
 
     protected static int TICKS_PER_CM = 15;
 
-    protected static int DIST_GLISIERE = 1300;
+    protected static int DIST_GLISIERE = 1450;
     private final int EXTINDERE_MAX_GLISIERA_MAX = 5800;
     private final int EXTINDERE_MAX_GLISIERA_MIN = 4790;
 
@@ -740,18 +740,18 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
 
     protected void LiftDown() {
 
-        MotorGlisieraL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        /*MotorGlisieraL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         MotorGlisieraR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         MotorGlisieraL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         MotorGlisieraR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        MotorGlisieraL.setPower(-0.7);
-        MotorGlisieraR.setPower(-0.7);
+        MotorGlisieraL.setPower(-0.8);
+        MotorGlisieraR.setPower(-0.8);
 
-        sleep(1000);
+        sleep(1500);*/
 
-        MotorGlisieraL.setPower(0.3);
-        MotorGlisieraR.setPower(0.3);
+        MotorGlisieraL.setPower(0.5);
+        MotorGlisieraR.setPower(0.5);
         SetWheelsPower(0 , 0 , -0.3 , -0.3);
 
         while (Math.abs(MotorGlisieraR.getCurrentPosition()) < DIST_GLISIERE && opModeIsActive()) {
@@ -885,7 +885,7 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
         }
         else if (now == RIGHT){
             WalkEncoder(12 , 0.8 , -45);
-            WalkEncoder(50 , 0.8 , -90);
+            WalkEncoder(42 , 0.8 , -90);
             WalkEncoder(20 , 0.8 , 0);
         }
     }
@@ -1078,6 +1078,20 @@ public abstract class Autonomous_Mode extends RobotHardwareClass {
         else{
             ParkAtCrater();
         }
+    }
+
+    protected void SteadyGlisiere(){
+        while (!opModeIsActive() && !isStopRequested()) {
+            MotorGlisieraL.setTargetPosition(0);
+            MotorGlisieraR.setTargetPosition(0);
+            MotorGlisieraL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            MotorGlisieraR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            MotorGlisieraL.setPower(0.2);
+            MotorGlisieraR.setPower(0.2);
+        }
+
+        MotorGlisieraL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        MotorGlisieraR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
 }

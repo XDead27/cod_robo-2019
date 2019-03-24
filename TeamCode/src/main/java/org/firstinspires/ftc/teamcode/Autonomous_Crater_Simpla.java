@@ -7,6 +7,13 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 public final class Autonomous_Crater_Simpla extends Autonomous_Mode {
 
     @Override
+    protected void initialise(boolean bIsDriver) {
+        super.initialise(bIsDriver);
+
+        SteadyGlisiere();
+    }
+
+    @Override
     protected void runOperations() {
 
         //let the robot down
@@ -35,5 +42,4 @@ public final class Autonomous_Crater_Simpla extends Autonomous_Mode {
     protected void endOperations() {
 
     }
-
 }

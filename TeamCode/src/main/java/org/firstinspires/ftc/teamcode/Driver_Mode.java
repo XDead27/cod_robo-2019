@@ -290,7 +290,7 @@ public class Driver_Mode extends RobotHardwareClass {
     private boolean GatherToExtendMACRO(int reverse){
         MotorExtindere.setTargetPosition(EXTINDERE_MIN);
         MotorExtindere.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        MotorExtindere.setPower(0.7);
+        MotorExtindere.setPower(0.9);
 
         while(MotorExtindere.isBusy() && !gamepad2.y && opModeIsActive()){
             idle();
@@ -313,7 +313,7 @@ public class Driver_Mode extends RobotHardwareClass {
 
         MotorExtindere.setTargetPosition(reverse > 0? EXTINDERE_MAX_GLISIERA_MAX : EXTINDERE_MAX_GLISIERA_MIN);
         MotorExtindere.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        MotorExtindere.setPower(0.7);
+        MotorExtindere.setPower(0.9);
 
         LastGlisiera = MotorGlisieraL.getCurrentPosition();
 

@@ -88,79 +88,86 @@ public final class Autonomous_Test extends Autonomous_Mode {
             }
 
             else if (gamepad1.dpad_up) {
-                //MIDDLE DANI, MIDDLE
+                //let the robot down
                 LiftDown();
 
                 //move left
                 MoveToUnlatch();
+
+                //Lift the sliders down to make the robot steadier
+                MoveSlidersEncoder(1000 , 0.8);
 
                 //see where the cube is
                 LiftPhoneUp();
                 MineralPosition now = MIDDLE;
                 LiftPhoneDown();
 
-                MoveSlidersEncoder(1000, 0.5);
-
                 //choose cube
                 ChooseCube(now);
 
-                WalkEncoder(5, 0.5, 0);
+                //moves slightly further from the other minerals then turns towards the crater/square
+                AfterChooseMoveSequence(false, now, Direction.NORMAL);
+                AfterChooseMoveSequence(false, now, Direction.REVERSE);
 
-                //park
-                ParkAtCrater();
+                GoBackToCenter(now);
+                ComplexCommute(false, now);
 
             }
             else if (gamepad1.dpad_down) {
 
             }
             else if (gamepad1.dpad_left) {
-                //LEFT AN POOLA MEA
+                //let the robot down
                 LiftDown();
 
                 //move left
                 MoveToUnlatch();
+
+                //Lift the sliders down to make the robot steadier
+                MoveSlidersEncoder(1000 , 0.8);
 
                 //see where the cube is
                 LiftPhoneUp();
                 MineralPosition now = LEFT;
                 LiftPhoneDown();
 
-                MoveSlidersEncoder(1000, 0.5);
-
                 //choose cube
                 ChooseCube(now);
 
                 //moves slightly further from the other minerals then turns towards the crater/square
+                AfterChooseMoveSequence(false, now, Direction.NORMAL);
+                AfterChooseMoveSequence(false, now, Direction.REVERSE);
 
-                WalkEncoder(20, 0.5, 90);
-                Rotate(-15);
 
-                //park
-                ParkAtCrater();
+                GoBackToCenter(now);
+                ComplexCommute(false, now);
+
             }
             else if (gamepad1.dpad_right) {
-                //RIGHT
+                //let the robot down
                 LiftDown();
 
                 //move left
                 MoveToUnlatch();
+
+                //Lift the sliders down to make the robot steadier
+                MoveSlidersEncoder(1000 , 0.8);
 
                 //see where the cube is
                 LiftPhoneUp();
                 MineralPosition now = RIGHT;
                 LiftPhoneDown();
 
-                MoveSlidersEncoder(1000, 0.5);
-
                 //choose cube
                 ChooseCube(now);
 
                 //moves slightly further from the other minerals then turns towards the crater/square
-                WalkEncoder(20, 0.5, -90);
-                Rotate(15);
+                AfterChooseMoveSequence(false, now, Direction.NORMAL);
+                AfterChooseMoveSequence(false, now, Direction.REVERSE);
 
-                //park
-                ParkAtCrater();
+                LetTeamMarker(false);
+                WalkEncoder(100, 0.8, 180);
+
             }
             else if(gamepad1.left_bumper){
                 Rotate(argument);

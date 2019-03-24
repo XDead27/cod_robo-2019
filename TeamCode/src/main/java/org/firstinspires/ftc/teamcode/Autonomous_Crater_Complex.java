@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.qualcomm.robotcore.hardware.DcMotor;
 
 import static org.firstinspires.ftc.teamcode.MineralPosition.LEFT;
 import static org.firstinspires.ftc.teamcode.MineralPosition.MIDDLE;
@@ -16,6 +17,8 @@ public final class Autonomous_Crater_Complex extends Autonomous_Mode {
         super.initialise(bIsDriver);
         telemetry.addData("waiting for start " , "");
         telemetry.update();
+
+        SteadyGlisiere();
     }
 
     @Override

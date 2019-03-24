@@ -10,6 +10,13 @@ import static org.firstinspires.ftc.teamcode.MineralPosition.RIGHT;
 public final class Autonomous_Square_Complex extends Autonomous_Mode {
 
     @Override
+    protected void initialise(boolean bIsDriver) {
+        super.initialise(bIsDriver);
+
+        SteadyGlisiere();
+    }
+
+    @Override
     protected void runOperations() {
 
         //let the robot down
